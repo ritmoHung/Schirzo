@@ -20,15 +20,18 @@ interface Event {
 
 interface JudgePoint {
     speedEvents: Event[];
-    moveEvents: Event[];
+    positionEvents: Event[];
     rotateEvents: Event[];
-    alphaEvents: Event[];
+    opacityEvents: Event[];
 }
 
 @ccclass("ChartPlayer")
 export class ChartPlayer extends Component {
     @property(Button)
     startButton: Button | null = null
+
+    @property(Button)
+    pauseButton: Button | null = null
 
     @property(Prefab)
     notePrefab: Prefab | null = null
@@ -39,7 +42,8 @@ export class ChartPlayer extends Component {
     @property(JudgePointPool)
     judgePointPool: JudgePointPool
 
-    songPath: string = "rip";
+    private static instance: ChartPlayer;
+    private songPath: string = "rip";
     private globalTime: number = 0;
     private settings: GlobalSettings;
 
@@ -51,9 +55,17 @@ export class ChartPlayer extends Component {
         this.settings = GlobalSettings.getInstance();
     }
 
+    public static get Instance() {
+        return this.instance;
+    }
+
     onLoad() {
+        ChartPlayer.instance = this;
         if (this.startButton) {
             this.startButton.node.on("click", () => this.startGame());
+        }
+        if (this.pauseButton) {
+            this.pauseButton.node.on("click", () => this.pauseMusic());
         }
     }
 
@@ -62,7 +74,6 @@ export class ChartPlayer extends Component {
     }
 
     onAudioStarted() {
-        this.judgePointPool.startAllTweens();
     }
 
     start() {
@@ -104,6 +115,16 @@ export class ChartPlayer extends Component {
         }
     }
 
+    pauseMusic() {
+        if (this.audioSource) {
+            if (this.audioSource.playing) {
+                this.audioSource.pause();
+            } else {
+                this.audioSource.play();
+            }
+        }
+    }
+
     playSfx(clip: AudioClip) {
         if (this.audioSource && clip) {
             this.audioSource.playOneShot(clip, 1.0);
@@ -141,9 +162,9 @@ export class ChartPlayer extends Component {
         return {
             ...judgePoint,
             speedEvents: convertEventTimings(judgePoint.speedEvents),
-            moveEvents: convertEventTimings(judgePoint.moveEvents),
+            positionEvents: convertEventTimings(judgePoint.positionEvents),
             rotateEvents: convertEventTimings(judgePoint.rotateEvents),
-            alphaEvents: convertEventTimings(judgePoint.alphaEvents)
+            opacityEvents: convertEventTimings(judgePoint.opacityEvents)
         };
     }
 
@@ -177,28 +198,16 @@ export class ChartPlayer extends Component {
         return totalTime;
     }
 
-    createNotes(chartData) {
-        chartData.notes.forEach(noteData => {
-            const noteTime = (noteData.bar * 4 + noteData.time) * (60 / chartData.bpm);
-            this.scheduleOnce(() => this.createNote(noteData), noteTime);
-        });
-    }
-
-    createNote(noteData) {
-        if (this.notePrefab) {
-            const note = instantiate(this.notePrefab);
-            note.setParent(this.node);
-
-            note.getComponent(ClickNote).initialize(this, noteData);
-        }
-    }
-
     startGame() {
         this.audioSource.stop();
-        this.judgePointPool.stopAllTweens();
+        this.globalTime = 0;
 
         this.scheduleOnce(() => {
             this.playMusic();
         }, 1);
+    }
+
+    getGlobalTime() {
+        return this.globalTime;
     }
 }

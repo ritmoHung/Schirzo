@@ -38,26 +38,4 @@ export class JudgePointPool extends Component {
             judgePointComponent.initialize(judgePointData);
         }
     }
-
-    startAllTweens() {
-        this.pool.forEach(node => {
-            if (node.active) {
-                const judgePointComponent = node.getComponent(JudgePoint);
-                if (judgePointComponent) {
-                    judgePointComponent.startAllTweens();
-                }
-            }
-        });
-    }
-
-    stopAllTweens() {
-        this.pool.forEach(node => {
-            if (node.active) {
-                const judgePointComponent = node.getComponent(JudgePoint);
-                if (judgePointComponent) {
-                    judgePointComponent.stopAllTweens();
-                }
-            }
-        });
-    }
 }
