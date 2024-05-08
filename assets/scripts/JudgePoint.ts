@@ -1,17 +1,10 @@
-import { _decorator, Component, TweenEasing, UIOpacity, Vec3, easing, lerp } from "cc";
+import { _decorator, Component, UIOpacity, view, Vec3, easing, lerp, Size } from "cc";
 import { ChartPlayer } from "./ChartPlayer";
 const { ccclass, property } = _decorator;
 
-interface Event {
-    startTime: number;
-    endTime: number;
-    easing: TweenEasing;
-    start: any;
-    end: any;
-}
-
 @ccclass("JudgePoint")
 export class JudgePoint extends Component {
+    private resolution: Size
     private events: any = {}
     private lastGlobalTime: number = -1
     private lastEventIndexes: { [key: string]: number } = {}
@@ -20,6 +13,10 @@ export class JudgePoint extends Component {
 
 
     // # Lifecycle
+    onLoad() {
+        this.resolution = view.getDesignResolutionSize();
+    }
+
     update(dt: number) {
         const globalTime = ChartPlayer.Instance ? ChartPlayer.Instance.getGlobalTime() : 0;
 
@@ -35,11 +32,6 @@ export class JudgePoint extends Component {
 
             // Update last global time
             this.lastGlobalTime = globalTime;
-        } else {
-            // this.node.position = this.lastPropValues["position"];
-            // this.node.angle = this.lastPropValues["rotate"];
-            // const uiOpacity = this.node.getComponent(UIOpacity);
-            // if (uiOpacity) uiOpacity.opacity = this.lastPropValues["opacity"];
         }
     }
 
@@ -115,7 +107,9 @@ export class JudgePoint extends Component {
     extractValue(value: any, property: string) {
         switch (property) {
             case "position":
-                return new Vec3(value[0], value[1], 0);
+                const x = this.linear(value[0], -1, 1, 0, this.resolution.width);
+                const y = this.linear(value[1], -1, 1, 0, this.resolution.height);
+                return new Vec3(x, y, 0);
             case "speed":
             case "rotate":
             case "opacity":
@@ -123,5 +117,9 @@ export class JudgePoint extends Component {
             default:
                 return value;
         }
+    }
+
+    linear(input: number, inputMin: number, inputMax: number, outputMin: number, outputMax: number): number {
+        return ((input - inputMin) / (inputMax - inputMin)) * (outputMax - outputMin) + outputMin;
     }
 }

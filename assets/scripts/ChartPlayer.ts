@@ -1,7 +1,6 @@
-import { _decorator, AudioClip, AudioSource, Button, Component, instantiate, JsonAsset, Prefab, resources } from "cc";
+import { _decorator, AudioClip, AudioSource, Button, Component, JsonAsset, Prefab, resources } from "cc";
 import { GlobalSettings } from "./GlobalSettings";
 import { JudgePointPool } from "./JudgePointPool";
-import { ClickNote } from "./ClickNote";
 const { ccclass, property } = _decorator;
 
 interface BPMEvent {
