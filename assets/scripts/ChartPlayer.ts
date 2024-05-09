@@ -1,4 +1,4 @@
-import { _decorator, AudioClip, AudioSource, Button, Component, JsonAsset, Prefab, resources } from "cc";
+import { _decorator, AudioClip, AudioSource, Button, Component, game, JsonAsset, Prefab, resources } from "cc";
 import { GlobalSettings } from "./GlobalSettings";
 import { JudgePointPool } from "./JudgePointPool";
 const { ccclass, property } = _decorator;
@@ -33,7 +33,7 @@ export class ChartPlayer extends Component {
     pauseButton: Button | null = null
 
     @property(Prefab)
-    notePrefab: Prefab | null = null
+    clickNotePrefab: Prefab | null = null
 
     @property(AudioSource)
     audioSource: AudioSource | null = null

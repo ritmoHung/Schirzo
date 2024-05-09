@@ -1,5 +1,5 @@
 import { _decorator, Component, instantiate, Node, Prefab } from "cc";
-import { JudgePoint } from './JudgePoint';
+import { JudgePoint } from "./JudgePoint";
 const { ccclass, property } = _decorator;
 
 @ccclass("JudgePointPool")

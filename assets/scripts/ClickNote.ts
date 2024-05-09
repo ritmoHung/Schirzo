@@ -1,47 +1,35 @@
-import { _decorator, AudioClip, Component, Vec3, tween, find } from 'cc';
-import { ChartPlayer } from './ChartPlayer';
+import { _decorator, AudioClip, Component, Vec3 } from "cc";
+import { GlobalSettings } from "./GlobalSettings";
+import { ChartPlayer } from "./ChartPlayer";
 const { ccclass, property } = _decorator;
 
-@ccclass('ClickNote')
+@ccclass("ClickNote")
 export class ClickNote extends Component {
     @property(AudioClip)
-    sfx: AudioClip | null = null;
+    sfx: AudioClip | null = null
 
-    private chartPlayer: ChartPlayer | null = null;
-    private noteData: any;
-    private travelTime: number = 1;
+    private settings: GlobalSettings
+    private direction: number
+    private isFake: boolean
+    private time: number
+    private speed: number
 
     
 
     // # Lifecycle
-    onLoad() { }
+    update() {
+        const globalTime = ChartPlayer.Instance ? ChartPlayer.Instance.getGlobalTime() : 0;
+    }
 
 
 
     // # Functions
-    initialize(chartPlayer: ChartPlayer, noteData) {
-        this.chartPlayer = chartPlayer;
-        this.noteData = noteData;
-        this.setupNoteMovement();
-    }
+    initialize(data: any) {
+        this.direction = data.direction;
+        this.isFake = data.isFake;
+        this.time = data.time;
+        this.speed = data.speed;
 
-    setupNoteMovement() {
-        const startPosition = new Vec3(960, 980, 0);
-        const endPosition = new Vec3(960, 100, 0);
-
-        this.node.setPosition(startPosition);
-        tween(this.node)
-            .to(this.travelTime, { position: endPosition }, { easing: "linear" })
-            .call(() => {
-                if (this.chartPlayer && this.sfx) {
-                    this.chartPlayer.playSfx(this.sfx);
-                } else {
-                    console.error("ERROR");
-                }
-                this.node.destroy();
-            })
-            .start();
+        this.node.position = new Vec3(0, this.direction * (this.time[0] + this.time[1] / 4) * 100, 0);
     }
 }
-
-

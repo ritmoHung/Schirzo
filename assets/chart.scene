@@ -184,7 +184,7 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 679.4154488517745,
+    "_orthoHeight": 672.5348189415042,
     "_near": 0,
     "_far": 1000,
     "_color": {
@@ -467,7 +467,7 @@
     "pauseButton": {
       "__id__": 20
     },
-    "notePrefab": {
+    "clickNotePrefab": {
       "__uuid__": "fd5fc84a-cbfa-4391-b71f-e99aff8d1e7e",
       "__expectedType__": "cc.Prefab"
     },

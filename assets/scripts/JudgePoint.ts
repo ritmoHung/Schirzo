@@ -1,10 +1,14 @@
-import { _decorator, Component, UIOpacity, view, Vec3, easing, lerp, Size } from "cc";
+import { _decorator, Component, UIOpacity, view, Vec3, easing, lerp, Size, instantiate } from "cc";
 import { ChartPlayer } from "./ChartPlayer";
+import { ClickNote } from "./ClickNote";
 const { ccclass, property } = _decorator;
 
 @ccclass("JudgePoint")
 export class JudgePoint extends Component {
     private resolution: Size
+
+    private isInvisible: boolean
+    private notes: any = []
     private events: any = {}
     private lastGlobalTime: number = -1
     private lastEventIndexes: { [key: string]: number } = {}
@@ -28,7 +32,11 @@ export class JudgePoint extends Component {
             this.node.position = this.getPropValueByTime("position", globalTime);
             this.node.angle = this.getPropValueByTime("rotate", globalTime);
             const uiOpacity = this.node.getComponent(UIOpacity);
-            if (uiOpacity) uiOpacity.opacity = this.getPropValueByTime("opacity", globalTime);
+            if (uiOpacity) {
+                this.isInvisible
+                    ? uiOpacity.opacity = 0
+                    : uiOpacity.opacity = this.getPropValueByTime("opacity", globalTime);
+            }
 
             // Update last global time
             this.lastGlobalTime = globalTime;
@@ -38,10 +46,40 @@ export class JudgePoint extends Component {
 
     // # Functions
     initialize(data: any) {
+        this.isInvisible = data.isInvisible || false;
+
+        this.notes = data.noteList || [];
+
+
         this.events.speedEvents = data.speedEvents || [];
         this.events.positionEvents = data.positionEvents || [];
         this.events.rotateEvents = data.rotateEvents || [];
         this.events.opacityEvents = data.opacityEvents || [];
+
+        this.notes.forEach(noteData => {
+            const node = this.createNote(noteData);
+        });
+    }
+
+    createNote(noteData: any): Node {
+        let chartPlayer = ChartPlayer.Instance;
+
+        let note;
+        switch (noteData.type) {
+            case 1:
+                note = instantiate(chartPlayer.clickNotePrefab);
+                const noteComponent = note.getComponent(ClickNote) as ClickNote;
+                if (noteComponent) {
+                    noteComponent.initialize(noteData);
+                }
+            case 2:
+            case 3:
+            default:
+        }
+
+        note.active = true;
+        note.parent = this.node;
+        return note;
     }
 
     getPropValueByTime(property: string, time: number) {

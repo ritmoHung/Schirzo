@@ -1,7 +1,6 @@
 {
 	"formatVersion": 1,
 	"offset": 0.0,
-	"bpm": 192,
 	"bpmEvents": [
 		{
 			"startTime": [0, 0],
@@ -11,11 +10,72 @@
 	],
 	"judgePointList": [
 		{
-			"notesAbove": [
-			
-			],
-			"notesBelow": [
-			
+			"isInvisible": false,
+			"noteList": [
+				{
+					"type": 1,
+					"direction": 1,
+					"isFake": false,
+					"time": [0, 0],
+					"holdTime": 0.0,
+					"speed": 1.0
+				},
+				{
+					"type": 1,
+					"direction": -1,
+					"isFake": false,
+					"time": [0, 0.5],
+					"holdTime": 0.0,
+					"speed": 1.0
+				},
+				{
+					"type": 1,
+					"direction": 1,
+					"isFake": false,
+					"time": [0, 1],
+					"holdTime": 0.0,
+					"speed": 1.0
+				},
+				{
+					"type": 1,
+					"direction": -1,
+					"isFake": false,
+					"time": [0, 1.5],
+					"holdTime": 0.0,
+					"speed": 1.0
+				},
+				{
+					"type": 1,
+					"direction": 1,
+					"isFake": false,
+					"time": [0, 2],
+					"holdTime": 0.0,
+					"speed": 1.0
+				},
+				{
+					"type": 1,
+					"direction": -1,
+					"isFake": false,
+					"time": [0, 2.5],
+					"holdTime": 0.0,
+					"speed": 1.0
+				},
+				{
+					"type": 1,
+					"direction": 1,
+					"isFake": false,
+					"time": [0, 3],
+					"holdTime": 0.0,
+					"speed": 1.0
+				},
+				{
+					"type": 1,
+					"direction": -1,
+					"isFake": false,
+					"time": [0, 3.5],
+					"holdTime": 0.0,
+					"speed": 1.0
+				}
 			],
 			"speedEvents": [
 				{
@@ -623,10 +683,8 @@
 			]
 		},
 		{
-			"notesAbove": [
-			
-			],
-			"notesBelow": [
+			"isInvisible": false,
+			"noteList": [
 			
 			],
 			"speedEvents": [
