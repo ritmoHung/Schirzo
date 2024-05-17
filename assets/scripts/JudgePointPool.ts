@@ -38,4 +38,12 @@ export class JudgePointPool extends Component {
             judgePointComponent.initialize(judgePointData);
         }
     }
+
+    reset() {
+        this.pool.forEach(node => {
+            node.destroy();
+        });
+
+        this.pool = [];
+    }
 }

@@ -1,6 +1,7 @@
-import { _decorator, AudioClip, AudioSource, Button, Component, game, JsonAsset, Prefab, resources } from "cc";
+import { _decorator, AudioClip, AudioSource, Button, Component, JsonAsset, Prefab, resources } from "cc";
 import { GlobalSettings } from "./GlobalSettings";
 import { JudgePointPool } from "./JudgePointPool";
+import { ChartText } from "./ChartText";
 const { ccclass, property } = _decorator;
 
 interface BPMEvent {
@@ -18,6 +19,7 @@ interface Event {
 }
 
 interface JudgePoint {
+    noteList: any[];
     speedEvents: Event[];
     positionEvents: Event[];
     rotateEvents: Event[];
@@ -41,10 +43,14 @@ export class ChartPlayer extends Component {
     @property(JudgePointPool)
     judgePointPool: JudgePointPool
 
+    @property(ChartText)
+    chartText: ChartText
+
     private static instance: ChartPlayer;
     private songPath: string = "rip";
     private globalTime: number = 0;
     private settings: GlobalSettings;
+    private UPB = 120;  // Units per beat
 
     
 
@@ -68,21 +74,12 @@ export class ChartPlayer extends Component {
         }
     }
 
-    onEnable() {
-        this.audioSource.node.on(AudioSource.EventType.STARTED, this.onAudioStarted, this);
-    }
-
-    onAudioStarted() {
-    }
-
     start() {
         if (this.audioSource) {
             this.loadMusic(`songs/${this.songPath}/base`);
         } else {
             console.error("AudioSource component is not attached.");
         }
-        
-        this.loadChart(`songs/${this.songPath}/2`);
     }
 
     update(deltaTime: number) {
@@ -141,25 +138,42 @@ export class ChartPlayer extends Component {
 
             const chartData = res.json!;
             const bpmEvents = chartData.bpmEvents;
+            const textEvents = chartData.textEventList.map(textEvent =>
+                this.covertTextEvent(textEvent, bpmEvents)
+            )
             const judgePoints = chartData.judgePointList.map(judgePoint =>
                 this.convertJudgePointEvents(judgePoint, bpmEvents)
             );
 
-            // console.log(judgePoints);
             this.judgePointPool.createJudgePoints(judgePoints);
+            this.chartText.initialize(textEvents);
         });
+    }
+
+    covertTextEvent(textEvent: any, bpmEvents: BPMEvent[]) {
+        return {
+            ...textEvent,
+            time: Array.isArray(textEvent.time) ? this.convertToSeconds(textEvent.time, bpmEvents) + this.settings.offset : textEvent.time + this.settings.offset,
+        }
     }
 
     convertJudgePointEvents(judgePoint: JudgePoint, bpmEvents: BPMEvent[]): JudgePoint {
         const convertEventTimings = (events: Event[]): Event[] =>
             events.map(event => ({
                 ...event,
-                startTime: Array.isArray(event.startTime) ? this.convertToSeconds(event.startTime, bpmEvents) : event.startTime,
-                endTime: Array.isArray(event.endTime) ? this.convertToSeconds(event.endTime, bpmEvents) : event.endTime,
+                startTime: Array.isArray(event.startTime) ? this.convertToSeconds(event.startTime, bpmEvents) + this.settings.offset : event.startTime + this.settings.offset,
+                endTime: Array.isArray(event.endTime) ? this.convertToSeconds(event.endTime, bpmEvents) + this.settings.offset : event.endTime + this.settings.offset,
+            }))
+
+        const convertNoteTimings = (notes: any[]): any[] =>
+            notes.map(note => ({
+                ...note, 
+                time: Array.isArray(note.time) ? this.convertToSeconds(note.time, bpmEvents) + this.settings.offset : note.time + this.settings.offset,
             }))
 
         return {
             ...judgePoint,
+            noteList: convertNoteTimings(judgePoint.noteList),
             speedEvents: convertEventTimings(judgePoint.speedEvents),
             positionEvents: convertEventTimings(judgePoint.positionEvents),
             rotateEvents: convertEventTimings(judgePoint.rotateEvents),
@@ -168,9 +182,10 @@ export class ChartPlayer extends Component {
     }
 
     convertToSeconds(barBeat: [number, number], bpmEvents: BPMEvent[]): number {
-        let totalTime = 0;
-        let prevEndBar = 0, prevEndBeat = 0;
+        const targetBar = barBeat[0];
+        const targetBeat = barBeat[1] / this.UPB;
 
+        let totalTime = 0;
         for (const event of bpmEvents) {
             const [bpm, bpb, unit] = event.bpm;
             const [startBar, startBeat] = event.startTime;
@@ -183,15 +198,12 @@ export class ChartPlayer extends Component {
             // Out of an event's range if:
             // 1. Target bar > event's end bar
             // 2. Target bar = event's end bar, but target beat > event's end beat
-            if (barBeat[0] > endBar || (barBeat[0] === endBar && barBeat[1] > endBeat)) {
+            if (targetBar > endBar || (targetBar === endBar && targetBeat > endBeat)) {
                 totalTime += (endBar - startBar) * barDuration + (endBeat - startBeat) * beatDuration;
             } else {
-                totalTime += (barBeat[0] - startBar) * barDuration + (barBeat[1] - startBeat) * beatDuration;
+                totalTime += (targetBar - startBar) * barDuration + (targetBeat - startBeat) * beatDuration;
                 break;
             }
-
-            prevEndBar = endBar;
-            prevEndBeat = endBeat;
         }
 
         return totalTime;
@@ -199,6 +211,8 @@ export class ChartPlayer extends Component {
 
     startGame() {
         this.audioSource.stop();
+        this.judgePointPool.reset();
+        this.loadChart(`songs/${this.songPath}/2`);
         this.globalTime = 0;
 
         this.scheduleOnce(() => {
