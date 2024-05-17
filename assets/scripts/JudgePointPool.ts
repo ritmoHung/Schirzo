@@ -1,5 +1,5 @@
 import { _decorator, Component, instantiate, Node, Prefab } from "cc";
-import { JudgePoint } from './JudgePoint';
+import { JudgePoint } from "./JudgePoint";
 const { ccclass, property } = _decorator;
 
 @ccclass("JudgePointPool")
@@ -39,25 +39,11 @@ export class JudgePointPool extends Component {
         }
     }
 
-    startAllTweens() {
+    reset() {
         this.pool.forEach(node => {
-            if (node.active) {
-                const judgePointComponent = node.getComponent(JudgePoint);
-                if (judgePointComponent) {
-                    judgePointComponent.startAllTweens();
-                }
-            }
+            node.destroy();
         });
-    }
 
-    stopAllTweens() {
-        this.pool.forEach(node => {
-            if (node.active) {
-                const judgePointComponent = node.getComponent(JudgePoint);
-                if (judgePointComponent) {
-                    judgePointComponent.stopAllTweens();
-                }
-            }
-        });
+        this.pool = [];
     }
 }

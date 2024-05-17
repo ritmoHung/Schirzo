@@ -1,7 +1,7 @@
-import { _decorator, AudioClip, AudioSource, Button, Component, instantiate, JsonAsset, Prefab, resources } from "cc";
+import { _decorator, AudioClip, AudioSource, Button, Component, JsonAsset, Prefab, resources } from "cc";
 import { GlobalSettings } from "./GlobalSettings";
 import { JudgePointPool } from "./JudgePointPool";
-import { ClickNote } from "./ClickNote";
+import { ChartText } from "./ChartText";
 const { ccclass, property } = _decorator;
 
 interface BPMEvent {
@@ -19,10 +19,11 @@ interface Event {
 }
 
 interface JudgePoint {
+    noteList: any[];
     speedEvents: Event[];
-    moveEvents: Event[];
+    positionEvents: Event[];
     rotateEvents: Event[];
-    alphaEvents: Event[];
+    opacityEvents: Event[];
 }
 
 @ccclass("ChartPlayer")
@@ -30,8 +31,11 @@ export class ChartPlayer extends Component {
     @property(Button)
     startButton: Button | null = null
 
+    @property(Button)
+    pauseButton: Button | null = null
+
     @property(Prefab)
-    notePrefab: Prefab | null = null
+    clickNotePrefab: Prefab | null = null
 
     @property(AudioSource)
     audioSource: AudioSource | null = null
@@ -39,9 +43,14 @@ export class ChartPlayer extends Component {
     @property(JudgePointPool)
     judgePointPool: JudgePointPool
 
-    songPath: string = "rip";
+    @property(ChartText)
+    chartText: ChartText
+
+    private static instance: ChartPlayer;
+    private songPath: string = "rip";
     private globalTime: number = 0;
     private settings: GlobalSettings;
+    private UPB = 120;  // Units per beat
 
     
 
@@ -51,18 +60,18 @@ export class ChartPlayer extends Component {
         this.settings = GlobalSettings.getInstance();
     }
 
+    public static get Instance() {
+        return this.instance;
+    }
+
     onLoad() {
+        ChartPlayer.instance = this;
         if (this.startButton) {
             this.startButton.node.on("click", () => this.startGame());
         }
-    }
-
-    onEnable() {
-        this.audioSource.node.on(AudioSource.EventType.STARTED, this.onAudioStarted, this);
-    }
-
-    onAudioStarted() {
-        this.judgePointPool.startAllTweens();
+        if (this.pauseButton) {
+            this.pauseButton.node.on("click", () => this.pauseMusic());
+        }
     }
 
     start() {
@@ -71,8 +80,6 @@ export class ChartPlayer extends Component {
         } else {
             console.error("AudioSource component is not attached.");
         }
-        
-        this.loadChart(`songs/${this.songPath}/2`);
     }
 
     update(deltaTime: number) {
@@ -104,6 +111,16 @@ export class ChartPlayer extends Component {
         }
     }
 
+    pauseMusic() {
+        if (this.audioSource) {
+            if (this.audioSource.playing) {
+                this.audioSource.pause();
+            } else {
+                this.audioSource.play();
+            }
+        }
+    }
+
     playSfx(clip: AudioClip) {
         if (this.audioSource && clip) {
             this.audioSource.playOneShot(clip, 1.0);
@@ -121,36 +138,54 @@ export class ChartPlayer extends Component {
 
             const chartData = res.json!;
             const bpmEvents = chartData.bpmEvents;
+            const textEvents = chartData.textEventList.map(textEvent =>
+                this.covertTextEvent(textEvent, bpmEvents)
+            )
             const judgePoints = chartData.judgePointList.map(judgePoint =>
                 this.convertJudgePointEvents(judgePoint, bpmEvents)
             );
 
-            // console.log(judgePoints);
             this.judgePointPool.createJudgePoints(judgePoints);
+            this.chartText.initialize(textEvents);
         });
+    }
+
+    covertTextEvent(textEvent: any, bpmEvents: BPMEvent[]) {
+        return {
+            ...textEvent,
+            time: Array.isArray(textEvent.time) ? this.convertToSeconds(textEvent.time, bpmEvents) + this.settings.offset : textEvent.time + this.settings.offset,
+        }
     }
 
     convertJudgePointEvents(judgePoint: JudgePoint, bpmEvents: BPMEvent[]): JudgePoint {
         const convertEventTimings = (events: Event[]): Event[] =>
             events.map(event => ({
                 ...event,
-                startTime: Array.isArray(event.startTime) ? this.convertToSeconds(event.startTime, bpmEvents) : event.startTime,
-                endTime: Array.isArray(event.endTime) ? this.convertToSeconds(event.endTime, bpmEvents) : event.endTime,
+                startTime: Array.isArray(event.startTime) ? this.convertToSeconds(event.startTime, bpmEvents) + this.settings.offset : event.startTime + this.settings.offset,
+                endTime: Array.isArray(event.endTime) ? this.convertToSeconds(event.endTime, bpmEvents) + this.settings.offset : event.endTime + this.settings.offset,
+            }))
+
+        const convertNoteTimings = (notes: any[]): any[] =>
+            notes.map(note => ({
+                ...note, 
+                time: Array.isArray(note.time) ? this.convertToSeconds(note.time, bpmEvents) + this.settings.offset : note.time + this.settings.offset,
             }))
 
         return {
             ...judgePoint,
+            noteList: convertNoteTimings(judgePoint.noteList),
             speedEvents: convertEventTimings(judgePoint.speedEvents),
-            moveEvents: convertEventTimings(judgePoint.moveEvents),
+            positionEvents: convertEventTimings(judgePoint.positionEvents),
             rotateEvents: convertEventTimings(judgePoint.rotateEvents),
-            alphaEvents: convertEventTimings(judgePoint.alphaEvents)
+            opacityEvents: convertEventTimings(judgePoint.opacityEvents)
         };
     }
 
     convertToSeconds(barBeat: [number, number], bpmEvents: BPMEvent[]): number {
-        let totalTime = 0;
-        let prevEndBar = 0, prevEndBeat = 0;
+        const targetBar = barBeat[0];
+        const targetBeat = barBeat[1] / this.UPB;
 
+        let totalTime = 0;
         for (const event of bpmEvents) {
             const [bpm, bpb, unit] = event.bpm;
             const [startBar, startBeat] = event.startTime;
@@ -163,42 +198,29 @@ export class ChartPlayer extends Component {
             // Out of an event's range if:
             // 1. Target bar > event's end bar
             // 2. Target bar = event's end bar, but target beat > event's end beat
-            if (barBeat[0] > endBar || (barBeat[0] === endBar && barBeat[1] > endBeat)) {
+            if (targetBar > endBar || (targetBar === endBar && targetBeat > endBeat)) {
                 totalTime += (endBar - startBar) * barDuration + (endBeat - startBeat) * beatDuration;
             } else {
-                totalTime += (barBeat[0] - startBar) * barDuration + (barBeat[1] - startBeat) * beatDuration;
+                totalTime += (targetBar - startBar) * barDuration + (targetBeat - startBeat) * beatDuration;
                 break;
             }
-
-            prevEndBar = endBar;
-            prevEndBeat = endBeat;
         }
 
         return totalTime;
     }
 
-    createNotes(chartData) {
-        chartData.notes.forEach(noteData => {
-            const noteTime = (noteData.bar * 4 + noteData.time) * (60 / chartData.bpm);
-            this.scheduleOnce(() => this.createNote(noteData), noteTime);
-        });
-    }
-
-    createNote(noteData) {
-        if (this.notePrefab) {
-            const note = instantiate(this.notePrefab);
-            note.setParent(this.node);
-
-            note.getComponent(ClickNote).initialize(this, noteData);
-        }
-    }
-
     startGame() {
         this.audioSource.stop();
-        this.judgePointPool.stopAllTweens();
+        this.judgePointPool.reset();
+        this.loadChart(`songs/${this.songPath}/2`);
+        this.globalTime = 0;
 
         this.scheduleOnce(() => {
             this.playMusic();
         }, 1);
+    }
+
+    getGlobalTime() {
+        return this.globalTime;
     }
 }

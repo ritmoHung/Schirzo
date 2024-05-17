@@ -2,7 +2,7 @@ export class GlobalSettings {
     private static instance: GlobalSettings
 
     public flowSpeed: number = 4.0
-    public musicOffset: number = 0
+    public offset: number = 0.25
 
 
     // # Constructor
@@ -22,14 +22,14 @@ export class GlobalSettings {
     // # Functions
     public saveSettings() {
         localStorage.setItem("flowSpeed", this.flowSpeed.toString());
-        localStorage.setItem("musicOffset", this.musicOffset.toString());
+        localStorage.setItem("offset", this.offset.toString());
     }
 
     public loadSettings() {
         const flowSpeed = parseFloat(localStorage.getItem("flowSpeed") ?? "4.0");
-        const musicOffset = parseInt(localStorage.getItem("musicOffset") ?? "0", 10);
+        const offset = parseInt(localStorage.getItem("offset") ?? "0", 10);
 
         this.flowSpeed = flowSpeed;
-        this.musicOffset = musicOffset;
+        this.offset = offset;
     }
 }
