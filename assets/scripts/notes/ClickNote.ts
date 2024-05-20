@@ -1,6 +1,6 @@
-import { _decorator, AudioClip, Component, EventKeyboard, input, Input, KeyCode, tween, UIOpacity, Vec3 } from "cc";
-import { ChartPlayer } from "./ChartPlayer";
-import { JudgePoint } from "./JudgePoint";
+import { _decorator, AudioClip, Component, EventKeyboard, input, Input, KeyCode } from "cc";
+import { ChartPlayer } from "../ChartPlayer";
+import { JudgePoint } from "../JudgePoint";
 const { ccclass, property } = _decorator;
 
 @ccclass("ClickNote")

@@ -1,6 +1,6 @@
 import { _decorator, Component, UIOpacity, view, Vec3, easing, lerp, Size, instantiate, Node } from "cc";
 import { ChartPlayer } from "./ChartPlayer";
-import { ClickNote } from "./ClickNote";
+import { ClickNote } from "./notes/ClickNote";
 import { GlobalSettings } from "./GlobalSettings";
 const { ccclass, property } = _decorator;
 
