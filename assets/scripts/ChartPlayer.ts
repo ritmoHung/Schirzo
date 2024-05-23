@@ -47,7 +47,7 @@ export class ChartPlayer extends Component {
     chartText: ChartText
 
     private static instance: ChartPlayer;
-    private songPath: string = "rip";
+    private songPath: string = "miserable";
     private globalTime: number = 0;
     private settings: GlobalSettings;
     private UPB = 120;  // Units per beat

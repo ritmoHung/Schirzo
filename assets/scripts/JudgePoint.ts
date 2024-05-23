@@ -12,7 +12,7 @@ export class JudgePoint extends Component {
     private topNoteContainer: Node = null
     private bottomNoteContainer: Node = null
 
-    private PXPS: number = 200
+    private PXPS: number = 300
     private isInvisible: boolean
     private notes: any = []
     private events: any = {}
