@@ -1,7 +1,10 @@
 import { _decorator, Component, UIOpacity, view, Vec3, easing, lerp, Size, instantiate, Node } from "cc";
+import { GlobalSettings } from "./GlobalSettings";
 import { ChartPlayer } from "./ChartPlayer";
 import { ClickNote } from "./notes/ClickNote";
-import { GlobalSettings } from "./GlobalSettings";
+import { KeyNote } from "./notes/KeyNote";
+import { DragNote } from "./notes/DragNote";
+import { HoldNote } from "./notes/HoldNote";
 const { ccclass, property } = _decorator;
 
 @ccclass("JudgePoint")
@@ -9,6 +12,7 @@ export class JudgePoint extends Component {
     private resolution: Size
     private settings: GlobalSettings
 
+    private chartPlayer: ChartPlayer
     private topNoteContainer: Node = null
     private bottomNoteContainer: Node = null
 
@@ -26,6 +30,8 @@ export class JudgePoint extends Component {
         this.resolution = view.getDesignResolutionSize();
         this.settings = GlobalSettings.getInstance();
 
+        this.chartPlayer = ChartPlayer.Instance;
+
         this.topNoteContainer = new Node("TopNoteContainer");
         this.topNoteContainer.setPosition(0, 0, 0);
         this.node.addChild(this.topNoteContainer);
@@ -37,7 +43,7 @@ export class JudgePoint extends Component {
     }
 
     update(dt: number) {
-        const globalTime = ChartPlayer.Instance ? ChartPlayer.Instance.getGlobalTime() : 0;
+        const globalTime = this.chartPlayer.getGlobalTime() || 0;
 
         // Reset search indexes if time rewinds
         if (globalTime < this.lastGlobalTime) this.lastEventIndexes = {};
@@ -233,22 +239,27 @@ export class JudgePoint extends Component {
 
     // Notes
     createNote(noteData: any): Node {
-        let chartPlayer = ChartPlayer.Instance;
-
-        let note;
+        let note: Node, noteComponent: any;
         switch (noteData.type) {
             case 0:
-                note = instantiate(chartPlayer.clickNotePrefab);
-                const noteComponent = note.getComponent(ClickNote) as ClickNote;
-                if (noteComponent) {
-                    noteComponent.initialize(noteData, this);
-                }
+                note = instantiate(this.chartPlayer.clickNotePrefab);
+                noteComponent = note.getComponent(ClickNote) as ClickNote;
+                break;
             case 1:
+                note = instantiate(this.chartPlayer.keyNotePrefab);
+                noteComponent = note.getComponent(KeyNote) as KeyNote;
+                break;
             case 2:
+                note = instantiate(this.chartPlayer.dragNotePrefab);
+                noteComponent = note.getComponent(DragNote) as DragNote;
+                break;
             case 3:
-            default:
+                note = instantiate(this.chartPlayer.holdNotePrefab);
+                noteComponent = note.getComponent(HoldNote) as HoldNote;
+                break;
         }
 
+        if (noteComponent) noteComponent.initialize(noteData, this);
         note.active = true;
         noteData.direction === 1 ? note.parent = this.topNoteContainer : note.parent = this.bottomNoteContainer;
         return note;

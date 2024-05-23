@@ -36,6 +36,12 @@ export class ChartPlayer extends Component {
 
     @property(Prefab)
     clickNotePrefab: Prefab | null = null
+    @property(Prefab)
+    keyNotePrefab: Prefab | null = null
+    @property(Prefab)
+    dragNotePrefab: Prefab | null = null
+    @property(Prefab)
+    holdNotePrefab: Prefab | null = null
 
     @property(AudioSource)
     audioSource: AudioSource | null = null

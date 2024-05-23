@@ -181,7 +181,7 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 540,
+    "_orthoHeight": 672.5348189415042,
     "_near": 0,
     "_far": 1000,
     "_color": {
@@ -631,6 +631,18 @@
     },
     "clickNotePrefab": {
       "__uuid__": "fd5fc84a-cbfa-4391-b71f-e99aff8d1e7e",
+      "__expectedType__": "cc.Prefab"
+    },
+    "keyNotePrefab": {
+      "__uuid__": "040e97e9-b62a-4838-a6d0-abdf9a390711",
+      "__expectedType__": "cc.Prefab"
+    },
+    "dragNotePrefab": {
+      "__uuid__": "770e15f8-6f0f-4661-acf0-6476e6d34dd0",
+      "__expectedType__": "cc.Prefab"
+    },
+    "holdNotePrefab": {
+      "__uuid__": "4c2e1426-46c9-4c47-8560-b244afe7849f",
       "__expectedType__": "cc.Prefab"
     },
     "audioSource": {
