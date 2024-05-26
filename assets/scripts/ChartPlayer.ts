@@ -36,6 +36,12 @@ export class ChartPlayer extends Component {
 
     @property(Prefab)
     clickNotePrefab: Prefab | null = null
+    @property(Prefab)
+    keyNotePrefab: Prefab | null = null
+    @property(Prefab)
+    dragNotePrefab: Prefab | null = null
+    @property(Prefab)
+    holdNotePrefab: Prefab | null = null
 
     @property(AudioSource)
     audioSource: AudioSource | null = null
@@ -47,7 +53,7 @@ export class ChartPlayer extends Component {
     chartText: ChartText
 
     private static instance: ChartPlayer;
-    private songPath: string = "rip";
+    private songPath: string = "miserable";
     private globalTime: number = 0;
     private settings: GlobalSettings;
     private UPB = 120;  // Units per beat

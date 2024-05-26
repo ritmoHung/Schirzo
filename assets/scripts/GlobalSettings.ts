@@ -2,7 +2,7 @@ export class GlobalSettings {
     private static instance: GlobalSettings
 
     public flowSpeed: number = 4.0
-    public offset: number = 0.25
+    public offset: number = 0.0
 
 
     // # Constructor
