@@ -171,11 +171,21 @@ export class ChartPlayer extends Component {
                 endTime: Array.isArray(event.endTime) ? this.convertToSeconds(event.endTime, bpmEvents) + this.settings.offset : event.endTime + this.settings.offset,
             }))
 
-        const convertNoteTimings = (notes: any[]): any[] =>
-            notes.map(note => ({
-                ...note, 
-                time: Array.isArray(note.time) ? this.convertToSeconds(note.time, bpmEvents) + this.settings.offset : note.time + this.settings.offset,
-            }))
+        const convertNoteTimings = (notes: any[]): any[] => {
+            return notes.map(note => {
+                const convertedNote = {
+                    ...note, 
+                    time: Array.isArray(note.time) ? this.convertToSeconds(note.time, bpmEvents) + this.settings.offset : note.time + this.settings.offset,
+                };
+
+                if (note.endTime) {
+                    convertedNote.endTime = Array.isArray(note.endTime) ? this.convertToSeconds(note.endTime, bpmEvents) + this.settings.offset : note.endTime + this.settings.offset;
+                }
+        
+                return convertedNote;
+            })
+        }
+            
 
         return {
             ...judgePoint,

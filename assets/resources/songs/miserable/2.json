@@ -16,500 +16,417 @@
 				{
 			        "type": 1,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [9, 0],
 			        "key": "R"
 			    },
 			    {
 			        "type": 2,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [9, 120]
 			    },
 			    {
 			        "type": 2,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [9, 240]
 			    },
 			    {
 			        "type": 2,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [9, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [10, 0]
 			    },
 			    {
 			        "type": 2,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [10, 120]
 			    },
 			    {
 			        "type": 2,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [10, 240]
 			    },
 			    {
 			        "type": 2,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [10, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [11, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [11, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [11, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [11, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [12, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [12, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [12, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [12, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [13, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [13, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [13, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [13, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [14, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [14, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [14, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [14, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [15, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [15, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [15, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [15, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [16, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [16, 60]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [16, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [16, 180]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [16, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [16, 300]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [16, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [17, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [17, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [17, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [17, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [18, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [18, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [18, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [18, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [19, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [19, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [19, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [19, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [20, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [20, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [20, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [20, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [21, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [21, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [21, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [21, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [22, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [22, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [22, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [22, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [23, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [23, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [23, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [23, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [24, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [24, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [24, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [24, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [25, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [25, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [25, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [25, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [26, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [26, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [26, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [26, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [27, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [27, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [27, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [27, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [28, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [28, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [28, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [28, 360]
 			    }
 			],
@@ -568,9 +485,8 @@
 				{
 			        "type": 3,
 			        "direction": 1,
-			        "isFake": false,
 			        "time": [9, 0],
-			        "holdTime": 5.88957
+			        "endTime": [11, 0]
 			    }
 			],
 			"speedEvents": [

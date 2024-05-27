@@ -56,7 +56,8 @@ export class HoldNote extends Note {
     // # Functions
     initialize(data: any, judgePoint: JudgePoint) {
         super.initialize(data, judgePoint);
-        this.holdTime = data.holdTime;
+        const endTime = data.endTime;
+        this.holdTime = endTime - this.time;
 
         this.startPosition = this.judgePoint.calculatePositionOffset(this.time);
         const endPosition = this.judgePoint.calculatePositionOffset(this.time + this.holdTime);
