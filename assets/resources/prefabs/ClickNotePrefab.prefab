@@ -238,8 +238,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 597,
-      "height": 76
+      "width": 100,
+      "height": 100
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -250,7 +250,7 @@
   },
   {
     "__type__": "cc.CompPrefabInfo",
-    "fileId": "9a8KB7hCpKPJFBBQacMrHV"
+    "fileId": "46EVnaEwxAuqFJ0fTlD8r7"
   },
   {
     "__type__": "09af5Db3cdNyogHbz8QzyVf",

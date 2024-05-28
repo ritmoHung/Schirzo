@@ -23,5 +23,13 @@ node_modules/
 #//////////////////////////
 .idea/
 
+#//////////////////////////
+# Firebase
+#//////////////////////////
+.firebase/
+
 # Materials
 materials/
+
+# .DS_Store
+**/.DS_Store*
