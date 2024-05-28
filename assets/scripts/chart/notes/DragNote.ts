@@ -1,24 +1,33 @@
 import { _decorator, EventKeyboard } from "cc";
-import { JudgePoint } from "../chart/JudgePoint";
+import { JudgePoint } from "../JudgePoint";
 import { Note } from "./Note";
 const { ccclass, property } = _decorator;
 
 @ccclass("DragNote")
 export class DragNote extends Note {
     // # Lifecycle
-    onKeyDown(event: EventKeyboard) {
+    protected onKeyDown(event: EventKeyboard) {
         const globalTime = this.chartPlayer.getGlobalTime() || 0;
-        // TODO
     }
 
     update() {
-        // TODO
         const globalTime = this.chartPlayer.getGlobalTime() || 0;
 
-        if (globalTime >= this.time + 0.08) {
-            console.log("MISS");
-            this.node.destroy();
+        if (globalTime >= this.time) {
+            if (!this.hasPlayedSFX) {
+                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
+                this.hasPlayedSFX = true;
+            }
+
+            if (this.mode !== "autoplay") {
+                this.node.destroy();
+            }
+        } else {
+            this.hasPlayedSFX = false;
         }
+
+        this.updateUI(globalTime);
+        this.lastGlobalTime = globalTime;
     }
 
 

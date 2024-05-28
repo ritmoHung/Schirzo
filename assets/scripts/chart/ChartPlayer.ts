@@ -1,6 +1,7 @@
-import { _decorator, AudioClip, AudioSource, Button, Component, JsonAsset, Prefab, resources } from "cc";
+import { _decorator, AudioClip, AudioSource, Button, Component, director, JsonAsset, Prefab, resources } from "cc";
 import { GlobalSettings } from "../GlobalSettings";
 import { JudgePointPool } from "./JudgePointPool";
+import { ProgressSlider } from "./ProgressSlider";
 import { ChartText } from "./ChartText";
 const { ccclass, property } = _decorator;
 
@@ -29,10 +30,11 @@ interface JudgePoint {
 @ccclass("ChartPlayer")
 export class ChartPlayer extends Component {
     @property(Button)
-    startButton: Button | null = null
-
-    @property(Button)
     pauseButton: Button | null = null
+    @property(Button)
+    startButton: Button | null = null
+    @property(Button)
+    restartButton: Button | null = null
 
     @property(Prefab)
     clickNotePrefab: Prefab | null = null
@@ -49,14 +51,18 @@ export class ChartPlayer extends Component {
     @property(JudgePointPool)
     judgePointPool: JudgePointPool
 
+    @property(ProgressSlider)
+    progressSlider: ProgressSlider
+
     @property(ChartText)
     chartText: ChartText
 
-    private static instance: ChartPlayer;
-    private songPath: string = "miserable";
-    private globalTime: number = 0;
-    private settings: GlobalSettings;
-    private UPB = 120;  // Units per beat
+    private static instance: ChartPlayer
+    private songPath: string = "hopefortheflowers"
+    private songDuration: number = 0;
+    private globalTime: number = 0
+    private settings: GlobalSettings
+    private UPB = 120  // Units per beat
 
     
 
@@ -72,33 +78,45 @@ export class ChartPlayer extends Component {
 
     onLoad() {
         ChartPlayer.instance = this;
-        if (this.startButton) {
-            this.startButton.node.on("click", () => this.startGame());
-        }
-        if (this.pauseButton) {
-            this.pauseButton.node.on("click", () => this.pauseMusic());
-        }
-    }
+        this.loadChart();
 
-    start() {
+        this.pauseButton.node.on("click", () => this.pauseMusic());
+        this.startButton.node.on("click", () => this.startGame());
+        this.restartButton.node.on("click", () => this.restartGame());
+
         if (this.audioSource) {
-            this.loadMusic(`songs/${this.songPath}/base`);
+            this.loadMusic();
+            this.audioSource.node.on("ended", this.onAudioEnded, this);
         } else {
             console.error("AudioSource component is not attached.");
         }
     }
 
+    onAudioEnded() {
+        console.log("SONG ENDED");
+        this.scheduleOnce(function() {
+            director.loadScene("result");
+        }, 3);
+    }
+
     update(deltaTime: number) {
         if (this.audioSource && this.audioSource.playing) {
             this.globalTime += deltaTime;
+
+            const progress = this.audioSource.currentTime / this.songDuration;
+            this.progressSlider.updateProgress(progress);
         }
+    }
+
+    onDestroy() {
+        this.audioSource.node.off("ended", this.onAudioEnded, this);
     }
 
 
 
     // # Functions
-    loadMusic(path: string) {
-        resources.load(path, AudioClip, (error, clip: AudioClip) => {
+    loadMusic() {
+        resources.load(`songs/${this.songPath}/base`, AudioClip, (error, clip: AudioClip) => {
             if (error) {
                 console.error("Failed to load music:", error);
                 return;
@@ -106,6 +124,8 @@ export class ChartPlayer extends Component {
 
             if (this.audioSource) {
                 this.audioSource.clip = clip;
+                this.songDuration = clip.getDuration();
+                this.progressSlider.initialize(clip.getDuration());
             }
         });
     }
@@ -113,17 +133,29 @@ export class ChartPlayer extends Component {
     playMusic() {
         if (this.audioSource && this.audioSource.clip) {
             this.audioSource.play();
-            console.log("Music playing");
         }
     }
 
     pauseMusic() {
+        if (this.audioSource && this.audioSource.playing) {
+            this.audioSource.pause();
+        }
+    }
+
+    resumeMusic() {
         if (this.audioSource) {
-            if (this.audioSource.playing) {
-                this.audioSource.pause();
-            } else {
-                this.audioSource.play();
-            }
+            this.audioSource.play();
+        }
+    }
+
+    setGlobalTimeByProgress(progress: number) {
+        if (this.audioSource && this.audioSource.clip) {
+            this.audioSource.pause();
+
+            const time = progress * this.songDuration;
+            this.audioSource.currentTime = time;
+            this.globalTime = time;
+            this.audioSource.play();
         }
     }
 
@@ -135,8 +167,9 @@ export class ChartPlayer extends Component {
         }
     }
 
-    loadChart(path: string) {
-        resources.load(path, JsonAsset, (error, res: JsonAsset) => {
+    loadChart() {
+        this.judgePointPool.reset();
+        resources.load(`songs/${this.songPath}/2`, JsonAsset, (error, res: JsonAsset) => {
             if (error) {
                 console.error("Failed to load chart:", error);
                 return;
@@ -226,14 +259,20 @@ export class ChartPlayer extends Component {
     }
 
     startGame() {
-        this.audioSource.stop();
-        this.judgePointPool.reset();
-        this.loadChart(`songs/${this.songPath}/2`);
-        this.globalTime = 0;
+        if (!this.audioSource.playing) {
+            this.globalTime = 0;
+            this.progressSlider.updateProgress(0);
+    
+            this.scheduleOnce(() => {
+                this.playMusic();
+            }, 1);
+        }
+    }
 
-        this.scheduleOnce(() => {
-            this.playMusic();
-        }, 1);
+    restartGame() {
+        this.audioSource.stop();
+        this.loadChart();
+        this.startGame();
     }
 
     getGlobalTime() {

@@ -1,5 +1,5 @@
-import { _decorator, EventKeyboard, Node } from "cc";
-import { JudgePoint } from "../chart/JudgePoint";
+import { _decorator, easing, EventKeyboard, Node } from "cc";
+import { JudgePoint } from "../JudgePoint";
 import { Note } from "./Note";
 const { ccclass, property } = _decorator;
 
@@ -32,23 +32,24 @@ export class HoldNote extends Note {
 
         if (globalTime >= this.time && globalTime < this.time + this.holdTime) {
             if (!this.hasPressed) {
-                this.chartPlayer.playSfx(this.sfx);
+                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
                 this.hasPressed = true;
             }
-
-            const newStartPosition = this.judgePoint.calculatePositionOffset(globalTime);
-
-            // Update StartSprite position
-            const startOffset = newStartPosition - this.startPosition;
-            this.startSprite.setPosition(0, startOffset, 0);
-
-            // Update RectSprite position & scale
-            this.rectSprite.setPosition(0, (startOffset + this.endOffset) / 2, 0);
-            this.rectSprite.setScale(1, this.endOffset - startOffset, 1);
         } else if (globalTime >= this.time + this.holdTime) {
-            this.chartPlayer.playSfx(this.sfx);
-            this.node.destroy();
+            if (!this.hasPlayedSFX) {
+                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
+                this.hasPlayedSFX = true;
+            }
+
+            if (this.mode !== "autoplay") {
+                this.node.destroy();
+            }
+        } else {
+            this.hasPlayedSFX = false;
         }
+
+        this.updateUI(globalTime);
+        this.lastGlobalTime = globalTime;
     }
 
 
@@ -68,5 +69,29 @@ export class HoldNote extends Note {
         this.endSprite.setPosition(0, this.endOffset, 0);
         this.rectSprite.setPosition(0, this.endOffset / 2, 0);
         this.rectSprite.setScale(1, this.endOffset, 1);
+    }
+
+    updateUI(time: number) {
+        if (time > this.time + this.holdTime) {
+            const fadeDuration = 0.1;
+            const elapsedTime = time - this.time;
+            const progress = Math.min(elapsedTime / fadeDuration, 1); // Ensure progress does not exceed 1
+            this.uiOpacity.opacity = 255 * (1 - easing.linear(progress));
+            this.node.setScale((1 - easing.expoIn(progress)), (1 - easing.expoIn(progress)));
+        } else {
+            this.uiOpacity.opacity = 255;
+            this.node.setScale(1, 1);
+        }
+
+        time = Math.min(Math.max(time, this.time), this.time + this.holdTime);
+        const newStartPosition = this.judgePoint.calculatePositionOffset(time);
+
+        // Update StartSprite position
+        const startOffset = newStartPosition - this.startPosition;
+        this.startSprite.setPosition(0, startOffset, 0);
+
+        // Update RectSprite position & scale
+        this.rectSprite.setPosition(0, (startOffset + this.endOffset) / 2, 0);
+        this.rectSprite.setScale(1, this.endOffset - startOffset, 1);
     }
 }

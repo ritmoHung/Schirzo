@@ -20,10 +20,21 @@ export class ClickNote extends Note {
     update() {
         const globalTime = this.chartPlayer.getGlobalTime() || 0;
 
-        if (globalTime >= this.time + 0.08) {
-            console.log("MISS");
-            this.node.destroy();
+        if (globalTime >= this.time) {
+            if (!this.hasPlayedSFX) {
+                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
+                this.hasPlayedSFX = true;
+            }
+
+            if (this.mode !== "autoplay") {
+                this.node.destroy();
+            }
+        } else {
+            this.hasPlayedSFX = false;
         }
+
+        this.updateUI(globalTime);
+        this.lastGlobalTime = globalTime;
     }
 
 

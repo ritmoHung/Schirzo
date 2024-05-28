@@ -1,4 +1,4 @@
-import { _decorator, Component, easing, lerp, Node, RichText, TTFFont, UIOpacity } from "cc";
+import { _decorator, Component, easing, lerp, RichText, TTFFont, UIOpacity } from "cc";
 import { ChartPlayer } from "./ChartPlayer";
 const { ccclass, property } = _decorator;
 
@@ -23,11 +23,6 @@ export class ChartText extends Component {
 
 
     // # Lifecycle
-    start() {
-        this.richText = this.node.getComponent(RichText);
-        this.uiOpacity = this.node.getComponent(UIOpacity);
-    }
-
     update(deltaTime: number) {
         const globalTime = ChartPlayer.Instance ? ChartPlayer.Instance.getGlobalTime() : 0;
 

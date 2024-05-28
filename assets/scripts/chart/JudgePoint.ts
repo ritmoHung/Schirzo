@@ -20,7 +20,7 @@ export class JudgePoint extends Component {
     private isInvisible: boolean
     private notes: any = []
     private events: any = {}
-    private lastGlobalTime: number = -1
+    private lastGlobalTime: number = -0.1
     private lastEventIndexes: { [key: string]: number } = {}
 
 

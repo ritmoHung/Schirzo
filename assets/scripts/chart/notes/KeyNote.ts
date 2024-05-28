@@ -44,7 +44,26 @@ export class KeyNote extends ClickNote {
     // # Lifecycle
     protected onKeyDown(event: EventKeyboard) {
         const globalTime = this.chartPlayer.getGlobalTime() || 0;
-        // TODO
+    }
+
+    update() {
+        const globalTime = this.chartPlayer.getGlobalTime() || 0;
+
+        if (globalTime >= this.time) {
+            if (!this.hasPlayedSFX) {
+                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
+                this.hasPlayedSFX = true;
+            }
+
+            if (this.mode !== "autoplay") {
+                this.node.destroy();
+            }
+        } else {
+            this.hasPlayedSFX = false;
+        }
+
+        this.updateUI(globalTime);
+        this.lastGlobalTime = globalTime;
     }
 
 
