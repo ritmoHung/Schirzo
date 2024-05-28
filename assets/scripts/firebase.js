@@ -13,13 +13,13 @@
 
 
 const config = {
-    apiKey: "AIzaSyBzk9FVuCQjUbWmxXYCKGnMZ2h8wlOOr64",
-    authDomain: "schirzo-44fc1.firebaseapp.com",
-    databaseURL: "https://schirzo-44fc1-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "schirzo-44fc1",
-    storageBucket: "schirzo-44fc1.appspot.com",
-    messagingSenderId: "schirzo-44fc1.appspot.com",
-    appId: "1:306353984498:web:7b69be4c30df88981e916b"
+    apiKey: "AIzaSyDPhRAPvyN4mIqYarYFa-1AYCqz0xrpCBA",
+    authDomain: "schirzo-3d2fb.firebaseapp.com",
+    databaseURL: "https://schirzo-3d2fb-default-rtdb.firebaseio.com",
+    projectId: "schirzo-3d2fb",
+    storageBucket: "schirzo-3d2fb.appspot.com",
+    messagingSenderId: "635904932333",
+    appId: "1:635904932333:web:b72672d0ed5f8b3f100fe4"
 };
 
 firebase.initializeApp(config);
