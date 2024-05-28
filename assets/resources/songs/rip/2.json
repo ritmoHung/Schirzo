@@ -1,7 +1,7 @@
 {
 	"formatVersion": 1.1,
 	"offset": 0,
-	"bpm": 192.0,
+	"bpm": [192.0, 4, 4],
 	"bpmEvents": [
 		{
 			"startTime": [0, 0],
