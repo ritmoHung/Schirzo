@@ -1,0 +1,77 @@
+{
+	"formatVersion": 1.1,
+	"offset": 0,
+	"bpm": [100.0, 4, 4],
+	"bpmEvents": [
+		{
+			"startTime": [0, 0],
+			"endTime": [19, 0],
+			"bpm": [100.0, 4, 4]
+		},
+		{
+			"startTime": [19, 0],
+			"endTime": [20, 0],
+			"bpm": [100.0, 1, 4]
+		},
+		{
+			"startTime": [20, 0],
+			"endTime": [47, 0],
+			"bpm": [100.0, 4, 4]
+		}
+	],
+	"judgePointList": [
+		{
+			"isInvisible": false,
+			"noteList": [
+				{
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 0],
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 120],
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 240],
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 360],
+			    },
+
+			    {
+			    	"type": 0,
+			        "direction": 1,
+			        "time": [19, 0],
+			    },
+
+			    {
+			    	"type": 0,
+			        "direction": 1,
+			        "time": [22, 0],
+			    },
+
+			    {
+			    	"type": 0,
+			        "direction": 1,
+			        "time": [46, 165],
+			    },
+			    {
+			    	"type": 0,
+			        "direction": 1,
+			        "time": [46, 210],
+			    }
+			],
+			"speedEvents": [],
+			"positionEvents": [],
+			"rotateEvents": [],
+			"opacityEvents": []
+		},
+	],
+	"textEventList": []
+}

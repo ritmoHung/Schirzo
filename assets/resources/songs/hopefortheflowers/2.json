@@ -1,0 +1,76 @@
+{
+	"formatVersion": 1.1,
+	"offset": 0,
+	"bpm": [187.0, 4, 4],
+	"bpmEvents": [
+		{
+			"startTime": [0, 0],
+			"endTime": [135, 0],
+			"bpm": [187.0, 4, 4]
+		}
+	],
+	"judgePointList": [
+		{
+			"isInvisible": false,
+			"noteList": [
+				{
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 0],
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 120],
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 240],
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 360],
+			    },
+
+			    {
+			    	"type": 0,
+			        "direction": 1,
+			        "time": [19, 0],
+			    },
+
+			    {
+			    	"type": 0,
+			        "direction": 1,
+			        "time": [124, 360],
+			    },
+			    {
+			    	"type": 0,
+			        "direction": 1,
+			        "time": [125, 135],
+			    },
+			    {
+			    	"type": 2,
+			        "direction": 1,
+			        "time": [125, 142.5],
+			    },
+			    {
+			    	"type": 0,
+			        "direction": 1,
+			        "time": [125, 322.5],
+			    },
+			    {
+			    	"type": 2,
+			        "direction": 1,
+			        "time": [125, 345],
+			    }
+			],
+			"speedEvents": [],
+			"positionEvents": [],
+			"rotateEvents": [],
+			"opacityEvents": []
+		},
+	],
+	"textEventList": []
+}
