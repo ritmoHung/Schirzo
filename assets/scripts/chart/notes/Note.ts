@@ -1,6 +1,6 @@
 import { _decorator, AudioClip, Component, EventKeyboard, Input, input } from "cc";
 import { ChartPlayer } from "../ChartPlayer";
-import { JudgePoint } from "../JudgePoint";
+import { JudgePoint } from "../chart/JudgePoint";
 const { ccclass, property } = _decorator;
 
 @ccclass("Note")

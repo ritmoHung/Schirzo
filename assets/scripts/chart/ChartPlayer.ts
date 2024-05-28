@@ -1,5 +1,5 @@
 import { _decorator, AudioClip, AudioSource, Button, Component, JsonAsset, Prefab, resources } from "cc";
-import { GlobalSettings } from "./GlobalSettings";
+import { GlobalSettings } from "../GlobalSettings";
 import { JudgePointPool } from "./JudgePointPool";
 import { ChartText } from "./ChartText";
 const { ccclass, property } = _decorator;

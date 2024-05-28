@@ -1,5 +1,5 @@
 import { _decorator, EventKeyboard, Node } from "cc";
-import { JudgePoint } from "../JudgePoint";
+import { JudgePoint } from "../chart/JudgePoint";
 import { Note } from "./Note";
 const { ccclass, property } = _decorator;
 

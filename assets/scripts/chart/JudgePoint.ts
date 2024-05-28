@@ -1,5 +1,5 @@
 import { _decorator, Component, UIOpacity, view, Vec3, easing, lerp, Size, instantiate, Node } from "cc";
-import { GlobalSettings } from "./GlobalSettings";
+import { GlobalSettings } from "../GlobalSettings";
 import { ChartPlayer } from "./ChartPlayer";
 import { ClickNote } from "./notes/ClickNote";
 import { KeyNote } from "./notes/KeyNote";
