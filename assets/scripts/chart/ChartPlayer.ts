@@ -137,7 +137,7 @@ export class ChartPlayer extends Component {
     }
 
     resumeMusic() {
-        if (this.audioSource) {
+        if (this.audioSource && !this.audioSource.playing) {
             this.audioSource.play();
         }
     }
@@ -217,7 +217,7 @@ export class ChartPlayer extends Component {
         };
     }
 
-    convertToSeconds(barBeat: [number, number], bpmEvents: BPMEvent[]): number {
+    convertToSeconds(barBeat: [number, number], bpmEvents: BPMEvent[] = this.chartData.bpmEvents): number {
         const targetBar = barBeat[0];
         const targetBeat = barBeat[1] / this.UPB;
 
@@ -245,6 +245,31 @@ export class ChartPlayer extends Component {
         return totalTime;
     }
 
+    /** Convert current time (in sec.) to bar/beat format. Return [-1, -1] if it meets the end. */
+    convertToChartTime(seconds: number, bpmEvents: BPMEvent[]): [number, number] {
+        let totalTime = 0;
+        for (const event of bpmEvents) {
+            const [bpm, bpb, unit] = event.bpm;
+            const [startBar, startBeat] = event.startTime;
+            const [endBar, endBeat] = event.endTime;
+
+            const effectiveBPM = bpm * (4 / unit);
+            const beatDuration = 60 / effectiveBPM;
+            const barDuration = bpb * beatDuration;
+
+            const expectedEndTime = totalTime + (endBar - startBar) * barDuration + (endBeat - startBeat) * beatDuration;
+            if (expectedEndTime > seconds) {
+                seconds -= totalTime;
+                const barCount = Math.floor(seconds / barDuration);
+                const beatCount = Math.floor((seconds % barDuration) / beatDuration);
+                return [startBar + barCount, startBeat + beatCount];
+            } else {
+                totalTime = expectedEndTime;
+            }
+        }
+        return [-1, -1]; 
+    }
+
     startGame() {
         if (!this.audioSource.playing) {
             this.globalTime = 0;
@@ -267,6 +292,10 @@ export class ChartPlayer extends Component {
     }
 
     // For editor
+    public get chartData() {
+        return this._chartData;
+    }
+
     public set chartData(chart: Record<string, any>) {
         this._chartData = chart;
     }
@@ -276,6 +305,7 @@ export class ChartPlayer extends Component {
         this.audioSource.stop();
         this.audioSource.clip = null;
         this.songDuration = 0;
+        this.progressSlider.updateProgress(0);
         
         this.startButton.enabled = false;
         this.restartButton.enabled = false;

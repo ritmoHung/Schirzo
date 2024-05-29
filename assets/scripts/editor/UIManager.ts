@@ -2,8 +2,8 @@ import { _decorator, assetManager, AudioClip, Button, Component, Label, Node } f
 import { ChartPlayer } from '../chart/ChartPlayer';
 const { ccclass, property } = _decorator;
 
-@ccclass('UIManager')
-export class UIManager extends Component {
+@ccclass('ChartEditor')
+export class ChartEditor extends Component {
     @property(Button)
     saveButton: Button = null;
     @property(Button)
@@ -20,19 +20,25 @@ export class UIManager extends Component {
     importMusicButton: Button = null;
     @property(Label)
     musicNameLabel: Label = null;
+    @property(Label)
+    musicProgressLabel: Label = null;
 
-    private static instance: UIManager = null;
+    private static instance: ChartEditor = null;
 
-    public static get Instance(): UIManager {
+    public static get Instance(): ChartEditor {
         return this.instance;
     }
 
     onLoad() {
-        UIManager.instance = this;
+        ChartEditor.instance = this;
         this.renewButton.node.on("click", this.clearData, this);
         this.saveButton.node.on("click", this.saveChart, this);
         this.importChartButton.node.on("click", this.importChart, this);
         this.importMusicButton.node.on("click", this.importMusic, this);
+    }
+
+    update(dt: number) {
+        this.updateMusicProgress();
     }
 
     public togglePauseButton(pause: boolean) {
@@ -78,7 +84,7 @@ export class UIManager extends Component {
         document.body.appendChild(input);
         input.addEventListener("input", (event) => {
             let file = (event.target as HTMLInputElement).files[0];
-            UIManager.Instance.musicNameLabel.string = file.name;
+            ChartEditor.Instance.musicNameLabel.string = file.name;
             assetManager.loadRemote<AudioClip>(URL.createObjectURL(file), { "ext": ".ogg" }, (err, data) => {
                 if (!err) {
                     ChartPlayer.Instance.loadMusic(data);
@@ -86,6 +92,19 @@ export class UIManager extends Component {
             })
         })
         input.click();
+    }
+
+    updateMusicProgress() {
+        if (ChartPlayer.Instance.chartData?.bpmEvents == null) {
+            this.musicProgressLabel.string = "No Chart Found"
+        } else {
+            const [bar, beat] = ChartPlayer.Instance.convertToChartTime(ChartPlayer.Instance.getGlobalTime(), ChartPlayer.Instance.chartData.bpmEvents);
+            if (bar == -1 && beat == -1) {
+                this.musicProgressLabel.string = `The End`
+            } else {
+                this.musicProgressLabel.string = ` BaR ${bar}, BeAt ${beat}`
+            }
+        }
     }
 }
 
