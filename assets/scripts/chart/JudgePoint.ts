@@ -5,7 +5,7 @@ import { ClickNote } from "./notes/ClickNote";
 import { KeyNote } from "./notes/KeyNote";
 import { DragNote } from "./notes/DragNote";
 import { HoldNote } from "./notes/HoldNote";
-import { ChartEditor } from "../editor/ChartEditor";
+
 const { ccclass, property } = _decorator;
 
 @ccclass("JudgePoint")
@@ -13,7 +13,7 @@ export class JudgePoint extends Component {
     private resolution: Size
     private settings: GlobalSettings
 
-    private chartPlayer: ChartPlayer | ChartEditor
+    private chartPlayer: ChartPlayer
     private topNoteContainer: Node = null
     private bottomNoteContainer: Node = null
 
@@ -24,12 +24,14 @@ export class JudgePoint extends Component {
     private lastGlobalTime: number = -0.1
     private lastEventIndexes: { [key: string]: number } = {}
 
+
+
     // # Lifecycle
     onLoad() {
         this.resolution = view.getDesignResolutionSize();
         this.settings = GlobalSettings.getInstance();
 
-        this.chartPlayer = GlobalSettings.getInstance().getPlayer();
+        this.chartPlayer = ChartPlayer.Instance;
 
         this.topNoteContainer = new Node("TopNoteContainer");
         this.topNoteContainer.setPosition(0, 0, 0);

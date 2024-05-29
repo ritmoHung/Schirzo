@@ -3,9 +3,29 @@ import { GlobalSettings } from "../GlobalSettings";
 import { JudgePointPool } from "./JudgePointPool";
 import { ProgressSlider } from "./ProgressSlider";
 import { ChartText } from "./ChartText";
-import { ChartData, FirebaseManager } from "../lib/FirebaseManager";
-import { BPMEventData, EventData, JudgePointData } from "../lib/Chart";
 const { ccclass, property } = _decorator;
+
+interface BPMEvent {
+    startTime: [number, number];
+    endTime: [number, number];
+    bpm: [number, number, number];
+}
+
+interface Event {
+    startTime: [number, number] | number;
+    endTime: [number, number] | number;
+    easing: string;
+    start: number;
+    end: number;
+}
+
+interface JudgePoint {
+    noteList: any[];
+    speedEvents: Event[];
+    positionEvents: Event[];
+    rotateEvents: Event[];
+    opacityEvents: Event[];
+}
 
 @ccclass("ChartPlayer")
 export class ChartPlayer extends Component {
@@ -38,12 +58,12 @@ export class ChartPlayer extends Component {
     chartText: ChartText
 
     private static instance: ChartPlayer
-    private chartData: Record<string, any> = null;
-
     private songDuration: number = 0;
     private globalTime: number = 0
     private settings: GlobalSettings
     private UPB = 120  // Units per beat
+
+    private _chartData: Record<string, any>;
 
     // # Lifecycle
     constructor() {
@@ -56,23 +76,17 @@ export class ChartPlayer extends Component {
     }
 
     onLoad() {
-        GlobalSettings.getInstance().editing = false;
         ChartPlayer.instance = this;
 
         this.pauseButton.node.on("click", () => this.pauseMusic());
         this.startButton.node.on("click", () => this.resumeMusic());
         this.restartButton.node.on("click", () => this.restartGame());
-        
-        FirebaseManager.loadChartFromURL("https://firebasestorage.googleapis.com/v0/b/schirzo-3d2fb.appspot.com/o/charts%2Fvanilla%2Fmiserable%2F2.json?alt=media&token=8d8889ba-c9f5-4f3a-ab35-50e0f3d1d3f2", "https://firebasestorage.googleapis.com/v0/b/schirzo-3d2fb.appspot.com/o/charts%2Fvanilla%2Fmiserable%2Fbase.ogg?alt=media&token=d68e563a-6268-43de-9a3d-aed7d16a700b", (chartData) => {
-            this.chartData = chartData.chart;
-            this.loadChart(chartData.chart);
-            if (this.audioSource) {
-                this.loadMusic(chartData.audio);
-                this.audioSource.node.on("ended", this.onAudioEnded, this);
-            } else {
-                console.error("AudioSource component is not attached.");
-            }
-        })
+
+        if (this.audioSource) {
+            this.audioSource.node.on("ended", this.onAudioEnded, this);
+        } else {
+            console.error("AudioSource component is not attached.");
+        }
     }
 
     onAudioEnded() {
@@ -99,9 +113,15 @@ export class ChartPlayer extends Component {
 
     // # Functions
     loadMusic(clip: AudioClip) {
-        this.audioSource.clip = clip;
-        this.songDuration = clip.getDuration();
-        this.progressSlider.initialize(clip.getDuration());
+        if (clip == null) {
+            console.error("Failed to load music.");
+            return;
+        }
+        if (this.audioSource) {
+            this.audioSource.clip = clip;
+            this.songDuration = clip.getDuration();
+            this.progressSlider.initialize(clip.getDuration());
+        }
     }
 
     playMusic() {
@@ -156,15 +176,15 @@ export class ChartPlayer extends Component {
         this.chartText.initialize(textEvents);
     }
 
-    covertTextEvent(textEvent: any, bpmEvents: BPMEventData[]) {
+    covertTextEvent(textEvent: any, bpmEvents: BPMEvent[]) {
         return {
             ...textEvent,
             time: Array.isArray(textEvent.time) ? this.convertToSeconds(textEvent.time, bpmEvents) + this.settings.offset : textEvent.time + this.settings.offset,
         }
     }
 
-    convertJudgePointEvents(judgePoint: JudgePointData, bpmEvents: BPMEventData[]): JudgePointData {
-        const convertEventTimings = (events: EventData[]): EventData[] =>
+    convertJudgePointEvents(judgePoint: JudgePoint, bpmEvents: BPMEvent[]): JudgePoint {
+        const convertEventTimings = (events: Event[]): Event[] =>
             events.map(event => ({
                 ...event,
                 startTime: Array.isArray(event.startTime) ? this.convertToSeconds(event.startTime, bpmEvents) + this.settings.offset : event.startTime + this.settings.offset,
@@ -197,7 +217,7 @@ export class ChartPlayer extends Component {
         };
     }
 
-    convertToSeconds(barBeat: [number, number], bpmEvents: BPMEventData[]): number {
+    convertToSeconds(barBeat: [number, number], bpmEvents: BPMEvent[]): number {
         const targetBar = barBeat[0];
         const targetBeat = barBeat[1] / this.UPB;
 
@@ -238,11 +258,27 @@ export class ChartPlayer extends Component {
 
     restartGame() {
         this.audioSource.stop();
-        this.loadChart(this.chartData);
+        this.loadChart(this._chartData);
         this.startGame();
     }
 
     getGlobalTime() {
         return this.globalTime;
+    }
+
+    // For editor
+    public set chartData(chart: Record<string, any>) {
+        this._chartData = chart;
+    }
+
+    public clearData() {
+        this.judgePointPool.reset();
+        this.audioSource.stop();
+        this.audioSource.clip = null;
+        this.songDuration = 0;
+        
+        this.startButton.enabled = false;
+        this.restartButton.enabled = false;
+        this.pauseButton.enabled = false;
     }
 }

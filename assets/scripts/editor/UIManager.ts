@@ -1,11 +1,13 @@
 import { _decorator, assetManager, AudioClip, Button, Component, Label, Node } from 'cc';
-import { ChartEditor } from './ChartEditor';
+import { ChartPlayer } from '../chart/ChartPlayer';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIManager')
 export class UIManager extends Component {
     @property(Button)
     saveButton: Button = null;
+    @property(Button)
+    renewButton: Button = null;
     @property(Button)
     startButton: Button = null;
     @property(Button)
@@ -27,9 +29,10 @@ export class UIManager extends Component {
 
     onLoad() {
         UIManager.instance = this;
-        this.saveButton.node.on("click", this.saveChart);
-        this.importChartButton.node.on("click", this.importChart);
-        this.importMusicButton.node.on("click", this.importMusic);
+        this.renewButton.node.on("click", this.clearData, this);
+        this.saveButton.node.on("click", this.saveChart, this);
+        this.importChartButton.node.on("click", this.importChart, this);
+        this.importMusicButton.node.on("click", this.importMusic, this);
     }
 
     public togglePauseButton(pause: boolean) {
@@ -38,6 +41,12 @@ export class UIManager extends Component {
         } else {
             this.startLabel.string = "pAuse";
         }
+    }
+
+    clearData() {
+        ChartPlayer.Instance.chartData = {};
+        ChartPlayer.Instance.clearData();
+        this.musicNameLabel.string = "";
     }
 
     saveChart() {
@@ -52,8 +61,11 @@ export class UIManager extends Component {
         input.addEventListener("input", async (event) => {
             const file = (event.target as HTMLInputElement).files[0];
             const json = JSON.parse(await file.text()) as Record<string, any>;
-            ChartEditor.Instance.chartData.chart = json;
-            ChartEditor.Instance.loadChart(json);
+            ChartPlayer.Instance.chartData = json;
+            ChartPlayer.Instance.loadChart(json);
+            this.startButton.enabled = true;
+            this.restartButton.enabled = true;
+            ChartPlayer.Instance.pauseButton.enabled = true;
         })
         input.click();
     }
@@ -69,8 +81,7 @@ export class UIManager extends Component {
             UIManager.Instance.musicNameLabel.string = file.name;
             assetManager.loadRemote<AudioClip>(URL.createObjectURL(file), { "ext": ".ogg" }, (err, data) => {
                 if (!err) {
-                    ChartEditor.Instance.chartData.audio = data;
-                    ChartEditor.Instance.loadMusic(data);
+                    ChartPlayer.Instance.loadMusic(data);
                 }
             })
         })

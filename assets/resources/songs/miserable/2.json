@@ -5,7 +5,7 @@
 	"bpmEvents": [
 		{
 			"startTime": [0, 0],
-			"endTime": [112, 0],
+			"endTime": [110, 0],
 			"bpm": [163.0, 4, 4]
 		}
 	],
@@ -16,358 +16,438 @@
 				{
 			        "type": 1,
 			        "direction": 1,
-			        "time": [74, 0],
+			        "time": [9, 0],
 			        "key": "R"
 			    },
 			    {
 			        "type": 2,
 			        "direction": 1,
-			        "time": [74, 120]
+			        "time": [9, 120]
 			    },
 			    {
 			        "type": 2,
 			        "direction": 1,
-			        "time": [74, 240]
+			        "time": [9, 240]
 			    },
 			    {
 			        "type": 2,
 			        "direction": 1,
-			        "time": [74, 360]
+			        "time": [9, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [75, 0]
+			        "time": [10, 0]
 			    },
 			    {
 			        "type": 2,
 			        "direction": 1,
-			        "time": [75, 120]
+			        "time": [10, 120]
 			    },
 			    {
 			        "type": 2,
 			        "direction": 1,
-			        "time": [75, 240]
+			        "time": [10, 240]
 			    },
 			    {
 			        "type": 2,
 			        "direction": 1,
-			        "time": [75, 360]
+			        "time": [10, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [76, 0]
+			        "time": [11, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [76, 120]
+			        "time": [11, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [76, 240]
+			        "time": [11, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [76, 360]
+			        "time": [11, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [77, 0]
+			        "time": [12, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [77, 120]
+			        "time": [12, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [77, 240]
+			        "time": [12, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [77, 360]
+			        "time": [12, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [78, 0]
+			        "time": [13, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [78, 120]
+			        "time": [13, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [78, 240]
+			        "time": [13, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [78, 360]
+			        "time": [13, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [79, 0]
+			        "time": [14, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [79, 120]
+			        "time": [14, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [79, 240]
+			        "time": [14, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [79, 360]
+			        "time": [14, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [80, 0]
+			        "time": [15, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [80, 120]
+			        "time": [15, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [80, 240]
+			        "time": [15, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [80, 360]
+			        "time": [15, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [81, 0]
+			        "time": [16, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [81, 60]
+			        "time": [16, 60]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [81, 120]
+			        "time": [16, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [81, 180]
+			        "time": [16, 180]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [81, 240]
+			        "time": [16, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [81, 300]
+			        "time": [16, 300]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [81, 360]
+			        "time": [16, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [82, 0]
+			        "time": [17, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [82, 120]
+			        "time": [17, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [82, 240]
+			        "time": [17, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [82, 360]
+			        "time": [17, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [83, 0]
+			        "time": [18, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [83, 120]
+			        "time": [18, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [83, 240]
+			        "time": [18, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [83, 360]
+			        "time": [18, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [84, 0]
+			        "time": [19, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [84, 120]
+			        "time": [19, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [84, 240]
+			        "time": [19, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [84, 360]
+			        "time": [19, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [85, 0]
+			        "time": [20, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [85, 120]
+			        "time": [20, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [85, 240]
+			        "time": [20, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [85, 360]
+			        "time": [20, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [86, 0]
+			        "time": [21, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [86, 120]
+			        "time": [21, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [86, 240]
+			        "time": [21, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [86, 360]
+			        "time": [21, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [87, 0]
+			        "time": [22, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [87, 120]
+			        "time": [22, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [87, 240]
+			        "time": [22, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [87, 360]
+			        "time": [22, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [88, 0]
+			        "time": [23, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [88, 120]
+			        "time": [23, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [88, 240]
+			        "time": [23, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [88, 360]
+			        "time": [23, 360]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [89, 0]
+			        "time": [24, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [89, 120]
+			        "time": [24, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [89, 240]
+			        "time": [24, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [89, 360]
+			        "time": [24, 360]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [25, 0]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [25, 120]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [25, 240]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [25, 360]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [26, 0]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [26, 120]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [26, 240]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [26, 360]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [27, 0]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [27, 120]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [27, 240]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [27, 360]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [28, 0]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [28, 120]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [28, 240]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [28, 360]
 			    }
 			],
 			"speedEvents": [
 				{
-					"startTime": [65, 0],
-		            "endTime": [73, 120],
+					"startTime": [0, 0],
+		            "endTime": [8, 120],
 		            "easing": "constant",
 		            "start": 0,
 		            "end": 0
 				},
 				{
-					"startTime": [73, 120],
-		            "endTime": [74, 0],
+					"startTime": [8, 120],
+		            "endTime": [9, 0],
 		            "easing": "linear",
 		            "start": 0,
 		            "end": 1
 				},
 				{
-					"startTime": [74, 0],
-		            "endTime": [112, 0],
+					"startTime": [9, 0],
+		            "endTime": [110, 0],
 		            "easing": "constant",
 		            "start": 1,
 		            "end": 1
@@ -375,22 +455,22 @@
 			],
 			"positionEvents": [
 				{
-					"startTime": [65, 0],
-		            "endTime": [66, 0],
+					"startTime": [0, 0],
+		            "endTime": [1, 0],
 		            "easing": "constant",
 		            "start": [0.5, -22],
 		            "end": [0.5, -22]
 				},
 				{
-					"startTime": [66, 0],
-		            "endTime": [73, 0],
+					"startTime": [1, 0],
+		            "endTime": [8, 0],
 		            "easing": "linear",
 		            "start": [0.5, -22],
 		            "end": [0.5, -0.4]
 				},
 				{
-					"startTime": [73, 0],
-		            "endTime": [73, 240],
+					"startTime": [8, 0],
+		            "endTime": [8, 240],
 		            "easing": "cubicOut",
 		            "start": [0.5, -0.4],
 		            "end": [0.5, 0.2]
@@ -405,28 +485,28 @@
 				{
 			        "type": 3,
 			        "direction": 1,
-			        "time": [74, 0],
-			        "endTime": [76, 0]
+			        "time": [9, 0],
+			        "endTime": [11, 0]
 			    }
 			],
 			"speedEvents": [
 				{
-					"startTime": [65, 0],
-		            "endTime": [73, 120],
+					"startTime": [0, 0],
+		            "endTime": [8, 120],
 		            "easing": "constant",
 		            "start": 0,
 		            "end": 0
 				},
 				{
-					"startTime": [73, 120],
-		            "endTime": [74, 0],
+					"startTime": [8, 120],
+		            "endTime": [9, 0],
 		            "easing": "linear",
 		            "start": 0,
 		            "end": 1
 				},
 				{
-					"startTime": [74, 0],
-		            "endTime": [112, 0],
+					"startTime": [9, 0],
+		            "endTime": [110, 0],
 		            "easing": "constant",
 		            "start": 1,
 		            "end": 1
@@ -434,22 +514,22 @@
 			],
 			"positionEvents": [
 				{
-					"startTime": [65, 0],
-		            "endTime": [66, 0],
+					"startTime": [0, 0],
+		            "endTime": [1, 0],
 		            "easing": "constant",
 		            "start": [0.75, -22],
 		            "end": [0.75, -22]
 				},
 				{
-					"startTime": [66, 0],
-		            "endTime": [73, 0],
+					"startTime": [1, 0],
+		            "endTime": [8, 0],
 		            "easing": "linear",
 		            "start": [0.75, -22],
 		            "end": [0.75, -0.4]
 				},
 				{
-					"startTime": [73, 0],
-		            "endTime": [73, 240],
+					"startTime": [8, 0],
+		            "endTime": [8, 240],
 		            "easing": "cubicOut",
 		            "start": [0.75, -0.4],
 		            "end": [0.75, 0.2]
@@ -463,7 +543,7 @@
 		{
 			"text": "REWIND",
 			"font": "default",
-			"time": [65, 1]
+			"time": [0, 1]
 		}
 	]
 }

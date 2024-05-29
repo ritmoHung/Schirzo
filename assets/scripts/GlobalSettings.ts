@@ -4,8 +4,6 @@ import { ChartEditor } from "./editor/ChartEditor";
 export class GlobalSettings {
     private static instance: GlobalSettings
 
-    public editing: boolean = false;
-
     public flowSpeed: number = 4.0
     public offset: number = 0.0
 
@@ -23,10 +21,6 @@ export class GlobalSettings {
     }
 
     // # Functions
-    public getPlayer() {
-        return this.editing ? ChartEditor.Instance : ChartPlayer.Instance;
-    }
-    
     public saveSettings() {
         localStorage.setItem("flowSpeed", this.flowSpeed.toString());
         localStorage.setItem("offset", this.offset.toString());
