@@ -1,6 +1,8 @@
 import { _decorator, AudioClip, Component, easing, EventKeyboard, Input, input, UIOpacity } from "cc";
 import { ChartPlayer } from "../ChartPlayer";
 import { JudgePoint } from "../JudgePoint";
+import { ChartEditor } from "../../editor/ChartEditor";
+import { GlobalSettings } from "../../GlobalSettings";
 const { ccclass, property } = _decorator;
 
 @ccclass("Note")
@@ -11,7 +13,7 @@ export abstract class Note extends Component {
     @property(AudioClip)
     sfx: AudioClip | null = null
 
-    protected chartPlayer: ChartPlayer
+    protected chartPlayer: ChartPlayer | ChartEditor
     protected judgePoint: JudgePoint
 
     protected mode: string = "autoplay"
@@ -44,7 +46,7 @@ export abstract class Note extends Component {
 
     // # Functions
     initialize(data: any, judgePoint: JudgePoint) {
-        this.chartPlayer = ChartPlayer.Instance;
+        this.chartPlayer = GlobalSettings.getInstance().getPlayer();
         this.judgePoint = judgePoint;
 
         this.isFake = data.isFake || false;

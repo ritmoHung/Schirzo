@@ -1,16 +1,15 @@
 import { _decorator, AudioClip, AudioSource, Button, Component, director, JsonAsset, Prefab, resources } from "cc";
 import { GlobalSettings } from "../GlobalSettings";
-import { JudgePointPool } from "./JudgePointPool";
-import { ProgressSlider } from "./ProgressSlider";
-import { ChartText } from "./ChartText";
 import { ChartData, FirebaseManager } from "../lib/FirebaseManager";
+import { JudgePointPool } from "../chart/JudgePointPool";
+import { ProgressSlider } from "../chart/ProgressSlider";
+import { ChartText } from "../chart/ChartText";
 import { BPMEventData, EventData, JudgePointData } from "../lib/Chart";
+import { UIManager } from "./UIManager";
 const { ccclass, property } = _decorator;
 
-@ccclass("ChartPlayer")
-export class ChartPlayer extends Component {
-    @property(Button)
-    pauseButton: Button | null = null
+@ccclass("ChartEditor")
+export class ChartEditor extends Component {
     @property(Button)
     startButton: Button | null = null
     @property(Button)
@@ -37,13 +36,16 @@ export class ChartPlayer extends Component {
     @property(ChartText)
     chartText: ChartText
 
-    private static instance: ChartPlayer
-    private chartData: Record<string, any> = null;
+    private static instance: ChartEditor
+    
+    public chartData: ChartData = {chart: null, audio: null};
 
     private songDuration: number = 0;
     private globalTime: number = 0
     private settings: GlobalSettings
     private UPB = 120  // Units per beat
+
+    
 
     // # Lifecycle
     constructor() {
@@ -56,23 +58,11 @@ export class ChartPlayer extends Component {
     }
 
     onLoad() {
-        GlobalSettings.getInstance().editing = false;
-        ChartPlayer.instance = this;
-
-        this.pauseButton.node.on("click", () => this.pauseMusic());
-        this.startButton.node.on("click", () => this.resumeMusic());
-        this.restartButton.node.on("click", () => this.restartGame());
-        
-        FirebaseManager.loadChartFromURL("https://firebasestorage.googleapis.com/v0/b/schirzo-3d2fb.appspot.com/o/charts%2Fvanilla%2Fmiserable%2F2.json?alt=media&token=8d8889ba-c9f5-4f3a-ab35-50e0f3d1d3f2", "https://firebasestorage.googleapis.com/v0/b/schirzo-3d2fb.appspot.com/o/charts%2Fvanilla%2Fmiserable%2Fbase.ogg?alt=media&token=d68e563a-6268-43de-9a3d-aed7d16a700b", (chartData) => {
-            this.chartData = chartData.chart;
-            this.loadChart(chartData.chart);
-            if (this.audioSource) {
-                this.loadMusic(chartData.audio);
-                this.audioSource.node.on("ended", this.onAudioEnded, this);
-            } else {
-                console.error("AudioSource component is not attached.");
-            }
-        })
+        GlobalSettings.getInstance().editing = true;
+        ChartEditor.instance = this;
+        this.startButton.node.on("click", this.toggleMusic, this);
+        this.restartButton.node.on("click", this.restartGame, this);
+        console.log(this.audioSource);
     }
 
     onAudioEnded() {
@@ -94,7 +84,6 @@ export class ChartPlayer extends Component {
     onDestroy() {
         this.audioSource.node.off("ended", this.onAudioEnded, this);
     }
-
 
 
     // # Functions
@@ -119,6 +108,17 @@ export class ChartPlayer extends Component {
     resumeMusic() {
         if (this.audioSource) {
             this.audioSource.play();
+        }
+    }
+
+    toggleMusic() {
+        if (this.audioSource) {
+            UIManager.Instance.togglePauseButton(this.audioSource.playing);
+            if (this.audioSource.playing) {
+                this.pauseMusic();
+            } else {
+                this.resumeMusic();
+            }
         }
     }
 
