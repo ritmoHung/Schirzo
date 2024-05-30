@@ -3,24 +3,11 @@ import { SelectedSong } from "./song"
 export class GlobalSettings {
     private static instance: GlobalSettings
 
-<<<<<<< HEAD:assets/scripts/GlobalSettings.ts
-    /** the path in firebase storage as "charts/${type}/${chart}". Change the path before entering chart scene so that ChartPlayer can fully load the chart. */
-    public currentChart: {
-        /** Vanilla = default, Custom = player-made */
-        type: "vanilla" | "custom",
-        /** The name of the chart. */
-        chart: string
-    } = {
-        type: "vanilla",
-        chart: "miserable"
-    }
-=======
     // Game Logic
     private _selectedChapterId: string = ""
     private _selectedSong: SelectedSong
 
     // User Settings
->>>>>>> origin/dev:assets/scripts/settings/GlobalSettings.ts
     public flowSpeed: number = 4.0
     public offset: number = 0.0
 
