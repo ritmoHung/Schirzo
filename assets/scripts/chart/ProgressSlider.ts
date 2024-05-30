@@ -11,12 +11,13 @@ export class ProgressSlider extends Component {
     progressBar: ProgressBar
 
     private chartPlayer: ChartPlayer
-    private duration: number = 0
 
 
 
     // # Lifecycle
     onLoad() {
+        this.chartPlayer = ChartPlayer.Instance;
+
         this.slider.progress = 0;
         this.slider.node.on("slideStart", this.onSliderStart, this);
         this.slider.node.on("slide", this.onSliderChange, this);
@@ -32,18 +33,12 @@ export class ProgressSlider extends Component {
     }
 
     onSliderEnd() {
-        console.log("END");
         this.chartPlayer.resumeMusic();
     }
 
 
 
     // # Functions
-    initialize(duration: number) {
-        this.chartPlayer = ChartPlayer.Instance;
-        this.duration = duration;
-    }
-
     updateProgress(progress: number) {
         this.slider.progress = progress;
         this.progressBar.progress = progress;

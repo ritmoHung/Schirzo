@@ -1,3 +1,34 @@
 {
-    
+    "formatVersion": 1.1,
+	"offset": 0,
+	"bpm": [200.0, 4, 4],
+	"bpmEvents": [
+		{
+			"startTime": [0, 0],
+			"endTime": [153, 0],
+			"bpm": [200.0, 4, 4]
+		}
+	],
+	"judgePointList": [
+		{
+			"isInvisible": false,
+			"noteList": [
+				{
+			        "type": 0,
+			        "direction": 1,
+			        "time": [9, 0],
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [137, 0],
+			    }
+			],
+			"speedEvents": [],
+			"positionEvents": [],
+			"rotateEvents": [],
+			"opacityEvents": []
+		},
+	],
+	"textEventList": []
 }
