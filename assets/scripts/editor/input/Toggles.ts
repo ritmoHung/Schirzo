@@ -1,11 +1,11 @@
-import { _decorator, Button, Color, Component, Node, Sprite } from 'cc';
+import { _decorator, Button, CCString, Color, Component, Node, Sprite } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Toggles')
 export class Toggles extends Component {
     @property([Button])
     toggles: Button[] = [];
-    @property([String])
+    @property([CCString])
     keys: string[] = [];
     @property([Color])
     toggleColors: Color[] = [];

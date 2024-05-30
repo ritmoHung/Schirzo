@@ -1,9 +1,12 @@
-import { _decorator, assetManager, AudioClip, Button, Color, Component, Label, Node, Tween, tween, v2, v3 } from 'cc';
+import { _decorator, assetManager, AudioClip, Button, Color, Component, EditBox, EventMouse, Input, input, Label, Node, rect, Tween, tween, v2, v3, view } from 'cc';
 import { ChartPlayer } from '../chart/ChartPlayer';
 import { NumericInput } from './input/NumericInput';
 import { Toggles } from './input/Toggles';
 import { Chart } from '../lib/Chart';
 import { JudgePoint } from '../chart/JudgePoint';
+import { JudgePointPool } from '../chart/JudgePointPool';
+import { GlobalSettings } from '../GlobalSettings';
+import { MeasureLinePool } from './MeasureLinePool';
 const { ccclass, property } = _decorator;
 
 @ccclass('ChartEditor')
@@ -26,12 +29,26 @@ export class ChartEditor extends Component {
     musicNameLabel: Label = null;
     @property(Label)
     musicProgressLabel: Label = null;
+    
+    @property(Node)
+    musicNotImportedNode: Node = null;
+    @property(Node)
+    musicImportedNode: Node = null;
+    
+    @property(EditBox)
+    bpmEditbox: EditBox = null;
+    @property(EditBox)
+    bpbEditbox: EditBox = null;
+    @property(EditBox)
+    durationEditbox: EditBox = null;
 
     @property(Node)
     judgePointNotSelectedNode: Node = null;
     @property(Node)
     judgePointSelectedNode: Node = null;
 
+    @property(NumericInput)
+    measureLineSplitInput: NumericInput = null;
     @property(NumericInput)
     judgePointInput: NumericInput = null;
     @property(NumericInput)
@@ -41,6 +58,10 @@ export class ChartEditor extends Component {
     notePropertiesCtrl: Node = null;
     @property(Node)
     eventPropertiesCtrl: Node = null;
+
+    bpm: number = 0;
+    bpb: number = 0;
+    duration: number = 0;
 
     public selectedJudgePoint: JudgePoint = null;
 
@@ -53,12 +74,17 @@ export class ChartEditor extends Component {
     onLoad() {
         ChartEditor.instance = this;
         this.clearData();
+        this.updateMusicProps();
         this.renewButton.node.on("click", this.clearData, this);
         this.saveButton.node.on("click", this.saveChart, this);
         this.importChartButton.node.on("click", this.importChart, this);
         this.importMusicButton.node.on("click", this.importMusic, this);
+        this.measureLineSplitInput.node.on("change", this.updateMeasureLineProps, this);
         this.judgePointInput.node.on("change", this.updateJudgePointPool, this);
         this.editTargetInput.node.on("change", this.propsUpdate, this);
+        this.bpmEditbox.node.on("change", (value) => this.bpm = Number.parseInt(value), this);
+        this.bpbEditbox.node.on("change", (value) => this.bpb = Number.parseInt(value), this);
+        this.durationEditbox.node.on("change", (value) => this.duration = Number.parseInt(value), this);
     }
     
     onDestroy() {
@@ -68,6 +94,7 @@ export class ChartEditor extends Component {
     update(dt: number) {
         this.updateMusicProgress();
         this.updateJudgePointProps();
+        this.updateMusicProps();
     }
 
     public togglePauseButton(pause: boolean) {
@@ -80,7 +107,6 @@ export class ChartEditor extends Component {
 
     // Judge point selection
     selectJudgePoint(object: JudgePoint) {
-        console.log("test");
         this.selectedJudgePoint = object;
         this.updateJudgePointProps();
         for (const sprite of ChartPlayer.Instance.judgePointPool.sprites) {
@@ -95,14 +121,18 @@ export class ChartEditor extends Component {
     }
 
     // Control
+    updateMeasureLineProps(value: string) {
+        MeasureLinePool.Instance.rearrangePoolWithSplit(Number.parseInt(value));
+    }
+
     updateJudgePointPool(value: string) {
         const count = Number.parseInt(value);
         const poolObj = ChartPlayer.Instance.judgePointPool;
         if (count > poolObj.pool.length) {
-            ChartPlayer.Instance.chartData.judgePointList.push(Chart.distributedJudgePoint(count-1));
-
-            const judgePoint = ChartPlayer.Instance.convertJudgePointEvents(Chart.distributedJudgePoint(count-1), ChartPlayer.Instance.chartData.bpmEvents);
-            const node = ChartPlayer.Instance.judgePointPool.createJudgePoint(judgePoint);
+            ChartPlayer.Instance.chartData.judgePointList.push(Chart.defaultJudgePoint);
+            const node = ChartPlayer.Instance.judgePointPool.createJudgePoint(Chart.defaultJudgePoint);
+            const size = view.getDesignResolutionSize();
+            node.position = v3(0.2 + 0.15 * (count-1), 0.2).multiply3f(size.width, size.height, 0);
         } else if (count < poolObj.pool.length) {
             ChartPlayer.Instance.chartData.judgePointList.pop();
             
@@ -165,7 +195,13 @@ export class ChartEditor extends Component {
             ChartEditor.Instance.musicNameLabel.string = file.name;
             assetManager.loadRemote<AudioClip>(URL.createObjectURL(file), { "ext": ".ogg" }, (err, data) => {
                 if (!err) {
-                    ChartPlayer.Instance.loadMusic(data);
+                    this.bpm = 160; this.bpmEditbox.string = "160";
+                    this.bpb = 4; this.bpbEditbox.string = "4";
+                    this.duration = Math.ceil(ChartPlayer.Instance.loadMusic(data));
+                    this.durationEditbox.string = `${this.duration}`;
+
+                    MeasureLinePool.Instance.initializePool();
+                    MeasureLinePool.Instance.rearrangePoolWithSplit(4);
                 }
             })
         })
@@ -173,15 +209,25 @@ export class ChartEditor extends Component {
     }
 
     updateMusicProgress() {
-        if (ChartPlayer.Instance.chartData?.bpmEvents == null) {
-            this.musicProgressLabel.string = "no bpM eVents"
+        if (!ChartPlayer.Instance.audioSource.clip) {
+            this.musicProgressLabel.string = "no Music"
         } else {
-            const [bar, beat] = ChartPlayer.Instance.convertToChartTime(ChartPlayer.Instance.getGlobalTime(), ChartPlayer.Instance.chartData.bpmEvents);
+            const [bar, beat] = ChartPlayer.Instance.convertToChartTime(ChartPlayer.Instance.getGlobalTime());
             if (bar == -1 && beat == -1) {
                 this.musicProgressLabel.string = `The End`
             } else {
                 this.musicProgressLabel.string = ` bar ${bar}, beAt ${beat}`
             }
+        }
+    }
+
+    updateMusicProps() {
+        if (ChartPlayer.Instance.audioSource.clip) {
+            this.musicNotImportedNode.active = false;
+            this.musicImportedNode.active = true;
+        } else {
+            this.musicNotImportedNode.active = true;
+            this.musicImportedNode.active = false;
         }
     }
 

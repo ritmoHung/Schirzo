@@ -3,15 +3,16 @@ import { GlobalSettings } from "../GlobalSettings";
 import { JudgePointPool } from "./JudgePointPool";
 import { ProgressSlider } from "./ProgressSlider";
 import { ChartText } from "./ChartText";
+import { ChartEditor } from "../editor/ChartEditor";
 const { ccclass, property } = _decorator;
 
-export interface BPMEvent {
+interface BPMEvent {
     startTime: [number, number];
     endTime: [number, number];
     bpm: [number, number, number];
 }
 
-export interface Event {
+interface Event {
     startTime: [number, number] | number;
     endTime: [number, number] | number;
     easing: string;
@@ -19,31 +20,12 @@ export interface Event {
     end: number | [number, number];
 }
 
-export interface JudgePoint {
+interface JudgePoint {
     noteList: any[];
     speedEvents: Event[];
     positionEvents: Event[];
     rotateEvents: Event[];
     opacityEvents: Event[];
-}
-
-export type ChartTime = [bar: number, beat: number];
-
-export interface ChartObject {
-    formatVersion: string,
-    offset: number,
-    bpm: [bpm: number, bar: number, beat: number],
-    bpmEvents: {
-        startTime: ChartTime,
-        endTime: ChartTime,
-        bpm: [bpm: number, bar: number, beat: number]
-    }[],
-    judgePointList: JudgePoint[],
-    textEventList: {
-        text: string,
-        font: "default" | "majorMonoDisplay", "hinaMincho",
-        time: ChartTime
-    }[]
 }
 
 @ccclass("ChartPlayer")
@@ -80,9 +62,10 @@ export class ChartPlayer extends Component {
     private songDuration: number = 0;
     private globalTime: number = 0
     private settings: GlobalSettings
-    private UPB = 120  // Units per beat
 
-    private _chartData: ChartObject;
+    public readonly UPB = 120  // Units per beat
+
+    private _chartData: any;
 
     // # Lifecycle
     constructor() {
@@ -125,10 +108,10 @@ export class ChartPlayer extends Component {
     }
 
     onDestroy() {
-        this.audioSource.node.off("ended", this.onAudioEnded, this);
+        if (!ChartEditor.Instance) {
+            this.audioSource.node.off("ended", this.onAudioEnded, this);
+        }
     }
-
-
 
     // # Functions
     loadMusic(clip: AudioClip) {
@@ -141,6 +124,7 @@ export class ChartPlayer extends Component {
             this.songDuration = clip.getDuration();
             this.progressSlider.initialize(clip.getDuration());
         }
+        return this.songDuration;
     }
 
     playMusic() {
@@ -180,7 +164,7 @@ export class ChartPlayer extends Component {
         }
     }
 
-    loadChart(chart: Record<string, any> | ChartObject) {
+    loadChart(chart: Record<string, any>) {
         this.judgePointPool.reset();
         if (!chart) return;
         const bpmEvents = chart.bpmEvents;
@@ -202,7 +186,7 @@ export class ChartPlayer extends Component {
         }
     }
 
-    convertJudgePointEvents(judgePoint: JudgePoint, bpmEvents: BPMEvent[]): JudgePoint {
+    convertJudgePointEvents(judgePoint: JudgePoint | any, bpmEvents: BPMEvent[]): JudgePoint {
         const convertEventTimings = (events: Event[]): Event[] =>
             events.map(event => ({
                 ...event,
@@ -264,31 +248,6 @@ export class ChartPlayer extends Component {
         return totalTime;
     }
 
-    /** Convert current time (in sec.) to bar/beat format. Return [-1, -1] if it meets the end. */
-    convertToChartTime(seconds: number, bpmEvents: BPMEvent[]): [number, number] {
-        let totalTime = 0;
-        for (const event of bpmEvents) {
-            const [bpm, bpb, unit] = event.bpm;
-            const [startBar, startBeat] = event.startTime;
-            const [endBar, endBeat] = event.endTime;
-
-            const effectiveBPM = bpm * (4 / unit);
-            const beatDuration = 60 / effectiveBPM;
-            const barDuration = bpb * beatDuration;
-
-            const expectedEndTime = totalTime + (endBar - startBar) * barDuration + (endBeat - startBeat) * beatDuration;
-            if (expectedEndTime > seconds) {
-                seconds -= totalTime;
-                const barCount = Math.floor(seconds / barDuration);
-                const beatCount = Math.floor((seconds % barDuration) / beatDuration);
-                return [startBar + barCount, startBeat + beatCount];
-            } else {
-                totalTime = expectedEndTime;
-            }
-        }
-        return [-1, -1];
-    }
-
     startGame() {
         if (!this.audioSource.playing) {
             this.globalTime = 0;
@@ -311,12 +270,12 @@ export class ChartPlayer extends Component {
     }
 
     // For editor
-    public get chartData(): ChartObject {
+    public get chartData(): any {
         return this._chartData;
     }
 
-    public set chartData(chart: Record<string, any> | ChartObject) {
-        this._chartData = chart as ChartObject;
+    public set chartData(chart: Record<string, any>) {
+        this._chartData = chart;
     }
 
     public clearData() {
@@ -334,5 +293,14 @@ export class ChartPlayer extends Component {
     reloadChart() {
         console.log(this.chartData);
         this.loadChart(this.chartData);
+    }
+
+    /** Convert current time (in sec.) to bar/beat format. Return [-1, -1] if it meets the end. */
+    convertToChartTime(seconds: number): [number, number] {
+        const beatDuration = 60 / ChartEditor.Instance.bpm;
+        const barDuration = ChartEditor.Instance.bpb * beatDuration;
+        const barCount = Math.floor(seconds / barDuration);
+        const beatCount = Math.floor((seconds % barDuration) / beatDuration);
+        return [barCount, beatCount];
     }
 }

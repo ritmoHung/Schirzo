@@ -1,4 +1,4 @@
-import { _decorator, Button, clamp, Component, EventTarget, Label, Node } from 'cc';
+import { _decorator, Button, CCString, clamp, Component, EventTarget, Label, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('NumericInput')
@@ -10,7 +10,7 @@ export class NumericInput extends Component {
     @property(Label)
     numberLabel: Label = null;
 
-    @property([String])
+    @property([CCString])
     public values: string[] = [];
 
     private selectIdx: number = 0;
