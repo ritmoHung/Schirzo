@@ -1,4 +1,4 @@
-import { assetManager, AudioClip, JsonAsset } from "cc"
+import { assetManager, AudioClip } from "cc"
 
 declare const firebase: any;
 
@@ -9,7 +9,7 @@ export interface ChartData {
 
 export module FirebaseManager {
     export async function loadChartFromFirebaseStorage(type: "vanilla" | "custom", name: string, onComplete: ({ chart, audio }: ChartData) => void) {
-        const chartRef = firebase.storage().ref(`charts/${type}/${name}`);
+        const chartRef = firebase.storage().ref(`songs/${type}/${name}`);
         const chartUrl = await chartRef.child("2.json").getDownloadURL();
         const songUrl = await chartRef.child("base.ogg").getDownloadURL();
         FirebaseManager.loadChartFromURL(chartUrl, songUrl, onComplete);
