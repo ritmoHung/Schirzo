@@ -5,26 +5,45 @@ import { ProgressSlider } from "./ProgressSlider";
 import { ChartText } from "./ChartText";
 const { ccclass, property } = _decorator;
 
-interface BPMEvent {
+export interface BPMEvent {
     startTime: [number, number];
     endTime: [number, number];
     bpm: [number, number, number];
 }
 
-interface Event {
+export interface Event {
     startTime: [number, number] | number;
     endTime: [number, number] | number;
     easing: string;
-    start: number;
-    end: number;
+    start: number | [number, number];
+    end: number | [number, number];
 }
 
-interface JudgePoint {
+export interface JudgePoint {
     noteList: any[];
     speedEvents: Event[];
     positionEvents: Event[];
     rotateEvents: Event[];
     opacityEvents: Event[];
+}
+
+export type ChartTime = [bar: number, beat: number];
+
+export interface ChartObject {
+    formatVersion: string,
+    offset: number,
+    bpm: [bpm: number, bar: number, beat: number],
+    bpmEvents: {
+        startTime: ChartTime,
+        endTime: ChartTime,
+        bpm: [bpm: number, bar: number, beat: number]
+    }[],
+    judgePointList: JudgePoint[],
+    textEventList: {
+        text: string,
+        font: "default" | "majorMonoDisplay", "hinaMincho",
+        time: ChartTime
+    }[]
 }
 
 @ccclass("ChartPlayer")
@@ -63,7 +82,7 @@ export class ChartPlayer extends Component {
     private settings: GlobalSettings
     private UPB = 120  // Units per beat
 
-    private _chartData: Record<string, any>;
+    private _chartData: ChartObject;
 
     // # Lifecycle
     constructor() {
@@ -91,7 +110,7 @@ export class ChartPlayer extends Component {
 
     onAudioEnded() {
         console.log("SONG ENDED");
-        this.scheduleOnce(function() {
+        this.scheduleOnce(function () {
             director.loadScene("result");
         }, 3);
     }
@@ -161,7 +180,7 @@ export class ChartPlayer extends Component {
         }
     }
 
-    loadChart(chart: Record<string, any>) {
+    loadChart(chart: Record<string, any> | ChartObject) {
         this.judgePointPool.reset();
         if (!chart) return;
         const bpmEvents = chart.bpmEvents;
@@ -194,18 +213,18 @@ export class ChartPlayer extends Component {
         const convertNoteTimings = (notes: any[]): any[] => {
             return notes.map(note => {
                 const convertedNote = {
-                    ...note, 
+                    ...note,
                     time: Array.isArray(note.time) ? this.convertToSeconds(note.time, bpmEvents) + this.settings.offset : note.time + this.settings.offset,
                 };
 
                 if (note.endTime) {
                     convertedNote.endTime = Array.isArray(note.endTime) ? this.convertToSeconds(note.endTime, bpmEvents) + this.settings.offset : note.endTime + this.settings.offset;
                 }
-        
+
                 return convertedNote;
             })
         }
-            
+
 
         return {
             ...judgePoint,
@@ -267,14 +286,14 @@ export class ChartPlayer extends Component {
                 totalTime = expectedEndTime;
             }
         }
-        return [-1, -1]; 
+        return [-1, -1];
     }
 
     startGame() {
         if (!this.audioSource.playing) {
             this.globalTime = 0;
             this.progressSlider.updateProgress(0);
-    
+
             this.scheduleOnce(() => {
                 this.playMusic();
             }, 1);
@@ -292,12 +311,12 @@ export class ChartPlayer extends Component {
     }
 
     // For editor
-    public get chartData() {
+    public get chartData(): ChartObject {
         return this._chartData;
     }
 
-    public set chartData(chart: Record<string, any>) {
-        this._chartData = chart;
+    public set chartData(chart: Record<string, any> | ChartObject) {
+        this._chartData = chart as ChartObject;
     }
 
     public clearData() {
@@ -306,9 +325,14 @@ export class ChartPlayer extends Component {
         this.audioSource.clip = null;
         this.songDuration = 0;
         this.progressSlider.updateProgress(0);
-        
-        this.startButton.enabled = false;
-        this.restartButton.enabled = false;
-        this.pauseButton.enabled = false;
+
+        this.startButton.interactable = false;
+        this.restartButton.interactable = false;
+        this.pauseButton.interactable = false;
+    }
+
+    reloadChart() {
+        console.log(this.chartData);
+        this.loadChart(this.chartData);
     }
 }

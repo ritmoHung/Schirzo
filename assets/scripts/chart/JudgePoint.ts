@@ -75,6 +75,7 @@ export class JudgePoint extends Component {
     // # Functions
     // Initialization
     initialize(data: any) {
+        console.log(data);
         this.isInvisible = data.isInvisible || false;
 
         this.notes = data.noteList || [];
