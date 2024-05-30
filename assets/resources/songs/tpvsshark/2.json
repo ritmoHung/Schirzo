@@ -16,19 +16,19 @@
 				{
 			        "type": 0,
 			        "direction": 1,
-			        "time": [9, 0],
+			        "time": [9, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [137, 0],
+			        "time": [137, 0]
 			    }
 			],
 			"speedEvents": [],
 			"positionEvents": [],
 			"rotateEvents": [],
 			"opacityEvents": []
-		},
+		}
 	],
 	"textEventList": []
 }

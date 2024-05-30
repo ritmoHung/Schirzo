@@ -26,52 +26,52 @@
 				{
 			        "type": 0,
 			        "direction": 1,
-			        "time": [1, 0],
+			        "time": [1, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [1, 120],
+			        "time": [1, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [1, 240],
+			        "time": [1, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [1, 360],
+			        "time": [1, 360]
 			    },
 
 			    {
 			    	"type": 0,
 			        "direction": 1,
-			        "time": [19, 0],
+			        "time": [19, 0]
 			    },
 
 			    {
 			    	"type": 0,
 			        "direction": 1,
-			        "time": [22, 0],
+			        "time": [22, 0]
 			    },
 
 			    {
 			    	"type": 0,
 			        "direction": 1,
-			        "time": [46, 165],
+			        "time": [46, 165]
 			    },
 			    {
 			    	"type": 0,
 			        "direction": 1,
-			        "time": [46, 210],
+			        "time": [46, 210]
 			    }
 			],
 			"speedEvents": [],
 			"positionEvents": [],
 			"rotateEvents": [],
 			"opacityEvents": []
-		},
+		}
 	],
 	"textEventList": []
 }
