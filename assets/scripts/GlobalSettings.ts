@@ -1,6 +1,16 @@
 export class GlobalSettings {
     private static instance: GlobalSettings
 
+    /** the path in firebase storage as "charts/${type}/${chart}". Change the path before entering chart scene so that ChartPlayer can fully load the chart. */
+    public currentChart: {
+        /** Vanilla = default, Custom = player-made */
+        type: "vanilla" | "custom",
+        /** The name of the chart. */
+        chart: string
+    } = {
+        type: "vanilla",
+        chart: "miserable"
+    }
     public flowSpeed: number = 4.0
     public offset: number = 0.0
 

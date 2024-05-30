@@ -3,6 +3,7 @@ import { GlobalSettings } from "../GlobalSettings";
 import { JudgePointPool } from "./JudgePointPool";
 import { ProgressSlider } from "./ProgressSlider";
 import { ChartText } from "./ChartText";
+import { FirebaseManager } from "../lib/FirebaseManager";
 const { ccclass, property } = _decorator;
 
 interface BPMEvent {
@@ -64,7 +65,7 @@ export class ChartPlayer extends Component {
     private settings: GlobalSettings
     private UPB = 120  // Units per beat
 
-    
+    private initializing = true
 
     // # Lifecycle
     constructor() {
@@ -78,6 +79,25 @@ export class ChartPlayer extends Component {
 
     onLoad() {
         ChartPlayer.instance = this;
+        
+        const {type, chart} = GlobalSettings.getInstance().currentChart;
+        FirebaseManager.loadChartFromFirebaseStorage(type, chart, (chartData) => {
+            this.loadChartFrom(chartData.chart);
+            this.pauseButton.node.on("click", () => this.pauseMusic());
+            this.startButton.node.on("click", () => this.startGame());
+            this.restartButton.node.on("click", () => this.restartGame());
+
+            if (this.audioSource) {
+                this.loadMusicFrom(chartData.audio);
+                this.audioSource.node.on("ended", this.onAudioEnded, this);
+            } else {
+                console.error("AudioSource component is not attached.");
+            }
+
+            this.initializing = false;
+        });
+
+        /*
         this.loadChart();
 
         this.pauseButton.node.on("click", () => this.pauseMusic());
@@ -89,12 +109,12 @@ export class ChartPlayer extends Component {
             this.audioSource.node.on("ended", this.onAudioEnded, this);
         } else {
             console.error("AudioSource component is not attached.");
-        }
+        }*/
     }
 
     onAudioEnded() {
         console.log("SONG ENDED");
-        this.scheduleOnce(function() {
+        this.scheduleOnce(function () {
             director.loadScene("result");
         }, 3);
     }
@@ -128,6 +148,18 @@ export class ChartPlayer extends Component {
                 this.progressSlider.initialize(clip.getDuration());
             }
         });
+    }
+
+    loadMusicFrom(clip: AudioClip) {
+        if (!clip) {
+            console.error("Failed to load music");
+            return;
+        }
+        if (this.audioSource) {
+            this.audioSource.clip = clip;
+            this.songDuration = clip.getDuration();
+            this.progressSlider.initialize(clip.getDuration());
+        }
     }
 
     playMusic() {
@@ -189,6 +221,25 @@ export class ChartPlayer extends Component {
         });
     }
 
+    loadChartFrom(chart: Record<string, any>) {
+        this.judgePointPool.reset();
+        if (!chart) {
+            console.error("Failed to load chart.");
+            return;
+        }
+
+        const bpmEvents = chart.bpmEvents;
+        const textEvents = chart.textEventList.map(textEvent =>
+            this.covertTextEvent(textEvent, bpmEvents)
+        )
+        const judgePoints = chart.judgePointList.map(judgePoint =>
+            this.convertJudgePointEvents(judgePoint, bpmEvents)
+        );
+
+        this.judgePointPool.createJudgePoints(judgePoints);
+        this.chartText.initialize(textEvents);
+    }
+
     covertTextEvent(textEvent: any, bpmEvents: BPMEvent[]) {
         return {
             ...textEvent,
@@ -207,18 +258,18 @@ export class ChartPlayer extends Component {
         const convertNoteTimings = (notes: any[]): any[] => {
             return notes.map(note => {
                 const convertedNote = {
-                    ...note, 
+                    ...note,
                     time: Array.isArray(note.time) ? this.convertToSeconds(note.time, bpmEvents) + this.settings.offset : note.time + this.settings.offset,
                 };
 
                 if (note.endTime) {
                     convertedNote.endTime = Array.isArray(note.endTime) ? this.convertToSeconds(note.endTime, bpmEvents) + this.settings.offset : note.endTime + this.settings.offset;
                 }
-        
+
                 return convertedNote;
             })
         }
-            
+
 
         return {
             ...judgePoint,
@@ -262,7 +313,7 @@ export class ChartPlayer extends Component {
         if (!this.audioSource.playing) {
             this.globalTime = 0;
             this.progressSlider.updateProgress(0);
-    
+
             this.scheduleOnce(() => {
                 this.playMusic();
             }, 1);
