@@ -1,9 +1,10 @@
 import { _decorator, AudioClip, AudioSource, Button, Component, director, JsonAsset, Prefab, resources } from "cc";
-import { GlobalSettings } from "../GlobalSettings";
+import { GlobalSettings } from "../settings/GlobalSettings";
 import { JudgePointPool } from "./JudgePointPool";
 import { ProgressSlider } from "./ProgressSlider";
 import { ChartText } from "./ChartText";
 import { ChartEditor } from "../editor/ChartEditor";
+import { FirebaseManager } from "../lib/FirebaseManager";
 const { ccclass, property } = _decorator;
 
 interface BPMEvent {
@@ -59,18 +60,19 @@ export class ChartPlayer extends Component {
     chartText: ChartText
 
     private static instance: ChartPlayer
-    private songDuration: number = 0;
+    private song: any = {}
+    private songDuration: number = 0
     private globalTime: number = 0
-    private settings: GlobalSettings
+    private globalSettings: GlobalSettings
+    UPB = 120  // Units per beat
 
-    public readonly UPB = 120  // Units per beat
-
-    private _chartData: any;
+    private initializing = true
+    private _chartData: Record<string, any>;
 
     // # Lifecycle
     constructor() {
         super();
-        this.settings = GlobalSettings.getInstance();
+        this.globalSettings = GlobalSettings.getInstance();
     }
 
     public static get Instance() {
@@ -79,22 +81,41 @@ export class ChartPlayer extends Component {
 
     onLoad() {
         ChartPlayer.instance = this;
+        this.song = this.globalSettings.selectedSong
+            ? this.globalSettings.selectedSong
+            : { type: "vanilla", id: "tpvsshark" }
 
-        this.pauseButton.node.on("click", () => this.pauseMusic());
-        this.startButton.node.on("click", () => this.resumeMusic());
-        this.restartButton.node.on("click", () => this.restartGame());
+        // Load song audio & chart
+        FirebaseManager.loadChartFromFirebaseStorage(this.song.type, this.song.id, (chartData) => {
+            this.loadChartFrom(chartData.chart);
+            this.pauseButton.node.on("click", () => this.pauseMusic());
+            this.startButton.node.on("click", () => this.startGame());
+            this.restartButton.node.on("click", () => this.restartGame());
 
-        if (this.audioSource) {
-            this.audioSource.node.on("ended", this.onAudioEnded, this);
-        } else {
-            console.error("AudioSource component is not attached.");
-        }
+            if (this.audioSource) {
+                this.loadMusicFrom(chartData.audio);
+                this.audioSource.node.on("ended", this.onAudioEnded, this);
+            } else {
+                console.error("AudioSource component is not attached.");
+            }
+
+            this.initializing = false;
+        });
+
+        // Preload ResultScreen
+        director.preloadScene("ResultScreen", (err) => {
+            if (err) {
+                console.log("SCENE::RESULTSCREEN: Failed");
+                return;
+            }
+            console.log("SCENE::RESULTSCREEN: Preloaded");
+        });
     }
 
     onAudioEnded() {
-        console.log("SONG ENDED");
+        console.log(`SONG::${this.song.id.toUpperCase()}: Ended`);
         this.scheduleOnce(function () {
-            director.loadScene("result");
+            director.loadScene("ResultScreen");
         }, 3);
     }
 
@@ -114,15 +135,28 @@ export class ChartPlayer extends Component {
     }
 
     // # Functions
-    loadMusic(clip: AudioClip) {
-        if (clip == null) {
-            console.error("Failed to load music.");
+    loadMusic() {
+        resources.load(`songs/${this.song.id}/base`, AudioClip, (error, clip: AudioClip) => {
+            if (error) {
+                console.error("Failed to load music:", error);
+                return;
+            }
+
+            if (this.audioSource) {
+                this.audioSource.clip = clip;
+                this.songDuration = clip.getDuration();
+            }
+        });
+    }
+
+    loadMusicFrom(clip: AudioClip) {
+        if (!clip) {
+            console.error("Failed to load music");
             return;
         }
         if (this.audioSource) {
             this.audioSource.clip = clip;
             this.songDuration = clip.getDuration();
-            this.progressSlider.initialize(clip.getDuration());
         }
         return this.songDuration;
     }
@@ -164,9 +198,35 @@ export class ChartPlayer extends Component {
         }
     }
 
-    loadChart(chart: Record<string, any>) {
+    loadChart() {
         this.judgePointPool.reset();
-        if (!chart) return;
+        resources.load(`songs/${this.song.id}/2`, JsonAsset, (error, res: JsonAsset) => {
+            if (error) {
+                console.error("Failed to load chart:", error);
+                return;
+            }
+
+            const chartData = res.json!;
+            const bpmEvents = chartData.bpmEvents;
+            const textEvents = chartData.textEventList.map(textEvent =>
+                this.covertTextEvent(textEvent, bpmEvents)
+            )
+            const judgePoints = chartData.judgePointList.map(judgePoint =>
+                this.convertJudgePointEvents(judgePoint, bpmEvents)
+            );
+
+            this.judgePointPool.createJudgePoints(judgePoints);
+            this.chartText.initialize(textEvents);
+        });
+    }
+
+    loadChartFrom(chart: Record<string, any>) {
+        this.judgePointPool.reset();
+        if (!chart) {
+            console.error("Failed to load chart.");
+            return;
+        }
+
         const bpmEvents = chart.bpmEvents;
         const textEvents = chart.textEventList.map(textEvent =>
             this.covertTextEvent(textEvent, bpmEvents)
@@ -182,7 +242,9 @@ export class ChartPlayer extends Component {
     covertTextEvent(textEvent: any, bpmEvents: BPMEvent[]) {
         return {
             ...textEvent,
-            time: Array.isArray(textEvent.time) ? this.convertToSeconds(textEvent.time, bpmEvents) + this.settings.offset : textEvent.time + this.settings.offset,
+            time: Array.isArray(textEvent.time)
+                ? this.convertToSeconds(textEvent.time, bpmEvents) + this.globalSettings.offset
+                : textEvent.time + this.globalSettings.offset,
         }
     }
 
@@ -190,19 +252,27 @@ export class ChartPlayer extends Component {
         const convertEventTimings = (events: Event[]): Event[] =>
             events.map(event => ({
                 ...event,
-                startTime: Array.isArray(event.startTime) ? this.convertToSeconds(event.startTime, bpmEvents) + this.settings.offset : event.startTime + this.settings.offset,
-                endTime: Array.isArray(event.endTime) ? this.convertToSeconds(event.endTime, bpmEvents) + this.settings.offset : event.endTime + this.settings.offset,
+                startTime: Array.isArray(event.startTime)
+                    ? this.convertToSeconds(event.startTime, bpmEvents) + this.globalSettings.offset
+                    : event.startTime + this.globalSettings.offset,
+                endTime: Array.isArray(event.endTime)
+                    ? this.convertToSeconds(event.endTime, bpmEvents) + this.globalSettings.offset
+                    : event.endTime + this.globalSettings.offset,
             }))
 
         const convertNoteTimings = (notes: any[]): any[] => {
             return notes.map(note => {
                 const convertedNote = {
                     ...note,
-                    time: Array.isArray(note.time) ? this.convertToSeconds(note.time, bpmEvents) + this.settings.offset : note.time + this.settings.offset,
+                    time: Array.isArray(note.time)
+                        ? this.convertToSeconds(note.time, bpmEvents) + this.globalSettings.offset
+                        : note.time + this.globalSettings.offset,
                 };
 
                 if (note.endTime) {
-                    convertedNote.endTime = Array.isArray(note.endTime) ? this.convertToSeconds(note.endTime, bpmEvents) + this.settings.offset : note.endTime + this.settings.offset;
+                    convertedNote.endTime = Array.isArray(note.endTime)
+                        ? this.convertToSeconds(note.endTime, bpmEvents) + this.globalSettings.offset
+                        : note.endTime + this.globalSettings.offset;
                 }
 
                 return convertedNote;
@@ -261,7 +331,7 @@ export class ChartPlayer extends Component {
 
     restartGame() {
         this.audioSource.stop();
-        this.loadChart(this._chartData);
+        this.loadChartFrom(this._chartData);
         this.startGame();
     }
 
@@ -291,8 +361,7 @@ export class ChartPlayer extends Component {
     }
 
     reloadChart() {
-        console.log(this.chartData);
-        this.loadChart(this.chartData);
+        this.loadChartFrom(this.chartData);
     }
 
     /** Convert current time (in sec.) to bar/beat format. Return [-1, -1] if it meets the end. */

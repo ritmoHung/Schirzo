@@ -2,7 +2,6 @@ import { _decorator, BoxCollider, BoxCollider2D, Color, Component, Input, input,
 import { ChartEditor } from './ChartEditor';
 import { MeasureLinePool } from './MeasureLinePool';
 import { ChartPlayer } from '../chart/ChartPlayer';
-import { GlobalSettings } from '../GlobalSettings';
 const { ccclass, property } = _decorator;
 
 @ccclass('MeasureLine')

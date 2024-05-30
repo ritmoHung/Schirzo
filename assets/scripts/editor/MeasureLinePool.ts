@@ -1,6 +1,5 @@
 import { _decorator, Component, Event, EventKeyboard, Input, input, instantiate, Node, Prefab, Size, sp, systemEvent, view } from 'cc';
 import { ChartEditor } from './ChartEditor';
-import { GlobalSettings } from '../GlobalSettings';
 import { MeasureLine } from './MeasureLine';
 import { ChartPlayer } from '../chart/ChartPlayer';
 const { ccclass, property } = _decorator;

@@ -4,8 +4,6 @@ import { NumericInput } from './input/NumericInput';
 import { Toggles } from './input/Toggles';
 import { Chart } from '../lib/Chart';
 import { JudgePoint } from '../chart/JudgePoint';
-import { JudgePointPool } from '../chart/JudgePointPool';
-import { GlobalSettings } from '../GlobalSettings';
 import { MeasureLinePool } from './MeasureLinePool';
 const { ccclass, property } = _decorator;
 
@@ -176,7 +174,7 @@ export class ChartEditor extends Component {
             const file = (event.target as HTMLInputElement).files[0];
             const json = JSON.parse(await file.text()) as Record<string, any>;
             ChartPlayer.Instance.chartData = json;
-            ChartPlayer.Instance.loadChart(json);
+            ChartPlayer.Instance.loadChartFrom(json);
             this.startButton.interactable = true;
             this.restartButton.interactable = true;
             ChartPlayer.Instance.pauseButton.interactable = true;
@@ -197,7 +195,7 @@ export class ChartEditor extends Component {
                 if (!err) {
                     this.bpm = 160; this.bpmEditbox.string = "160";
                     this.bpb = 4; this.bpbEditbox.string = "4";
-                    this.duration = Math.ceil(ChartPlayer.Instance.loadMusic(data));
+                    this.duration = Math.ceil(ChartPlayer.Instance.loadMusicFrom(data));
                     this.durationEditbox.string = `${this.duration}`;
 
                     MeasureLinePool.Instance.initializePool();

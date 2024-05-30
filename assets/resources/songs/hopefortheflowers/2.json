@@ -16,61 +16,61 @@
 				{
 			        "type": 0,
 			        "direction": 1,
-			        "time": [1, 0],
+			        "time": [1, 0]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [1, 120],
+			        "time": [1, 120]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [1, 240],
+			        "time": [1, 240]
 			    },
 			    {
 			        "type": 0,
 			        "direction": 1,
-			        "time": [1, 360],
+			        "time": [1, 360]
 			    },
 
 			    {
 			    	"type": 0,
 			        "direction": 1,
-			        "time": [19, 0],
+			        "time": [19, 0]
 			    },
 
 			    {
 			    	"type": 0,
 			        "direction": 1,
-			        "time": [124, 360],
+			        "time": [124, 360]
 			    },
 			    {
 			    	"type": 0,
 			        "direction": 1,
-			        "time": [125, 135],
+			        "time": [125, 135]
 			    },
 			    {
 			    	"type": 2,
 			        "direction": 1,
-			        "time": [125, 142.5],
+			        "time": [125, 142.5]
 			    },
 			    {
 			    	"type": 0,
 			        "direction": 1,
-			        "time": [125, 322.5],
+			        "time": [125, 322.5]
 			    },
 			    {
 			    	"type": 2,
 			        "direction": 1,
-			        "time": [125, 345],
+			        "time": [125, 345]
 			    }
 			],
 			"speedEvents": [],
 			"positionEvents": [],
 			"rotateEvents": [],
 			"opacityEvents": []
-		},
+		}
 	],
 	"textEventList": []
 }
