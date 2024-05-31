@@ -66,5 +66,6 @@ export class JudgePointPool extends Component {
         });
 
         this._pool = [];
+        this._sprites = [];
     }
 }

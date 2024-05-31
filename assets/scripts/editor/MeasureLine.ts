@@ -1,8 +1,9 @@
-import { _decorator, BoxCollider, BoxCollider2D, Color, Component, Input, input, Label, Node, Prefab, rect, Sprite, UIOpacity, v3, view } from 'cc';
+import { _decorator, BoxCollider, BoxCollider2D, Color, Component, EventMouse, Input, input, Label, Node, Prefab, rect, Sprite, UIOpacity, v3, view } from 'cc';
 import { ChartEditor } from './ChartEditor';
 import { MeasureLinePool } from './MeasureLinePool';
 import { ChartPlayer } from '../chart/ChartPlayer';
 import { JudgePoint } from '../chart/JudgePoint';
+import { EditorJudgePoint } from './EditorJudgePoint';
 const { ccclass, property } = _decorator;
 
 @ccclass('MeasureLine')
@@ -60,9 +61,22 @@ export class MeasureLine extends Component {
         this.node.off(Node.EventType.MOUSE_LEAVE, this.hoverEnd, this);
     }
 
-    measureLineClick() {
+    measureLineClick(event: EventMouse) {
+        const judgePoint = ChartEditor.Instance.judgePointPool.pool[ChartEditor.Instance.selectedJudgePoint.index].getComponent(EditorJudgePoint);
         if (ChartEditor.Instance.editTargetInput.string == "note") {
-            ChartEditor.Instance.addNote(this.time);
+            if (event.getButton() == 0) {
+                if (!judgePoint.hasNote(this.time)) {
+                    judgePoint.createNote({
+                        "type": ChartEditor.Instance.noteProperties.noteTypeInput.index,
+                        "direction": 1,
+                        "time": this.time
+                    });
+                }
+            } else if (event.getButton() == 2) {
+                if (judgePoint.hasNote(this.time)) {
+                    judgePoint.removeNote(this.time);
+                }
+            }
         } else {
             
         }

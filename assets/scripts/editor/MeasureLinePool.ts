@@ -38,6 +38,7 @@ export class MeasureLinePool extends Component {
         for (const node of this._pool) {
             node.node.destroy();
         }
+        this._pool = [];
     }
 
     scroll(speed: number) {

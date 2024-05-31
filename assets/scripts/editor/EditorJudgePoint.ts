@@ -1,4 +1,4 @@
-import { _decorator, instantiate, Node, UIOpacity, v3 } from "cc";
+import { _decorator, Button, EventMouse, instantiate, Node, UIOpacity, v3 } from "cc";
 import { JudgePoint } from "../chart/JudgePoint";
 import { ClickNote } from "../chart/notes/ClickNote";
 import { KeyNote } from "../chart/notes/KeyNote";
@@ -9,19 +9,21 @@ import { ChartPlayer } from "../chart/ChartPlayer";
 import { MeasureLinePool } from "./MeasureLinePool";
 import { ChartEditor } from "./ChartEditor";
 import { NoteProperties } from "./NoteProperties";
+import { EditorHoldNote } from "../chart/notes/EditorHoldNote";
 
 const { ccclass, property } = _decorator;
 
 @ccclass("EditorJudgePoint")
 export class EditorJudgePoint extends JudgePoint {
     index: number = 0;
+    holdNote: EditorHoldNote = null;
 
     update(dt: number) {
         const globalTime = this.chartPlayer.getGlobalTime() || 0;
 
         // Reset search indexes if time rewinds
         if (globalTime < this.lastGlobalTime) this.lastEventIndexes = {};
-        
+
         if (globalTime !== this.lastGlobalTime) {
             // Update NoteContainer position
             const offset = this.calculatePositionOffset(globalTime);
@@ -44,8 +46,8 @@ export class EditorJudgePoint extends JudgePoint {
                 case "DragNotePrefab":
                     noteComponent = note.getComponent(DragNote) as DragNote;
                     break;
-                case "HoldNotePrefab":
-                    noteComponent = note.getComponent(HoldNote) as HoldNote;
+                case "EditorHoldNotePrefab":
+                    noteComponent = note.getComponent(EditorHoldNote) as EditorHoldNote;
                     break;
             }
             if (!noteComponent) continue;
@@ -56,10 +58,30 @@ export class EditorJudgePoint extends JudgePoint {
                 note.active = true;
             }
         }
+
+        if (this.holdNote) {
+            this.holdNote.updateEnd(ChartEditor.Instance.hoverTime);
+        }
+    }
+
+    hasNote(time: [number, number]) {
+        for (const note of ChartEditor.Instance.chartData.judgePointList[ChartEditor.Instance.selectedJudgePoint.index].noteList) {
+            if (note.time[0] == time[0] && note.time[1] == time[1]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     createNote(noteData: any): Node {
         let note: Node, noteComponent: Note;
+        if (this.holdNote) {
+            ChartEditor.Instance.chartData.judgePointList[ChartEditor.Instance.selectedJudgePoint.index].noteList.push(this.holdNote.note);
+            ChartEditor.Instance.holdSetting = false;
+            this.holdNote.enabled = false;
+            this.holdNote = null;
+            return;
+        }
         switch (noteData.type) {
             case 0:
                 note = instantiate(this.chartPlayer.clickNotePrefab);
@@ -67,7 +89,7 @@ export class EditorJudgePoint extends JudgePoint {
                 break;
             case 1:
                 note = instantiate(this.chartPlayer.keyNotePrefab);
-                noteData = {...noteData, key: ChartEditor.Instance.noteProperties.key};
+                noteData = { ...noteData, key: ChartEditor.Instance.noteProperties.key };
                 noteComponent = note.getComponent(KeyNote) as KeyNote;
                 break;
             case 2:
@@ -75,20 +97,39 @@ export class EditorJudgePoint extends JudgePoint {
                 noteComponent = note.getComponent(DragNote) as DragNote;
                 break;
             case 3:
-                note = instantiate(this.chartPlayer.holdNotePrefab);
-                noteComponent = note.getComponent(HoldNote) as HoldNote;
+                note = instantiate(ChartEditor.Instance.editorHoldNotePrefab);
+                noteComponent = note.getComponent(EditorHoldNote) as EditorHoldNote;
                 break;
         }
 
         if (noteComponent) {
             noteComponent.initialize(noteData, this);
-            noteComponent.enabled = false;
+            if (noteData.type == 3) {
+                ChartEditor.Instance.holdSetting = true;
+                this.holdNote = noteComponent as EditorHoldNote;
+                this.holdNote.updateEnd(noteData.time);
+            } else {
+                ChartEditor.Instance.chartData.judgePointList[ChartEditor.Instance.selectedJudgePoint.index].noteList.push(noteData);
+                noteComponent.enabled = false;
+            }
         }
-
-        ChartPlayer.Instance.chartData.judgePointList[ChartEditor.Instance.selectedJudgePoint.index].noteList.push(noteData);
-
-        note.active = true;
         this.node.addChild(note);
         return note;
+    }
+
+    removeNote(time: [number, number]) {
+        const list: Record<string, any>[] = ChartEditor.Instance.chartData.judgePointList[ChartEditor.Instance.selectedJudgePoint.index].noteList;
+        let i
+        for (i = 0; i < list.length; i++) {
+            if (list[i].time[0] == time[0] && list[i].time[1] == time[1]) {
+                list.splice(i, 1);
+                break;
+            }
+        }
+        this.node.children[i + 3].destroy();
+    }
+
+    calculatePositionOffset(targetTime: number): number {
+        return
     }
 }

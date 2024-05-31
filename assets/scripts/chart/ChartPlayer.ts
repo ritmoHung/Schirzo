@@ -51,7 +51,7 @@ export class ChartPlayer extends Component {
     audioSource: AudioSource | null = null
 
     @property(JudgePointPool)
-    judgePointPool: JudgePointPool
+    private judgePointPool: JudgePointPool
 
     @property(ProgressSlider)
     progressSlider: ProgressSlider
@@ -86,7 +86,7 @@ export class ChartPlayer extends Component {
         ChartPlayer.instance = this;
         this.song = this.globalSettings.selectedSong
             ? this.globalSettings.selectedSong
-            : { type: "vanilla", id: "tpvsshark" }
+            : { type: "vanilla", id: "miserable" }
 
         if (this.editing) {
             this.pauseButton.node.on("click", () => this.pauseMusic());
@@ -231,6 +231,8 @@ export class ChartPlayer extends Component {
     }
 
     loadChartFrom(chart: Record<string, any>) {
+        this._chartData = chart;
+        
         this.judgePointPool.reset();
         if (!chart) {
             console.error("Failed to load chart.");
@@ -349,37 +351,11 @@ export class ChartPlayer extends Component {
         return this.globalTime;
     }
 
-    // For editor
     public get chartData(): any {
         return this._chartData;
     }
 
     public set chartData(chart: Record<string, any>) {
         this._chartData = chart;
-    }
-
-    public clearData() {
-        this.judgePointPool.reset();
-        this.audioSource.stop();
-        this.audioSource.clip = null;
-        this.songDuration = 0;
-        this.progressSlider.updateProgress(0);
-
-        this.startButton.interactable = false;
-        this.restartButton.interactable = false;
-        this.pauseButton.interactable = false;
-    }
-
-    reloadChart() {
-        this.loadChartFrom(this.chartData);
-    }
-
-    /** Convert current time (in sec.) to bar/beat format. Return [-1, -1] if it meets the end. */
-    convertToChartTime(seconds: number): [number, number] {
-        const beatDuration = 60 / ChartEditor.Instance.bpm;
-        const barDuration = ChartEditor.Instance.bpb * beatDuration;
-        const barCount = Math.floor(seconds / barDuration);
-        const beatCount = Math.floor((seconds % barDuration) / beatDuration);
-        return [barCount, beatCount];
     }
 }

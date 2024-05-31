@@ -37,6 +37,14 @@ export class NumericInput extends Component {
         this.addButton.interactable = this.selectIdx < this.values.length - 1;
         this.node.emit("change", this.numberLabel.string.toLowerCase());
     }
+
+    clear() {
+        this.selectIdx = 0;
+        this.numberLabel.string = this.values[this.selectIdx];
+        this.subButton.interactable = this.selectIdx > 0;
+        this.addButton.interactable = this.selectIdx < this.values.length - 1;
+        this.node.emit("change", this.numberLabel.string.toLowerCase());
+    }
 }
 
 
