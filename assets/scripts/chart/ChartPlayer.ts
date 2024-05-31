@@ -1,4 +1,4 @@
-import { _decorator, AudioClip, AudioSource, Button, Component, director, JsonAsset, Prefab, resources } from "cc";
+import { _decorator, AudioClip, AudioSource, Button, CCBoolean, Component, director, JsonAsset, Prefab, resources } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { JudgePointPool } from "./JudgePointPool";
 import { ProgressSlider } from "./ProgressSlider";
@@ -59,6 +59,9 @@ export class ChartPlayer extends Component {
     @property(ChartText)
     chartText: ChartText
 
+    @property(CCBoolean)
+    editing: boolean = false
+
     private static instance: ChartPlayer
     private song: any = {}
     private songDuration: number = 0
@@ -85,6 +88,13 @@ export class ChartPlayer extends Component {
             ? this.globalSettings.selectedSong
             : { type: "vanilla", id: "tpvsshark" }
 
+        if (this.editing) {
+            this.pauseButton.node.on("click", () => this.pauseMusic());
+            this.startButton.node.on("click", () => this.startGame());
+            this.restartButton.node.on("click", () => this.restartGame());
+            this.audioSource.node.on("ended", this.onAudioEnded, this);
+            return;
+        }
         // Load song audio & chart
         FirebaseManager.loadChartFromFirebaseStorage(this.song.type, this.song.id, (chartData) => {
             this.loadChartFrom(chartData.chart);

@@ -1,6 +1,7 @@
 import { _decorator, Color, Component, instantiate, Node, Prefab, Sprite } from "cc";
 import { JudgePoint } from "./JudgePoint";
 import { ChartEditor } from "../editor/ChartEditor";
+import { EditorJudgePoint } from "../editor/EditorJudgePoint";
 const { ccclass, property } = _decorator;
 
 @ccclass("JudgePointPool")
@@ -32,7 +33,7 @@ export class JudgePointPool extends Component {
         if (!judgePoint) {
             judgePoint = instantiate(this.judgePointPrefab);
             if (ChartEditor.Instance) {
-                judgePoint.getChildByName("JudgePointSprite").on("click", () => ChartEditor.Instance.selectJudgePoint(judgePoint.getComponent(JudgePoint)), ChartEditor.Instance);
+                judgePoint.getChildByName("JudgePointSprite").on("click", () => ChartEditor.Instance.selectJudgePoint(judgePoint.getComponent(EditorJudgePoint)), ChartEditor.Instance);
             }
             this._pool.push(judgePoint);
             

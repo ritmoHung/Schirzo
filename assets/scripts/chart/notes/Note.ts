@@ -23,7 +23,9 @@ export abstract class Note extends Component {
     protected speed: number
     protected isJudged: number
 
-
+    public get noteTime() {
+        return this.time;
+    }
     
     // # Lifecycle
     onLoad() {

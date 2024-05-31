@@ -25,7 +25,6 @@ export class JudgePoint extends Component {
     protected lastEventIndexes: { [key: string]: number } = {}
 
 
-
     // # Lifecycle
     onLoad() {
         this.resolution = view.getDesignResolutionSize();
@@ -75,7 +74,6 @@ export class JudgePoint extends Component {
     // # Functions
     // Initialization
     initialize(data: any) {
-        console.log(data);
         this.isInvisible = data.isInvisible || false;
 
         this.notes = data.noteList || [];

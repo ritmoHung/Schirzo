@@ -7,6 +7,11 @@ export interface ChartData {
     audio: AudioClip
 }
 
+export interface CustomSongData {
+    name: string,
+    author: string
+}
+
 export module FirebaseManager {
     export async function loadChartFromFirebaseStorage(type: "vanilla" | "custom", name: string, onComplete: ({ chart, audio }: ChartData) => void) {
         const chartRef = firebase.storage().ref(`songs/${type}/${name}`);
@@ -29,5 +34,13 @@ export module FirebaseManager {
             }
             onComplete(chart);
         })
+    }
+
+    export function readCustomSongs(onComplete: (songs: CustomSongData[]) => void) {
+        firebase.database().ref("songs/custom").on("value", (snapshot) => {
+            const list: CustomSongData[] = []
+            snapshot.forEach((child) => list.push(child.val()));
+            onComplete(list);
+        });
     }
 }

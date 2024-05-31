@@ -1,10 +1,14 @@
-import { _decorator, assetManager, AudioClip, Button, Color, Component, EditBox, EventMouse, Input, input, Label, Node, rect, Tween, tween, v2, v3, view } from 'cc';
+import { _decorator, assetManager, AudioClip, Button, clamp, Color, Component, EditBox, EventMouse, Input, input, instantiate, Label, Node, rect, Size, Tween, tween, v2, v3, view } from 'cc';
 import { ChartPlayer } from '../chart/ChartPlayer';
 import { NumericInput } from './input/NumericInput';
 import { Toggles } from './input/Toggles';
 import { Chart } from '../lib/Chart';
 import { JudgePoint } from '../chart/JudgePoint';
 import { MeasureLinePool } from './MeasureLinePool';
+import { Note } from '../chart/notes/Note';
+import { EventProperties } from './EventProperties';
+import { NoteProperties } from './NoteProperties';
+import { EditorJudgePoint } from './EditorJudgePoint';
 const { ccclass, property } = _decorator;
 
 @ccclass('ChartEditor')
@@ -27,12 +31,12 @@ export class ChartEditor extends Component {
     musicNameLabel: Label = null;
     @property(Label)
     musicProgressLabel: Label = null;
-    
+
     @property(Node)
     musicNotImportedNode: Node = null;
     @property(Node)
     musicImportedNode: Node = null;
-    
+
     @property(EditBox)
     bpmEditbox: EditBox = null;
     @property(EditBox)
@@ -52,26 +56,35 @@ export class ChartEditor extends Component {
     @property(NumericInput)
     editTargetInput: NumericInput = null;
 
-    @property(Node)
-    notePropertiesCtrl: Node = null;
-    @property(Node)
-    eventPropertiesCtrl: Node = null;
+    @property(NoteProperties)
+    noteProperties: NoteProperties = null;
+    @property(EventProperties)
+    eventProperties: EventProperties = null;
+
+    public selectedJudgePoint: EditorJudgePoint = null;
 
     bpm: number = 0;
     bpb: number = 0;
     duration: number = 0;
 
-    public selectedJudgePoint: JudgePoint = null;
+    private previewNote: Node = null;
+    private isHovering: boolean;
+    private currentHoverY: number;
+    private currentHoverTime: [number, number];
+    private holdStart = false;
+
+    private resolution: Size;
+
+    private chartData: Record<string, any>;
 
     private static instance: ChartEditor = null;
-
     public static get Instance(): ChartEditor {
         return this.instance;
     }
 
     onLoad() {
         ChartEditor.instance = this;
-        this.clearData();
+        this.resolution = view.getDesignResolutionSize();
         this.updateMusicProps();
         this.renewButton.node.on("click", this.clearData, this);
         this.saveButton.node.on("click", this.saveChart, this);
@@ -84,7 +97,11 @@ export class ChartEditor extends Component {
         this.bpbEditbox.node.on("change", (value) => this.bpb = Number.parseInt(value), this);
         this.durationEditbox.node.on("change", (value) => this.duration = Number.parseInt(value), this);
     }
-    
+
+    start() {
+        this.clearData();
+    }
+
     onDestroy() {
         ChartEditor.instance = null;
     }
@@ -103,17 +120,69 @@ export class ChartEditor extends Component {
         }
     }
 
+    // Note
+    public set hoverTime(time: [number, number]) {
+        this.currentHoverTime = time;
+        this.isHovering = true;
+    }
+
+    public set hoverY(y: number) {
+        this.currentHoverY = y;
+    }
+
+    public get hoverY() {
+        return this.currentHoverY;
+    }
+
+    public endMeasureLineHover() {
+        this.isHovering = false;
+        this.previewNote.active = false;
+    }
+
+    public get isPreviewNodeExists() {
+        return this.previewNote != null;
+    }
+
+    updatePreviewNote() {
+        if (this.previewNote) {
+            this.previewNote.destroy();
+        }
+        if (this.selectedJudgePoint) {
+            this.previewNote = instantiate(ChartPlayer.Instance[`${this.noteProperties.noteTypeInput.string}NotePrefab`]);
+            this.previewNote.getComponents(Component).find((component) => component instanceof Note).enabled = false;
+            this.previewNote.position = v3(this.selectedJudgePoint.node.position.x - this.resolution.width / 2, (this.isHovering) ? this.hoverY - this.resolution.height / 2 : -100);
+            this.node.addChild(this.previewNote);
+        }
+    }
+
+    updatePreviewNotePosition(y: number) {
+        if (this.selectedJudgePoint && this.previewNote) {
+            this.isHovering = true;
+            this.previewNote.active = true;
+            this.previewNote.position = v3(this.selectedJudgePoint.node.position.x - this.resolution.width / 2, clamp(y, this.selectedJudgePoint.node.position.y, this.resolution.height) - this.resolution.height / 2);
+            this.hoverY = y;
+        }
+    }
+
+    addNote(time: [number, number]) {
+        ChartPlayer.Instance.judgePointPool.pool[this.selectedJudgePoint.index].getComponent(EditorJudgePoint).createNote({
+            "type": this.noteProperties.noteTypeInput.index,
+            "direction": 1,
+            "time": time
+        });
+    }
+
     // Judge point selection
-    selectJudgePoint(object: JudgePoint) {
+    selectJudgePoint(object: EditorJudgePoint) {
         this.selectedJudgePoint = object;
         this.updateJudgePointProps();
         for (const sprite of ChartPlayer.Instance.judgePointPool.sprites) {
             if (sprite.node.parent.uuid == object.node.uuid) {
                 sprite.color = new Color("#FFFFFF");
-                tween(sprite.node).to(0.1, {scale: v3(1.1, 1.1, 1)}, {easing: "sineInOut"}).start();
+                tween(sprite.node).to(0.1, { scale: v3(1.1, 1.1, 1) }, { easing: "sineInOut" }).start();
             } else {
                 sprite.color = new Color("#999999");
-                tween(sprite.node).stop().to(0.1, {scale: v3(1, 1, 1)}, {easing: "sineInOut"}).start();
+                tween(sprite.node).stop().to(0.1, { scale: v3(1, 1, 1) }, { easing: "sineInOut" }).start();
             }
         }
     }
@@ -127,16 +196,18 @@ export class ChartEditor extends Component {
         const count = Number.parseInt(value);
         const poolObj = ChartPlayer.Instance.judgePointPool;
         if (count > poolObj.pool.length) {
+            const size = view.getDesignResolutionSize();
             ChartPlayer.Instance.chartData.judgePointList.push(Chart.defaultJudgePoint);
             const node = ChartPlayer.Instance.judgePointPool.createJudgePoint(Chart.defaultJudgePoint);
-            const size = view.getDesignResolutionSize();
-            node.position = v3(0.2 + 0.15 * (count-1), 0.2).multiply3f(size.width, size.height, 0);
+            node.position = v3(0.2 + 0.15 * (count - 1), 0.2).multiply3f(size.width, size.height, 0);
+            node.getComponent(EditorJudgePoint).index = count - 1;
         } else if (count < poolObj.pool.length) {
             ChartPlayer.Instance.chartData.judgePointList.pop();
-            
+
             const removedNode = ChartPlayer.Instance.judgePointPool.popJudgePoint();
             if (this.selectedJudgePoint && this.selectedJudgePoint.node.uuid == removedNode.uuid) {
                 this.selectedJudgePoint = null;
+                this.endMeasureLineHover();
             }
             removedNode.destroy();
         }
@@ -145,11 +216,11 @@ export class ChartEditor extends Component {
 
     propsUpdate(value: string) {
         if (value == "note") {
-            this.eventPropertiesCtrl.active = false;
-            this.notePropertiesCtrl.active = true;
+            this.eventProperties.node.active = false;
+            this.noteProperties.node.active = true;
         } else if (value == "event") {
-            this.notePropertiesCtrl.active = false;
-            this.eventPropertiesCtrl.active = true;
+            this.noteProperties.node.active = false;
+            this.eventProperties.node.active = true;
 
         }
     }
@@ -158,12 +229,14 @@ export class ChartEditor extends Component {
         ChartPlayer.Instance.chartData = Chart.defaultJson;
         ChartPlayer.Instance.clearData();
         this.musicNameLabel.string = "";
+        MeasureLinePool.Instance.clear();
+        if (this.previewNote) this.previewNote.destroy();
     }
 
     saveChart() {
-        
+
     }
-    
+
     importChart() {
         let input = document.createElement("input");
         input.setAttribute("type", "file");
@@ -181,7 +254,7 @@ export class ChartEditor extends Component {
         })
         input.click();
     }
-    
+
     importMusic() {
         let input = document.createElement("input");
         input.setAttribute("type", "file");
@@ -209,13 +282,10 @@ export class ChartEditor extends Component {
     updateMusicProgress() {
         if (!ChartPlayer.Instance.audioSource.clip) {
             this.musicProgressLabel.string = "no Music"
+        } else if (!this.isHovering) {
+            this.musicProgressLabel.string = "not hoVering"
         } else {
-            const [bar, beat] = ChartPlayer.Instance.convertToChartTime(ChartPlayer.Instance.getGlobalTime());
-            if (bar == -1 && beat == -1) {
-                this.musicProgressLabel.string = `The End`
-            } else {
-                this.musicProgressLabel.string = ` bar ${bar}, beAt ${beat}`
-            }
+            this.musicProgressLabel.string = ` bar ${this.currentHoverTime[0]}, beAt ${Math.floor(this.currentHoverTime[1] / ChartPlayer.Instance.UPB)}, uniT ${this.currentHoverTime[1] % ChartPlayer.Instance.UPB}/${ChartPlayer.Instance.UPB}`
         }
     }
 

@@ -15,6 +15,14 @@ export class NumericInput extends Component {
 
     private selectIdx: number = 0;
 
+    public get index() {
+        return this.selectIdx;
+    }
+
+    public get string() {
+        return this.values[this.selectIdx].toLowerCase();
+    }
+
     onLoad() {
         this.subButton.node.on("click", () => this.selectionChange(-1), this);
         this.addButton.node.on("click", () => this.selectionChange(1), this);

@@ -1,8 +1,8 @@
 import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
-@ccclass('NoteProperties')
-export class NoteProperties extends Component {
+@ccclass('EventProperties')
+export class EventProperties extends Component {
     start() {
 
     }
@@ -11,4 +11,5 @@ export class NoteProperties extends Component {
         
     }
 }
-
+
+

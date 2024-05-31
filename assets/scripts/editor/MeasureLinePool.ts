@@ -34,6 +34,12 @@ export class MeasureLinePool extends Component {
         input.on(Input.EventType.MOUSE_WHEEL, (event) => this.scroll(event.getScrollY() * 0.25), this);
     }
 
+    clear() {
+        for (const node of this._pool) {
+            node.node.destroy();
+        }
+    }
+
     scroll(speed: number) {
         const UPBar = ChartPlayer.Instance.UPB * ChartEditor.Instance.bpb;
         this.currentTime[1] += speed;
@@ -48,7 +54,6 @@ export class MeasureLinePool extends Component {
             this.currentTime[0]++;
             this.currentTime[1] -= UPBar;
         }
-        console.log(this.currentTime);
     }
 
     update(dt: number) {
@@ -82,9 +87,11 @@ export class MeasureLinePool extends Component {
         this._pool.forEach((measureLine) => {
             if (measureLine.unitIndex < split) {
                 measureLine.enabled = true;
+                measureLine.on();
                 measureLine.time = [measureLine.time[0], measureLine.time[1] - measureLine.time[1] % ChartPlayer.Instance.UPB + ChartPlayer.Instance.UPB * measureLine.unitIndex / split];
             } else {
                 measureLine.enabled = false;
+                measureLine.off();
                 measureLine.opacity.opacity = 0;
             }
         })
