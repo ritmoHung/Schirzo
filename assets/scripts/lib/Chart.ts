@@ -31,4 +31,8 @@ export module Chart {
             ]
         }
     }
+
+    export function timeInRange([targetBar, targetUnit], [startBar, startUnit], [endBar, endUnit]) {
+        return (startBar < targetBar || startBar == targetBar && startUnit <= targetUnit) && (targetBar < endBar || targetBar == endBar && targetUnit < endBar);
+    }
 }

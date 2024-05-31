@@ -61,10 +61,6 @@ export class MeasureLinePool extends Component {
         this.topViewTime = [this.currentTime[0] + this.renderBarCount, this.currentTime[1]];
     }
 
-    timeInRange([targetBar, targetUnit], [startBar, startUnit], [endBar, endUnit]) {
-        return (startBar < targetBar || startBar == targetBar && startUnit <= targetUnit) && (targetBar < endBar || targetBar == endBar && targetUnit < endBar);
-    }
-
     initializePool() {
         const bpb = ChartEditor.Instance.bpb;
         this.resolution = view.getDesignResolutionSize();

@@ -10,6 +10,7 @@ import { MeasureLinePool } from "./MeasureLinePool";
 import { ChartEditor } from "./ChartEditor";
 import { NoteProperties } from "./NoteProperties";
 import { EditorHoldNote } from "../chart/notes/EditorHoldNote";
+import { Chart } from "../lib/Chart";
 
 const { ccclass, property } = _decorator;
 
@@ -66,7 +67,8 @@ export class EditorJudgePoint extends JudgePoint {
 
     hasNote(time: [number, number]) {
         for (const note of ChartEditor.Instance.chartData.judgePointList[ChartEditor.Instance.selectedJudgePoint.index].noteList) {
-            if (note.time[0] == time[0] && note.time[1] == time[1]) {
+            if (note.type == 3 && Chart.timeInRange(time, note.time, note.endTime)) {
+            } else if (note.time[0] == time[0] && note.time[1] == time[1]) {
                 return true;
             }
         }

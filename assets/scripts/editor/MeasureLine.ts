@@ -126,10 +126,12 @@ export class MeasureLine extends Component {
             this.sprite.color = new Color("#CCCCFF");
             if (ChartEditor.Instance.editTargetInput.string == "note") {
                 ChartEditor.Instance.hoverTime = this.time;
-                if (!ChartEditor.Instance.isPreviewNodeExists) {
-                    ChartEditor.Instance.updatePreviewNote();
+                if (!ChartEditor.Instance.holdSetting) {
+                    if (!ChartEditor.Instance.isPreviewNodeExists) {
+                        ChartEditor.Instance.updatePreviewNote();
+                    }
+                    ChartEditor.Instance.updatePreviewNotePosition(this.node.position.y);
                 }
-                ChartEditor.Instance.updatePreviewNotePosition(this.node.position.y);
             }
         }
     }
