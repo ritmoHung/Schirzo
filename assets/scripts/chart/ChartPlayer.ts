@@ -84,17 +84,18 @@ export class ChartPlayer extends Component {
 
     onLoad() {
         ChartPlayer.instance = this;
-        this.song = this.globalSettings.selectedSong
-            ? this.globalSettings.selectedSong
-            : { type: "vanilla", id: "miserable" }
-
         if (this.editing) {
             this.pauseButton.node.on("click", () => this.pauseMusic());
             this.startButton.node.on("click", () => this.startGame());
             this.restartButton.node.on("click", () => this.restartGame());
             this.audioSource.node.on("ended", this.onAudioEnded, this);
+            this.initializing = false;
             return;
         }
+        
+        this.song = this.globalSettings.selectedSong
+            ? this.globalSettings.selectedSong
+            : { type: "vanilla", id: "rip" }
         // Load song audio & chart
         FirebaseManager.loadChartFromFirebaseStorage(this.song.type, this.song.id, (chartData) => {
             this.loadChartFrom(chartData.chart);
@@ -160,6 +161,7 @@ export class ChartPlayer extends Component {
     }
 
     loadMusicFrom(clip: AudioClip) {
+        console.log(clip);
         if (!clip) {
             console.error("Failed to load music");
             return;
@@ -345,6 +347,11 @@ export class ChartPlayer extends Component {
         this.audioSource.stop();
         this.loadChartFrom(this._chartData);
         this.startGame();
+    }
+
+    stopGame() {
+        this.chartData = null;
+        this.judgePointPool.reset();
     }
 
     getGlobalTime() {

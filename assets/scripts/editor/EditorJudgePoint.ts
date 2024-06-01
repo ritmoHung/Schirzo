@@ -1,4 +1,4 @@
-import { _decorator, Button, EventMouse, instantiate, Node, UIOpacity, v3 } from "cc";
+import { _decorator, Button, EventMouse, Input, input, instantiate, Node, UIOpacity, v3 } from "cc";
 import { JudgePoint } from "../chart/JudgePoint";
 import { ClickNote } from "../chart/notes/ClickNote";
 import { KeyNote } from "../chart/notes/KeyNote";
@@ -53,10 +53,11 @@ export class EditorJudgePoint extends JudgePoint {
             }
             if (!noteComponent) continue;
             note.position = v3(0, MeasureLinePool.Instance.barHeight * (noteComponent.noteTime[0] - MeasureLinePool.Instance.currentTime[0] + (noteComponent.noteTime[1] - MeasureLinePool.Instance.currentTime[1]) / ChartPlayer.Instance.UPB / ChartEditor.Instance.bpb));
-            if (note.position.y < 0 || this.node.position.y > this.resolution.height * 0.75) {
-                note.active = false;
+            if (note.name == "EditorHoldNotePrefab") {
+                const holdNote = noteComponent as EditorHoldNote;
+                note.active = !(holdNote.endPos.y < 0 || holdNote.startPos.y > this.resolution.height * 0.75)
             } else {
-                note.active = true;
+                note.active = !(note.position.y < 0 || this.node.position.y > this.resolution.height * 0.75);
             }
         }
 
@@ -106,13 +107,13 @@ export class EditorJudgePoint extends JudgePoint {
 
         if (noteComponent) {
             noteComponent.initialize(noteData, this);
+            noteComponent.keydownListen = false;
             if (noteData.type == 3) {
                 ChartEditor.Instance.holdSetting = true;
                 this.holdNote = noteComponent as EditorHoldNote;
                 this.holdNote.updateEnd(noteData.time);
             } else {
                 ChartEditor.Instance.chartData.judgePointList[ChartEditor.Instance.selectedJudgePoint.index].noteList.push(noteData);
-                noteComponent.enabled = false;
             }
         }
         this.node.addChild(note);

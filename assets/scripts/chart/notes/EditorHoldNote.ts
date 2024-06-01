@@ -1,4 +1,4 @@
-import { _decorator, easing, EventKeyboard, Node } from "cc";
+import { _decorator, easing, EventKeyboard, Node, v3 } from "cc";
 import { JudgePoint } from "../JudgePoint";
 import { Note } from "./Note";
 import { ChartEditor } from "../../editor/ChartEditor";
@@ -19,6 +19,14 @@ export class EditorHoldNote extends Note {
 
     private startTime: [number, number]
     private endTime: [number, number]
+
+    get startPos() {
+        return v3(this.startSprite.position).add(this.node.position);
+    }
+
+    get endPos() {
+        return v3(this.endSprite.position).add(this.node.position);
+    }
 
     get note() {
         return {

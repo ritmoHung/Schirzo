@@ -1,4 +1,4 @@
-import { _decorator, Component, Event, EventKeyboard, Input, input, instantiate, Node, Prefab, Size, sp, systemEvent, view } from 'cc';
+import { _decorator, Component, Event, EventKeyboard, Input, input, instantiate, KeyCode, Node, Prefab, Size, sp, systemEvent, view } from 'cc';
 import { ChartEditor } from './ChartEditor';
 import { MeasureLine } from './MeasureLine';
 import { ChartPlayer } from '../chart/ChartPlayer';
@@ -18,9 +18,11 @@ export class MeasureLinePool extends Component {
     resolution: Size;
     barHeight: number;
     renderBarCount: number = 0; 
-    private _pool: MeasureLine[] = [];
-    private static instance: MeasureLinePool
 
+    private _pool: MeasureLine[] = [];
+    private keyHold: number = 0;
+
+    private static instance: MeasureLinePool;
     public get pool() {
         return this._pool;
     }
@@ -32,6 +34,9 @@ export class MeasureLinePool extends Component {
     onLoad() {
         MeasureLinePool.instance = this;
         input.on(Input.EventType.MOUSE_WHEEL, (event) => this.scroll(event.getScrollY() * 0.25), this);
+        input.on(Input.EventType.KEY_DOWN, this.scrollByKey, this);
+        input.on(Input.EventType.KEY_PRESSING, this.scrollByKey, this);
+        input.on(Input.EventType.KEY_UP, () => this.keyHold = 0, this);
     }
 
     clear() {
@@ -39,6 +44,16 @@ export class MeasureLinePool extends Component {
             node.node.destroy();
         }
         this._pool = [];
+    }
+
+    scrollByKey(event: EventKeyboard) {
+        this.keyHold++;
+        const speed = (this.keyHold > 16) ? 40 : (this.keyHold > 6) ? 20 : 10;
+        if (event.keyCode == KeyCode.KEY_W) {
+            this.scroll(speed);
+        } else if (event.keyCode == KeyCode.KEY_S) {
+            this.scroll(-speed);
+        }
     }
 
     scroll(speed: number) {
