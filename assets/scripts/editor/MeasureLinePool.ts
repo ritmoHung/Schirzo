@@ -46,9 +46,19 @@ export class MeasureLinePool extends Component {
         this._pool = [];
     }
 
+    pull() {
+        for (const node of this._pool) {
+            node.pull();
+        }
+    }
+
     scrollByKey(event: EventKeyboard) {
         this.keyHold++;
-        const speed = (this.keyHold > 16) ? 40 : (this.keyHold > 6) ? 20 : 10;
+        const speed = (this.keyHold > 48) ? 240 : (this.keyHold > 16) ? 40 : (this.keyHold > 6) ? 20 : 10;
+        if (speed == 240) {
+            this.pull();
+        }
+
         if (event.keyCode == KeyCode.KEY_W) {
             this.scroll(speed);
         } else if (event.keyCode == KeyCode.KEY_S) {
@@ -56,10 +66,13 @@ export class MeasureLinePool extends Component {
         }
     }
 
-    scroll(speed: number) {
+    scroll(unit: number) {
         const UPBar = ChartPlayer.Instance.UPB * ChartEditor.Instance.bpb;
-        this.currentTime[1] += speed;
-        if (this.currentTime[1] < 0) {
+        this.currentTime[1] += unit;
+        if (unit > 0 && this.currentTime[0] >= ChartEditor.Instance.endTime[0]) {
+            this.currentTime[1] -= unit;
+            return;
+        } else if (this.currentTime[1] < 0) {
             if (this.currentTime[0] == 0) {
                 this.currentTime[1] = 0;
             } else {
@@ -70,6 +83,7 @@ export class MeasureLinePool extends Component {
             this.currentTime[0]++;
             this.currentTime[1] -= UPBar;
         }
+        ChartEditor.Instance.updateMusicProgress(this.currentTime);
     }
 
     update(dt: number) {

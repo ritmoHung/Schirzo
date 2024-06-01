@@ -18,9 +18,7 @@ export class ChartEditor extends Component {
     @property(Button)
     renewButton: Button = null;
     @property(Button)
-    startButton: Button = null;
-    @property(Button)
-    restartButton: Button = null;
+    playButton: Button = null;
     @property(Label)
     startLabel: Label = null;
     @property(Button)
@@ -68,7 +66,7 @@ export class ChartEditor extends Component {
 
     @property(Prefab)
     editorHoldNotePrefab: Prefab = null;
-    
+
     @property(AudioSource)
     audioSource: AudioSource = null;
     @property(ProgressSlider)
@@ -87,6 +85,11 @@ export class ChartEditor extends Component {
     private isHovering: boolean;
     private currentHoverY: number;
     private currentHoverTime: [number, number];
+    private _endTime: [number, number];
+
+    public get endTime() {
+        return this._endTime;
+    }
 
     private resolution: Size
     private audioFile: File
@@ -101,6 +104,8 @@ export class ChartEditor extends Component {
         this.resolution = view.getDesignResolutionSize();
         this.judgePointPool = this.judgePointPoolNode.getComponent(JudgePointPool);
 
+        this.progressSlider.enabled = false;
+        this.playButton.interactable = false;
         this.updateMusicProps();
         this.renewButton.node.on("click", this.clearData, this);
         this.saveButton.node.on("click", this.saveChart, this);
@@ -210,7 +215,7 @@ export class ChartEditor extends Component {
         const count = Number.parseInt(value);
         if (count > this.judgePointPool.pool.length) {
             const size = view.getDesignResolutionSize();
-            const clone = structuredClone(Chart.distributedJudgePoint(count-1));
+            const clone = structuredClone(Chart.distributedJudgePoint(count - 1));
             this.chartData.judgePointList.push(clone);
             const node = this.judgePointPool.createJudgePoint(clone);
             node.position = v3(0.2 + 0.15 * (count - 1), 0.2).multiply3f(size.width, size.height, 0);
@@ -241,6 +246,8 @@ export class ChartEditor extends Component {
 
     clearData() {
         this.chartData = structuredClone(Chart.defaultJson);
+        this.progressSlider.enabled = false;
+        this.playButton.interactable = false;
         this.selectedJudgePoint = null;
         this.holdSetting = false;
         this.musicNameLabel.string = "";
@@ -261,7 +268,14 @@ export class ChartEditor extends Component {
     }
 
     saveChart() {
-        console.log(this.chartData);
+        const file = new File([JSON.stringify(this.publishChart())], "2.json", {type: "text/plain"});
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(file);
+        a.download = "2.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        console.log(this.publishChart());
     }
 
     importChart() {
@@ -299,17 +313,47 @@ export class ChartEditor extends Component {
                     MeasureLinePool.Instance.initializePool();
                     MeasureLinePool.Instance.rearrangePoolWithSplit(4);
                     ChartEditor.Instance.musicNameLabel.string = file.name;
+
+                    this.progressSlider.enabled = true;
+                    this.playButton.interactable = true;
+
+                    this.updateEndTime();
                 }
             })
         })
         input.click();
     }
 
-    updateMusicProgress(unit: number) {
-        const second = unit / ChartPlayer.Instance.UPB * 60 / this.bpm;
-        this.audioSource.stop();
-        this.audioSource.currentTime = second;
-        this.audioSource.play();
+    progressToTime(progress: number): [number, number] {
+        const time = progress * this.duration
+        const beats = Math.ceil(time * this.bpm / 60);
+        const bars = Math.floor(beats / this.bpb);
+        const units = (beats % this.bpb) * ChartPlayer.Instance.UPB;
+        return [bars, units];
+    }
+
+    updateEndTime() {
+        const beats = Math.ceil(this.duration * this.bpm / 60);
+        const bars = Math.floor(beats / this.bpb);
+        const units = (beats % this.bpb) * ChartPlayer.Instance.UPB;
+        this._endTime = [bars, units];
+    }
+
+    setEditorTimeByProgress(progress: number) {
+        const time = ChartEditor.Instance.progressToTime(progress);
+        MeasureLinePool.Instance.currentTime = time;
+        MeasureLinePool.Instance.pull();
+        this.updateMusicProgress(time);
+    }
+
+    updateMusicProgress(time: [number, number]) {
+        const second = (time[0] * this.bpb + time[1] / ChartPlayer.Instance.UPB) * 60 / this.bpm;
+        if (second > 0 && second < this.duration) {
+            this.audioSource.stop();
+            this.audioSource.currentTime = second;
+            this.audioSource.play();
+            this.progressSlider.updateProgress(second / this.duration);
+        }
     }
 
     updateBeatHoverLabel() {
@@ -349,16 +393,13 @@ export class ChartEditor extends Component {
     }
 
     publishChart() {
-        const beats = Math.ceil(this.duration * 60 / this.bpm);
-        const bars = Math.floor(beats / this.bpb);
-        const units = (beats % this.bpb) * ChartPlayer.Instance.UPB;
         return {
             ...this.chartData,
             bpm: [this.bpm, this.bpb, 4],
             bpmEvents: [
                 {
                     startTime: [0, 0],
-                    endTime: [bars, units],
+                    endTime: this.endTime,
                     bpm: [this.bpm, this.bpb, 4],
                 }
             ]

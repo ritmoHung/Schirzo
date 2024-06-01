@@ -1,5 +1,9 @@
 import { _decorator, Component, ProgressBar, Slider } from "cc";
 import { ChartPlayer } from "./ChartPlayer";
+import { EditStateManager } from "../editor/EditStateManager";
+import { ChartEditor } from "../editor/ChartEditor";
+import { MeasureLine } from "../editor/MeasureLine";
+import { MeasureLinePool } from "../editor/MeasureLinePool";
 const { ccclass, property } = _decorator;
 
 @ccclass("ProgressSlider")
@@ -25,15 +29,23 @@ export class ProgressSlider extends Component {
     }
 
     onSliderStart() {
-        this.chartPlayer.pauseMusic();
+        if (!EditStateManager.editing) {
+            this.chartPlayer.pauseMusic();
+        }
     }
 
     onSliderChange() {
-        this.chartPlayer.setGlobalTimeByProgress(this.slider.progress);
+        if (!EditStateManager.editing) {
+            this.chartPlayer.setGlobalTimeByProgress(this.slider.progress);
+        } else {
+            ChartEditor.Instance.setEditorTimeByProgress(this.slider.progress);
+        }
     }
 
     onSliderEnd() {
-        this.chartPlayer.resumeMusic();
+        if (!EditStateManager.editing) {
+            this.chartPlayer.resumeMusic();
+        }
     }
 
 

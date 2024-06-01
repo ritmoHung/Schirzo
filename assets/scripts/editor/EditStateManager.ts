@@ -17,6 +17,16 @@ export class EditStateManager extends Component {
     switchToPlayerButton: Button = null;
 
     currentEditing: boolean = true;
+
+    private static instance: EditStateManager = null;
+
+    public static get editing() {
+        return EditStateManager.instance ? EditStateManager.instance.currentEditing : false;
+    }
+
+    onLoad() {
+        EditStateManager.instance = this;
+    }
     
     start() {
         this.currentEditing = true;
