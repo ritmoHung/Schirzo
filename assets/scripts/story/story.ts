@@ -1,7 +1,8 @@
-import { _decorator, Component, Node, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, SpriteFrame, Sprite, Button, director, find } from 'cc';
 import Queue from './queue';
 
 const { ccclass, property } = _decorator;
+const { EventHandler } = cc;
 
 const maxLogNumber = 14;
 
@@ -55,7 +56,7 @@ export class Story extends Component {
     log14: Node = null;
 
     @property(SpriteFrame)
-    lockedSprite: SpriteFrame = null;
+    unlockedSprite: SpriteFrame = null;
 
     private edgeList: Edge[] = [];
     private adjacencyList: Map<number, number[]> = new Map();
@@ -63,7 +64,8 @@ export class Story extends Component {
     private prerequisites: number[] = [];
 
     onLoad(): void {
-        // initialize the graph
+        // Initialize the graph
+        this.initializeGraph();
     }
 
     start(): void {
@@ -71,22 +73,44 @@ export class Story extends Component {
             this.inDegree.set(edge.to, (this.inDegree.get(edge.to) || 0) + 1);
         });
         this.prerequisites = this.topologySort();
-    }
 
+        // Create and add EventHandler for back button
+        const backBtnEventHandler = new Component.EventHandler();
+        backBtnEventHandler.target = this.node;
+        backBtnEventHandler.component = 'Story';
+        backBtnEventHandler.handler = 'loadScene';
+
+        const backBtn = find('Canvas/back_btn').getComponent(Button);
+        backBtn.clickEvents.push(backBtnEventHandler);
+    }
+    
     update(deltaTime: number): void {
         this.fetchUnlockedLogs().then(unlockedNodes => {
             if (unlockedNodes) {
                 for (let node of this.prerequisites) {
                     if (this.canVisitNode(node, unlockedNodes)) {
-                        this[`log${node}`].active = true;
-                    } else {
-                        this[`log${node}`].active = false;
+                        const logNode = this.getLogNode(node);
+                        if (logNode) {
+                            logNode.active = true;
+                            // Optionally unlock node sprite here
+                            // this.unlock(node);
+                        }
                     }
                 }
             }
         }).catch(error => {
             console.error('Error in update:', error);
         });
+    }
+
+    unlock(index: number): void {
+        const logNode = this[`log${index}`];
+        if (logNode) {
+            const sprite = logNode.getComponent(Sprite);
+            if (sprite) {
+                sprite.spriteFrame = this.unlockedSprite;
+            }
+        }
     }
 
     async fetchUnlockedLogs(): Promise<number[]> {
@@ -102,14 +126,14 @@ export class Story extends Component {
                 userData.chapters.forEach(chapter => {
                     for (let i = 1; i <= maxLogNumber; i++) {
                         const logName = `log${i}_unlocked`;
-                        if (chapter.songs[0][logName]) {
-                            unlockedLogs.push(i);
-                        } else {
-                            break;
+                        for (let song of chapter.songs) {
+                            if (song[logName]) {
+                                unlockedLogs.push(i);
+                                break;
+                            }
                         }
                     }
                 });
-                console.log(unlockedLogs);
             }
 
             return unlockedLogs;
@@ -188,5 +212,19 @@ export class Story extends Component {
             }
         }
         return true;
+    }
+
+    private initializeGraph(): void {
+        // Add the edges here if necessary
+        // Example: this.addEdge(1, 2);
+    }
+
+    loadScene(): void {
+        //暫定intro
+        director.loadScene('intro');
+    }
+
+    private getLogNode(index: number): Node | null {
+        return this[`log${index}`] || null;
     }
 }
