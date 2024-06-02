@@ -149,12 +149,13 @@ export class Timeline extends Component {
                 data.push({
                     "startTime": prevTime,
                     "endTime": node.time,
-                    "easing": prevValue ? node.easingTypeInput.string : "constant",
+                    "easing": prevValue ? node.easingTypeInput.rawString : "constant",
                     "start": prevValue ?? node.value,
                     "end": node.value
                 });
                 prevTime = node.time;
                 prevValue = node.value;
+                
             }
             //data = data.sort((a, b) => a.startTime[0] > b.startTime[0] || a.startTime[0] == b.startTime[0] && a.startTime[1] > b.startTime[1] ? 1 : -1);
         }

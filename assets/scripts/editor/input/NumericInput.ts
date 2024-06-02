@@ -23,6 +23,10 @@ export class NumericInput extends Component {
         return this.values[this.selectIdx].toLowerCase();
     }
 
+    public get rawString() {
+        return this.values[this.selectIdx];
+    }
+
     public setString(value: string, defaultIndex = 0) {
         this.selectIdx = this.values.indexOf(value);
         if (this.selectIdx == -1) {
