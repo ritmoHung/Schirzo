@@ -23,21 +23,34 @@ export abstract class Note extends Component {
     protected speed: number
     protected isJudged: number
 
+    protected actKeydown: boolean = true;
 
-    
+    // Editor
+    public set keydownListen(value: boolean) {
+        this.actKeydown = value;
+    }
+
+    public get noteTime() {
+        return this.time;
+    }
+
     // # Lifecycle
     onLoad() {
-        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+        if (this.actKeydown) {
+            input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+        }
     }
 
     onDestroy() {
-        input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+        if (this.actKeydown) {
+            input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+        }
     }
 
     protected abstract onKeyDown(event: EventKeyboard): void;
 
     update(deltaTime: number) {
-        
+
     }
 
 
@@ -68,4 +81,3 @@ export abstract class Note extends Component {
         }
     }
 }
-

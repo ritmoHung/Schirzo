@@ -1,8 +1,9 @@
-import { _decorator, AudioClip, AudioSource, Button, Component, director, JsonAsset, Prefab, resources } from "cc";
+import { _decorator, AudioClip, AudioSource, Button, CCBoolean, Component, director, JsonAsset, Prefab, resources } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { JudgePointPool } from "./JudgePointPool";
 import { ProgressSlider } from "./ProgressSlider";
 import { ChartText } from "./ChartText";
+import { ChartEditor } from "../editor/ChartEditor";
 import { FirebaseManager } from "../lib/FirebaseManager";
 const { ccclass, property } = _decorator;
 
@@ -16,8 +17,8 @@ interface Event {
     startTime: [number, number] | number;
     endTime: [number, number] | number;
     easing: string;
-    start: number;
-    end: number;
+    start: number | [number, number];
+    end: number | [number, number];
 }
 
 interface JudgePoint {
@@ -50,7 +51,7 @@ export class ChartPlayer extends Component {
     audioSource: AudioSource | null = null
 
     @property(JudgePointPool)
-    judgePointPool: JudgePointPool
+    private judgePointPool: JudgePointPool
 
     @property(ProgressSlider)
     progressSlider: ProgressSlider
@@ -58,14 +59,18 @@ export class ChartPlayer extends Component {
     @property(ChartText)
     chartText: ChartText
 
+    @property(CCBoolean)
+    editing: boolean = false
+
     private static instance: ChartPlayer
     private song: any = {}
     private songDuration: number = 0
     private globalTime: number = 0
     private globalSettings: GlobalSettings
-    private UPB = 120  // Units per beat
+    UPB = 120  // Units per beat
 
     private initializing = true
+    private _chartData: Record<string, any>;
 
     // # Lifecycle
     constructor() {
@@ -79,10 +84,18 @@ export class ChartPlayer extends Component {
 
     onLoad() {
         ChartPlayer.instance = this;
+        if (this.editing) {
+            this.pauseButton.node.on("click", () => this.pauseMusic());
+            this.startButton.node.on("click", () => this.startGame());
+            this.restartButton.node.on("click", () => this.restartGame());
+            this.audioSource.node.on("ended", this.onAudioEnded, this);
+            this.initializing = false;
+            return;
+        }
+        
         this.song = this.globalSettings.selectedSong
             ? this.globalSettings.selectedSong
-            : { type: "vanilla", id: "tpvsshark" }
-
+            : { type: "vanilla", id: "rip" }
         // Load song audio & chart
         FirebaseManager.loadChartFromFirebaseStorage(this.song.type, this.song.id, (chartData) => {
             this.loadChartFrom(chartData.chart);
@@ -112,7 +125,7 @@ export class ChartPlayer extends Component {
 
     onAudioEnded() {
         console.log(`SONG::${this.song.id.toUpperCase()}: Ended`);
-        this.scheduleOnce(function() {
+        this.scheduleOnce(function () {
             director.loadScene("ResultScreen");
         }, 3);
     }
@@ -127,10 +140,10 @@ export class ChartPlayer extends Component {
     }
 
     onDestroy() {
-        this.audioSource.node.off("ended", this.onAudioEnded, this);
+        if (!ChartEditor.Instance) {
+            this.audioSource.node.off("ended", this.onAudioEnded, this);
+        }
     }
-
-
 
     // # Functions
     loadMusic() {
@@ -148,6 +161,7 @@ export class ChartPlayer extends Component {
     }
 
     loadMusicFrom(clip: AudioClip) {
+        console.log(clip);
         if (!clip) {
             console.error("Failed to load music");
             return;
@@ -156,6 +170,7 @@ export class ChartPlayer extends Component {
             this.audioSource.clip = clip;
             this.songDuration = clip.getDuration();
         }
+        return this.songDuration;
     }
 
     playMusic() {
@@ -171,7 +186,7 @@ export class ChartPlayer extends Component {
     }
 
     resumeMusic() {
-        if (this.audioSource) {
+        if (this.audioSource && !this.audioSource.playing) {
             this.audioSource.play();
         }
     }
@@ -218,6 +233,8 @@ export class ChartPlayer extends Component {
     }
 
     loadChartFrom(chart: Record<string, any>) {
+        this._chartData = chart;
+        
         this.judgePointPool.reset();
         if (!chart) {
             console.error("Failed to load chart.");
@@ -245,7 +262,7 @@ export class ChartPlayer extends Component {
         }
     }
 
-    convertJudgePointEvents(judgePoint: JudgePoint, bpmEvents: BPMEvent[]): JudgePoint {
+    convertJudgePointEvents(judgePoint: JudgePoint | any, bpmEvents: BPMEvent[]): JudgePoint {
         const convertEventTimings = (events: Event[]): Event[] =>
             events.map(event => ({
                 ...event,
@@ -260,7 +277,7 @@ export class ChartPlayer extends Component {
         const convertNoteTimings = (notes: any[]): any[] => {
             return notes.map(note => {
                 const convertedNote = {
-                    ...note, 
+                    ...note,
                     time: Array.isArray(note.time)
                         ? this.convertToSeconds(note.time, bpmEvents) + this.globalSettings.offset
                         : note.time + this.globalSettings.offset,
@@ -287,7 +304,7 @@ export class ChartPlayer extends Component {
         };
     }
 
-    convertToSeconds(barBeat: [number, number], bpmEvents: BPMEvent[]): number {
+    convertToSeconds(barBeat: [number, number], bpmEvents: BPMEvent[] = this.chartData.bpmEvents): number {
         const targetBar = barBeat[0];
         const targetBeat = barBeat[1] / this.UPB;
 
@@ -328,11 +345,24 @@ export class ChartPlayer extends Component {
 
     restartGame() {
         this.audioSource.stop();
-        this.loadChart();
+        this.loadChartFrom(this._chartData);
         this.startGame();
+    }
+
+    stopGame() {
+        this.chartData = null;
+        this.judgePointPool.reset();
     }
 
     getGlobalTime() {
         return this.globalTime;
+    }
+
+    public get chartData(): any {
+        return this._chartData;
+    }
+
+    public set chartData(chart: Record<string, any>) {
+        this._chartData = chart;
     }
 }

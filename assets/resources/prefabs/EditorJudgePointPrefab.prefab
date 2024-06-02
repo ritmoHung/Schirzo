@@ -1,7 +1,7 @@
 [
   {
     "__type__": "cc.Prefab",
-    "_name": "JudgePointPrefab",
+    "_name": "EditorJudgePointPrefab",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_native": "",
@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "JudgePointPrefab",
+    "_name": "EditorJudgePointPrefab",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": null,
@@ -312,7 +312,7 @@
     "fileId": "75aZu5HMFHgqZjs4r6p+79"
   },
   {
-    "__type__": "918d8XzOvFHea1sINpPxFAa",
+    "__type__": "3ca6dq4vb9KEr9CDvkoxmV4",
     "_name": "",
     "_objFlags": 0,
     "__editorExtras__": {},
@@ -327,7 +327,7 @@
   },
   {
     "__type__": "cc.CompPrefabInfo",
-    "fileId": "1cnEDKbrBE4JF4/3D/BjK4"
+    "fileId": "9dssJx/7BMA43vRnXH9AaA"
   },
   {
     "__type__": "cc.UIOpacity",

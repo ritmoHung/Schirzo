@@ -47,10 +47,10 @@ export class GlobalSettings {
         this._selectedChapterId = chapterId;
     }
 
-    get selectedSong(): any {
+    get selectedSong(): SelectedSong {
         return this._selectedSong;
     }
-    set selectedSong(song: any) {
+    set selectedSong(song: SelectedSong) {
         if (this.isValidSelectedSong(song)) {
             this._selectedSong = song;
         } else {
