@@ -23,6 +23,13 @@ export class NumericInput extends Component {
         return this.values[this.selectIdx].toLowerCase();
     }
 
+    public setString(value: string, defaultIndex = 0) {
+        this.selectIdx = this.values.indexOf(value);
+        if (this.selectIdx == -1) {
+            this.selectIdx = defaultIndex;
+        }
+    }
+
     public set interactable(value: boolean) {
         this.subButton.interactable = value;
         this.addButton.interactable = value;

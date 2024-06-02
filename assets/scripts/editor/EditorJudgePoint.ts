@@ -24,7 +24,7 @@ export class EditorJudgePoint extends JudgePoint {
 
         // Reset search indexes if time rewinds
         if (globalTime < this.lastGlobalTime) this.lastEventIndexes = {};
-
+        /*
         if (globalTime !== this.lastGlobalTime) {
             // Update NoteContainer position
             const offset = this.calculatePositionOffset(globalTime);
@@ -33,7 +33,7 @@ export class EditorJudgePoint extends JudgePoint {
 
             // Update last global time
             this.lastGlobalTime = globalTime;
-        }
+        }*/
 
         for (const note of this.node.children) {
             let noteComponent: Note;
@@ -67,7 +67,7 @@ export class EditorJudgePoint extends JudgePoint {
     }
 
     hasNote(time: [number, number]) {
-        for (const note of ChartEditor.Instance.chartData.judgePointList[ChartEditor.Instance.selectedJudgePoint.index].noteList) {
+        for (const note of ChartEditor.Instance.selectedJudgePointData.noteList) {
             if (note.type == 3 && Chart.timeInRange(time, note.time, note.endTime)) {
             } else if (note.time[0] == time[0] && note.time[1] == time[1]) {
                 return true;
@@ -79,7 +79,7 @@ export class EditorJudgePoint extends JudgePoint {
     createNote(noteData: any): Node {
         let note: Node, noteComponent: Note;
         if (this.holdNote) {
-            ChartEditor.Instance.chartData.judgePointList[ChartEditor.Instance.selectedJudgePoint.index].noteList.push(this.holdNote.note);
+            ChartEditor.Instance.selectedJudgePointData.noteList.push(this.holdNote.note);
             ChartEditor.Instance.holdSetting = false;
             this.holdNote.enabled = false;
             this.holdNote = null;
@@ -113,7 +113,7 @@ export class EditorJudgePoint extends JudgePoint {
                 this.holdNote = noteComponent as EditorHoldNote;
                 this.holdNote.updateEnd(noteData.time);
             } else {
-                ChartEditor.Instance.chartData.judgePointList[ChartEditor.Instance.selectedJudgePoint.index].noteList.push(noteData);
+                ChartEditor.Instance.selectedJudgePointData.noteList.push(noteData);
             }
         }
         this.node.addChild(note);
@@ -121,7 +121,7 @@ export class EditorJudgePoint extends JudgePoint {
     }
 
     removeNote(time: [number, number]) {
-        const list: Record<string, any>[] = ChartEditor.Instance.chartData.judgePointList[ChartEditor.Instance.selectedJudgePoint.index].noteList;
+        const list: Record<string, any>[] = ChartEditor.Instance.selectedJudgePointData.noteList;
         let i
         for (i = 0; i < list.length; i++) {
             if (list[i].time[0] == time[0] && list[i].time[1] == time[1]) {

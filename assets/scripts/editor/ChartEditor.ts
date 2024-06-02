@@ -9,6 +9,7 @@ import { EditorJudgePoint } from './EditorJudgePoint';
 import { ChartPlayer } from '../chart/ChartPlayer';
 import { JudgePointPool } from '../chart/JudgePointPool';
 import { ProgressSlider } from '../chart/ProgressSlider';
+import { TimelinePool } from './TimelinePool';
 const { ccclass, property } = _decorator;
 
 @ccclass('ChartEditor')
@@ -97,6 +98,10 @@ export class ChartEditor extends Component {
     private static instance: ChartEditor = null;
     public static get Instance(): ChartEditor {
         return this.instance;
+    }
+
+    public get selectedJudgePointData() {
+        return ChartEditor.Instance.selectedJudgePoint ? ChartEditor.Instance.chartData.judgePointList[ChartEditor.Instance.selectedJudgePoint.index] : null;
     }
 
     onLoad() {
@@ -197,8 +202,8 @@ export class ChartEditor extends Component {
 
     // Judge point selection
     selectJudgePoint(object: EditorJudgePoint) {
-        this.selectedJudgePoint = object;
         this.updateJudgePointProps();
+        TimelinePool.Instance.publishTimelines();
         for (const sprite of this.judgePointPool.sprites) {
             if (sprite.node.parent.uuid == object.node.uuid) {
                 sprite.color = new Color("#FFFFFF");
@@ -208,6 +213,8 @@ export class ChartEditor extends Component {
                 tween(sprite.node).stop().to(0.1, { scale: v3(1, 1, 1) }, { easing: "sineInOut" }).start();
             }
         }
+        this.selectedJudgePoint = object;
+        TimelinePool.Instance.loadTimelines(this.selectedJudgePointData);
     }
 
     // Control
@@ -272,6 +279,9 @@ export class ChartEditor extends Component {
     }
 
     saveChart() {
+        TimelinePool.Instance.publishTimelines();
+        TimelinePool.Instance.publishTextEvent();
+
         const file = new File([JSON.stringify(this.publishChart())], "2.json", {type: "text/plain"});
         const a = document.createElement("a");
         a.href = URL.createObjectURL(file);

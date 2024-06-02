@@ -1,4 +1,4 @@
-import { _decorator, Component, EditBox, Node } from 'cc';
+import { _decorator, Component, EditBox } from 'cc';
 import { NumericInput } from './input/NumericInput';
 import { ChartEditor } from './ChartEditor';
 const { ccclass, property } = _decorator;

@@ -1,4 +1,4 @@
-import { _decorator, Button, Component, EditBox, Node, tween, UIOpacity } from 'cc';
+import { _decorator, Button, Component, EditBox, tween, UIOpacity } from 'cc';
 import { ImportButton } from './ImportButton';
 import { FirebaseManager } from '../lib/FirebaseManager';
 const { ccclass, property } = _decorator;
@@ -30,7 +30,7 @@ export class PublishDialog extends Component {
     }
 
     publish() {
-        FirebaseManager.publishCustomSong({id: this.nameEditbox.string.toLowerCase().replace(" ", "").concat(), name: this.nameEditbox.string, artist: "test"}, this.chartFile.file, this.audioFile.file, (err) => {
+        FirebaseManager.publishCustomSong({ id: this.nameEditbox.string.toLowerCase().replace(" ", "").concat(), name: this.nameEditbox.string, artist: "test" }, this.chartFile.file, this.audioFile.file, (err) => {
             this.close();
         });
     }
@@ -40,11 +40,10 @@ export class PublishDialog extends Component {
         this.nameEditbox.string = "";
         this.chartFile.file = null;
         this.audioFile.file = null;
-        tween(this.opacity).to(0.15, {opacity: 0}).call(() => this.node.active = false).start();
+        tween(this.opacity).to(0.15, { opacity: 0 }).call(() => this.node.active = false).start();
     }
 
     updatePublishButton() {
-        console.log("test");
         this.publishButton.interactable = this.chartFile.file && this.audioFile.file && this.nameEditbox.string.length > 0;
     }
 }

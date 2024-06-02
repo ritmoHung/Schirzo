@@ -1,7 +1,7 @@
 import { _decorator, Button, Component, Node } from 'cc';
 import { ChartEditor } from './ChartEditor';
 import { ChartPlayer } from '../chart/ChartPlayer';
-import { Chart } from '../lib/Chart';
+import { TimelinePool } from './TimelinePool';
 const { ccclass, property } = _decorator;
 
 @ccclass('EditStateManager')
@@ -44,6 +44,9 @@ export class EditStateManager extends Component {
             ChartPlayer.Instance.stopGame();
             ChartPlayer.Instance.node.active = false;
         } else {
+            TimelinePool.Instance.publishTimelines();
+            TimelinePool.Instance.publishTextEvent();
+
             ChartPlayer.Instance.node.active = true;
             ChartPlayer.Instance.loadChartFrom(ChartEditor.Instance.publishChart());
             ChartPlayer.Instance.loadMusicFrom(ChartEditor.Instance.audioSource.clip);

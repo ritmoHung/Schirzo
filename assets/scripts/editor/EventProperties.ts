@@ -1,15 +1,11 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Toggle } from 'cc';
+import { Toggles } from './input/Toggles';
 const { ccclass, property } = _decorator;
 
 @ccclass('EventProperties')
 export class EventProperties extends Component {
-    start() {
-
-    }
-
-    update(deltaTime: number) {
-        
-    }
+    @property(Toggles)
+    eventFilterToggle: Toggles = null;
 }
 
 

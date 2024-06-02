@@ -1,4 +1,4 @@
-import { _decorator, Component, Event, EventKeyboard, Input, input, instantiate, KeyCode, Node, Prefab, Size, sp, systemEvent, view } from 'cc';
+import { _decorator, Component, EventKeyboard, Input, input, instantiate, KeyCode, Prefab, Size, view } from 'cc';
 import { ChartEditor } from './ChartEditor';
 import { MeasureLine } from './MeasureLine';
 import { ChartPlayer } from '../chart/ChartPlayer';

@@ -1,9 +1,10 @@
-import { _decorator, BoxCollider, BoxCollider2D, Color, Component, EventMouse, Input, input, Label, Node, Prefab, rect, Sprite, UIOpacity, v3, Vec3, view } from 'cc';
+import { _decorator, Color, Component, EventMouse, Label, Node, Sprite, UIOpacity, v3 } from 'cc';
 import { ChartEditor } from './ChartEditor';
 import { MeasureLinePool } from './MeasureLinePool';
 import { ChartPlayer } from '../chart/ChartPlayer';
 import { JudgePoint } from '../chart/JudgePoint';
 import { EditorJudgePoint } from './EditorJudgePoint';
+import { TimelinePool } from './TimelinePool';
 const { ccclass, property } = _decorator;
 
 @ccclass('MeasureLine')
@@ -99,7 +100,7 @@ export class MeasureLine extends Component {
                 }
             }
         } else {
-            
+            TimelinePool.Instance.createNode(this.time, event.getButton() == 2);
         }
     }
 
@@ -157,6 +158,8 @@ export class MeasureLine extends Component {
                     }
                     ChartEditor.Instance.updatePreviewNotePosition(this.node.position.y);
                 }
+            } else {
+                ChartEditor.Instance.hoverTime = this.time;
             }
         }
     }
@@ -164,6 +167,7 @@ export class MeasureLine extends Component {
     hoverEnd() {
         if (this.opacity.opacity > 0) {
             this.hovering = false;
+            ChartEditor.Instance.hoverTime = undefined;
             this.sprite.node.scale = v3(1, 1);
             this.sprite.color = new Color("#FFFFFF");
             ChartEditor.Instance.endMeasureLineHover();

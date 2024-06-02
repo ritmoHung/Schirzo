@@ -19,6 +19,10 @@ export class Toggles extends Component {
     public get selectionArray() {
         return this.keys.filter((key) => this._map[key]);
     }
+
+    public get selectionIndex() {
+        return Object.assign({}, ...this.keys.map((key, index) => ({[index]: this._map[key]})));
+    }
     
     onLoad() {
         this._map = Object.assign({}, ...this.keys.map((key) => ({[key]: false})));

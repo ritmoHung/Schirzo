@@ -1,4 +1,4 @@
-import { assetManager, AudioClip, JsonAsset, ParticleSystem } from "cc"
+import { assetManager, AudioClip } from "cc"
 
 declare const firebase: any;
 
