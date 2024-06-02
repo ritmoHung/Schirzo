@@ -72,6 +72,8 @@ export class ChartEditor extends Component {
     audioSource: AudioSource = null;
     @property(ProgressSlider)
     progressSlider: ProgressSlider = null;
+    @property(Button)
+    musicControlButton: Button = null;
 
     public selectedJudgePoint: EditorJudgePoint = null;
 
@@ -112,6 +114,7 @@ export class ChartEditor extends Component {
         this.progressSlider.enabled = false;
         this.playButton.interactable = false;
         this.updateMusicProps();
+        this.musicControlButton.node.on("click", this.toggleMusic, this);
         this.backButton.node.on("click", this.back, this);
         this.renewButton.node.on("click", this.clearData, this);
         this.saveButton.node.on("click", this.saveChart, this);
@@ -140,6 +143,10 @@ export class ChartEditor extends Component {
         this.updateBeatHoverLabel();
         this.updateJudgePointProps();
         this.updateMusicProps();
+        if (this.audioSource && this.audioSource.playing) {
+            const progress = this.audioSource.currentTime / this.duration;
+            this.progressSlider.updateProgress(progress);
+        }
     }
 
     public togglePauseButton(pause: boolean) {
@@ -148,6 +155,25 @@ export class ChartEditor extends Component {
         } else {
             this.startLabel.string = "pAuse";
         }
+    }
+
+    toggleMusic() {
+        if (!this.audioSource || !this.audioSource.clip) return;
+        const label = this.musicControlButton.node.getChildByName("Label").getComponent(Label);
+        if (this.audioSource.playing) {
+            label.string = "▶";
+            this.audioSource.pause();
+        } else {
+            label.string = "| |";
+            this.audioSource.play();
+        }
+    }
+
+    playMusic() {
+        if (!this.audioSource || !this.audioSource.clip || !this.audioSource.playing) return;
+        const label = this.musicControlButton.node.getChildByName("Label").getComponent(Label);
+        label.string = "| |";
+        this.audioSource.play();
     }
 
     // Note
@@ -357,9 +383,10 @@ export class ChartEditor extends Component {
 
     setEditorTimeByProgress(progress: number) {
         const time = ChartEditor.Instance.progressToTime(progress);
+        this.updateMusicProgress(time);
+        if (!MeasureLinePool.Instance) return;
         MeasureLinePool.Instance.currentTime = time;
         MeasureLinePool.Instance.pull();
-        this.updateMusicProgress(time);
     }
 
     updateMusicProgress(time: [number, number]) {
@@ -367,7 +394,8 @@ export class ChartEditor extends Component {
         if (second > 0 && second < this.duration) {
             this.audioSource.stop();
             this.audioSource.currentTime = second;
-            this.audioSource.play();
+            this.playMusic();
+            console.log("test");
             this.progressSlider.updateProgress(second / this.duration);
         }
     }
@@ -385,6 +413,7 @@ export class ChartEditor extends Component {
     updateMusicProps() {
         if (this.audioSource.clip) {
             this.musicNotImportedNode.active = false;
+            this.musicControlButton.node.active = true;
             if (this.holdSetting) {
                 this.holdNoteNotFinishedNode.active = true;
                 this.musicImportedNode.active = false;
@@ -394,6 +423,7 @@ export class ChartEditor extends Component {
             }
         } else {
             this.musicNotImportedNode.active = true;
+            this.musicControlButton.node.active = false;
             this.musicImportedNode.active = false;
         }
     }

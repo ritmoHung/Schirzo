@@ -1,6 +1,5 @@
 import { _decorator, Component, instantiate, Node, Prefab, v2, v3 } from 'cc';
 import { Timeline } from './input/Timeline';
-import { TimelineNode } from './input/TimelineNode';
 import { ChartEditor } from './ChartEditor';
 import { Chart } from '../lib/Chart';
 import { MeasureLinePool } from './MeasureLinePool';

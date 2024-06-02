@@ -1,4 +1,4 @@
-import { _decorator, Button, Component, director, EditBox, instantiate, Node, Prefab, tween, UIOpacity } from 'cc';
+import { _decorator, Button, Component, director, EditBox, instantiate, Label, Node, Prefab, tween, UIOpacity } from 'cc';
 import { CustomSongData, FirebaseManager } from './lib/FirebaseManager';
 import { CustomSong } from './menu/CustomSong';
 import { NumericInput } from './editor/input/NumericInput';
@@ -27,6 +27,9 @@ export class CustomChart extends Component {
     @property(PublishDialog)
     publishDialog: PublishDialog = null;
 
+    @property(Label)
+    noCustomSongLabel: Label = null;
+
     songs: CustomSongData[] = [];
     searchedSongs: CustomSongData[] = [];
     songBlocks: CustomSong[] = [];
@@ -36,6 +39,7 @@ export class CustomChart extends Component {
     onLoad() {
         this.pageInput.interactable = false;
         this.pageInput.values = ["-"];
+        this.noCustomSongLabel.string = "loading...";
         this.backButton.node.on("click", this.back, this);
         this.editButton.node.on("click", this.edit, this);
         this.publishButton.node.on("click", this.publish, this);
@@ -63,6 +67,8 @@ export class CustomChart extends Component {
             console.log(songs);
             this.songs = songs;
             this.searchedSongs = songs;
+            this.noCustomSongLabel.string = "no chart data.";
+            this.noCustomSongLabel.node.active = songs.length == 0;
             this.pageInput.interactable = true;
             this.pageInput.values = [];
             for (let i = 1; i <= Math.ceil(songs.length / this.maxSongPerPage); i++) {

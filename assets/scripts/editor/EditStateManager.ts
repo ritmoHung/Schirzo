@@ -46,6 +46,7 @@ export class EditStateManager extends Component {
         } else {
             TimelinePool.Instance.publishTimelines();
             TimelinePool.Instance.publishTextEvent();
+            ChartEditor.Instance.audioSource.stop();
 
             ChartPlayer.Instance.node.active = true;
             ChartPlayer.Instance.loadChartFrom(ChartEditor.Instance.publishChart());
