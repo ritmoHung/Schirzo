@@ -40,6 +40,11 @@ export module FirebaseManager {
     export function loadCustomSongs(onComplete: (songs: CustomSongData[]) => void) {
         firebase.database().ref("custom_charts").on("value", (snapshot) => {
             const obj = snapshot.val();
+            console.log(obj);
+            if (!obj) {
+                onComplete([]);
+                return
+            }
             onComplete(Object.keys(obj).map((key) => obj[key]));
         });
     }
