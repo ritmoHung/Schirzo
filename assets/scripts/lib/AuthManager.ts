@@ -1,38 +1,35 @@
 declare const firebase: any;
 
 export module AuthManager {
-    export function checkLoginStatus(onUserLoggedIn: (user: firebase.User) => void, onUserLoggedOut: () => void) {
-        firebase.auth().onAuthStateChanged((user) => {
+    export function checkUserStatus(
+        onUserSignedIn: (user: firebase.User) => void,
+        onUserSignedOut: () => void
+    ) {
+        firebase.auth().onAuthStateChanged((user: firebase.User) => {
             if (user) {
-                console.log(`LOGGED IN AS: ${user}`);
-                onUserLoggedIn(user);
+                console.log(`LOGGED IN AS: ${user.displayName}`);
+                onUserSignedIn(user);
             } else {
-                console.log("NOT LOGGED IN");
-                onUserLoggedOut();
+                console.warn("NOT LOGGED IN");
+                onUserSignedOut();
             }
         })
     }
 
-    export async function showLoginRedirect() {
-        const provider = new firebase.auth.GoogleAuthProvider();
+    export async function signInRedirect(provider: firebase.auth.AuthProvider) {
         try {
             await firebase.auth().signInWithRedirect(provider);
         } catch (error) {
-            console.error('Error signing in:', error);
+            console.error("Error signing in:", error);
         }
     }
 
-   export async function handleRedirectResult(): Promise<firebase.User | null> {
-        try {
-            const result = await firebase.auth().getRedirectResult();
-            if (result.user) {
-                console.log('User signed in with redirect:', result.user);
-                return result.user;
-            }
-            return null;
-        } catch (error) {
-            console.error('Error handling redirect result:', error);
-            return null;
-        }
+    export async function signOut(): Promise<void> {
+        return firebase.auth().signOut().then(() => {
+            console.log(`SIGNED OUT`);
+        }).catch((error) => {
+            console.error("Error signing out:", error);
+            throw error;
+        })
     }
 }
