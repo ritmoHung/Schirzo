@@ -1,7 +1,8 @@
-import { _decorator, Button, Camera, Component, director, EventMouse, Input, input, Tween, tween, UIOpacity, Vec3 } from "cc";
+import { _decorator, Button, Camera, Component, director, EventMouse, Input, input, RichText, Tween, tween, UIOpacity, Vec3 } from "cc";
 import { AuthManager } from "./lib/AuthManager";
 import { DatabaseManager } from "./lib/DatabaseManager";
 import { GlobalSettings } from "./settings/GlobalSettings";
+import { LoaderCommon } from "./ui/loader/LoaderCommon";
 const { ccclass, property } = _decorator;
 
 @ccclass("Intro")
@@ -13,12 +14,22 @@ export class Intro extends Component {
     logoutButton: Button
 
     @property(UIOpacity)
+    uiOpacity: UIOpacity
+
+    @property(UIOpacity)
     subUIOpacity: UIOpacity
 
     @property(UIOpacity)
     coverUIOpacity: UIOpacity
 
+    @property(LoaderCommon)
+    loader: LoaderCommon
+
+    @property(RichText)
+    statusText: RichText
+
     private globalSettings: GlobalSettings
+    private isSignOutProcess: boolean = false;
     private blinkTween: Tween<any> = null
     private zPosition: number = 1000
 
@@ -35,6 +46,10 @@ export class Intro extends Component {
         tween(this.camera.node)
             .to(4, { position: new Vec3(0, 0, this.zPosition) }, { easing: "quartOut" })
             .call(() => {
+                tween(this.uiOpacity)
+                    .to(0.5, { opacity: 255 }, { easing: "smooth" })
+                    .start();
+
                 AuthManager.checkUserStatus(
                     (user) => this.onUserSignedIn(user),
                     () => this.onUserSignedOut()
@@ -48,22 +63,39 @@ export class Intro extends Component {
 
     // # Functions
     async onUserSignedIn(user: firebase.User) {
-        const userData = await DatabaseManager.getUserData(user.uid);
-        this.globalSettings.userData = userData ? userData : {};
+        const userData = await DatabaseManager.createUserData(user.uid);
+        this.globalSettings.userData = userData;
+
+        // Update loader status
+        this.loader.showStatus("success");
+        this.statusText.string = `useR: ${user.displayName}`;
         
+        // Attach on touch listener
         input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
         this.applySubtitleBlink();
     }
 
     async onUserSignedOut() {
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
-        AuthManager.signInRedirect(googleProvider);
+        // Update loader status
+        this.loader.showStatus("warning");
+        this.statusText.string = "Not logged in";
+
+        if (!this.isSignOutProcess) {
+            this.scheduleOnce(function() {
+                const googleProvider = new firebase.auth.GoogleAuthProvider();
+                AuthManager.signInRedirect(googleProvider);
+            }, 1);
+        }
     }
 
     async signOut() {
         try {
+            this.isSignOutProcess = true;
             await AuthManager.signOut();
+            this.globalSettings.userData = {};
+            director.loadScene(director.getScene().name);
         } catch (error) {
+            this.isSignOutProcess = false;
             console.error("SIGNOUT: Failed");
         }
     }
@@ -89,7 +121,9 @@ export class Intro extends Component {
 
                 cameraTween.start();
                 opacityTween.call(() => {
-                    this.loadScene();
+                    this.scheduleOnce(function() {
+                        this.loadScene();
+                    }, 2);
                 }).start();
             })
             .start();
