@@ -22,7 +22,7 @@ export class ChartEditor extends Component {
     @property(Label)
     startLabel: Label = null;
     @property(Button)
-    importChartButton: Button = null;
+    backButton: Button = null;
     @property(Button)
     importMusicButton: Button = null;
     @property(Label)
@@ -107,9 +107,9 @@ export class ChartEditor extends Component {
         this.progressSlider.enabled = false;
         this.playButton.interactable = false;
         this.updateMusicProps();
+        this.backButton.node.on("click", this.back, this);
         this.renewButton.node.on("click", this.clearData, this);
         this.saveButton.node.on("click", this.saveChart, this);
-        this.importChartButton.node.on("click", this.importChart, this);
         this.importMusicButton.node.on("click", this.importMusic, this);
         this.measureLineSplitInput.node.on("change", this.updateMeasureLineProps, this);
         this.judgePointInput.node.on("change", this.updateJudgePointPool, this);
@@ -117,6 +117,10 @@ export class ChartEditor extends Component {
         this.bpmEditbox.node.on("change", (value) => this.bpm = Number.parseInt(value), this);
         this.bpbEditbox.node.on("change", (value) => this.bpb = Number.parseInt(value), this);
         this.durationEditbox.node.on("change", (value) => this.duration = Number.parseInt(value), this);
+    }
+
+    back() {
+        // TODO: Back to menu scene
     }
 
     start() {
@@ -278,6 +282,7 @@ export class ChartEditor extends Component {
         console.log(this.publishChart());
     }
 
+/* 
     importChart() {
         let input = document.createElement("input");
         input.setAttribute("type", "file");
@@ -291,6 +296,7 @@ export class ChartEditor extends Component {
         })
         input.click();
     }
+*/
 
     importMusic() {
         let input = document.createElement("input");
