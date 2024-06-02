@@ -1,4 +1,4 @@
-import { _decorator, Color, Component, EventMouse, Label, Node, Sprite, UIOpacity, v3 } from 'cc';
+import { _decorator, Color, Component, EventMouse, Input, input, Label, Node, Sprite, UIOpacity, v3 } from 'cc';
 import { ChartEditor } from './ChartEditor';
 import { MeasureLinePool } from './MeasureLinePool';
 import { ChartPlayer } from '../chart/ChartPlayer';

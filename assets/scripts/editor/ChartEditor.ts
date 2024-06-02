@@ -1,4 +1,4 @@
-import { _decorator, assetManager, AudioClip, AudioSource, Button, clamp, Color, Component, EditBox, instantiate, Label, Node, Prefab, Size, tween, v3, view } from 'cc';
+import { _decorator, assetManager, AudioClip, AudioSource, Button, clamp, Color, Component, EditBox, input, Input, instantiate, Label, Node, Prefab, Size, tween, v3, view } from 'cc';
 import { NumericInput } from './input/NumericInput';
 import { Chart } from '../lib/Chart';
 import { MeasureLinePool } from './MeasureLinePool';

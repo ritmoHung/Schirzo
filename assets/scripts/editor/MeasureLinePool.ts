@@ -1,4 +1,4 @@
-import { _decorator, Component, EventKeyboard, Input, input, instantiate, KeyCode, Prefab, Size, view } from 'cc';
+import { _decorator, Component, EventKeyboard, Input, input, instantiate, KeyCode, Node, Prefab, Size, view } from 'cc';
 import { ChartEditor } from './ChartEditor';
 import { MeasureLine } from './MeasureLine';
 import { ChartPlayer } from '../chart/ChartPlayer';
@@ -8,6 +8,8 @@ const { ccclass, property } = _decorator;
 export class MeasureLinePool extends Component {
     public readonly measureLineBeatGap: number = 0.2
 
+    @property(Node)
+    scroller: Node = null;
     @property(Prefab)
     measureLinePrefab: Prefab = null;
 
@@ -67,6 +69,7 @@ export class MeasureLinePool extends Component {
     }
 
     scroll(unit: number) {
+        if (!ChartEditor.Instance.endTime) return
         const UPBar = ChartPlayer.Instance.UPB * ChartEditor.Instance.bpb;
         this.currentTime[1] += unit;
         if (unit > 0 && this.currentTime[0] >= ChartEditor.Instance.endTime[0]) {
