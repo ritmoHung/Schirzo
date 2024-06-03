@@ -77,6 +77,8 @@ export class ChartEditor extends Component {
 
     @property(UIOpacity)
     filter: UIOpacity = null;
+    @property(Node)
+    tutorialBox: Node = null;
 
     public selectedJudgePoint: EditorJudgePoint = null;
 
