@@ -1,4 +1,4 @@
-import { _decorator, assetManager, AudioClip, AudioSource, Button, clamp, Color, Component, EditBox, input, Input, instantiate, Label, Node, Prefab, Size, tween, v3, view } from 'cc';
+import { _decorator, assetManager, AudioClip, AudioSource, Button, clamp, Color, Component, director, EditBox, input, Input, instantiate, Label, Node, Prefab, Size, tween, UIOpacity, v3, view } from 'cc';
 import { NumericInput } from './input/NumericInput';
 import { Chart } from '../lib/Chart';
 import { MeasureLinePool } from './MeasureLinePool';
@@ -75,6 +75,9 @@ export class ChartEditor extends Component {
     @property(Button)
     musicControlButton: Button = null;
 
+    @property(UIOpacity)
+    filter: UIOpacity = null;
+
     public selectedJudgePoint: EditorJudgePoint = null;
 
     bpm: number = 0;
@@ -107,6 +110,9 @@ export class ChartEditor extends Component {
     }
 
     onLoad() {
+        this.filter.opacity = 255;
+        tween(this.filter).to(0.25, {opacity: 0}).start();
+
         ChartEditor.instance = this;
         this.resolution = view.getDesignResolutionSize();
         this.judgePointPool = this.judgePointPoolNode.getComponent(JudgePointPool);
@@ -125,10 +131,20 @@ export class ChartEditor extends Component {
         this.bpmEditbox.node.on("change", (value) => this.bpm = Number.parseInt(value), this);
         this.bpbEditbox.node.on("change", (value) => this.bpb = Number.parseInt(value), this);
         this.durationEditbox.node.on("change", (value) => this.duration = Number.parseInt(value), this);
+
+        director.preloadScene("CustomChartSelect", (err) => {
+            if (err) {
+                console.log("SCENE::CUSTOMCHART: Failed");
+                return;
+            }
+            console.log("SCENE::CUSTOMCHART: Preloaded");
+        });
     }
 
     back() {
-        // TODO: Back to menu scene
+        this.filter.opacity = 0;
+        tween(this.filter).to(0.25, {opacity: 255}).start();
+        director.loadScene("CustomChartSelect");
     }
 
     start() {

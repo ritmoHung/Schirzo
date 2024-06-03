@@ -34,9 +34,14 @@ export class CustomChart extends Component {
     searchedSongs: CustomSongData[] = [];
     songBlocks: CustomSong[] = [];
 
+    @property(UIOpacity)
+    filter: UIOpacity = null;
+
     private readonly maxSongPerPage = 7;
 
     onLoad() {
+        this.filter.opacity = 255;
+        tween(this.filter).to(0.25, {opacity: 0}).start();
         this.pageInput.interactable = false;
         this.pageInput.values = ["-"];
         this.noCustomSongLabel.string = "loading...";
@@ -59,6 +64,14 @@ export class CustomChart extends Component {
                 return;
             }
             console.log("SCENE::CHARTPLAYER: Preloaded");
+        });
+        
+        director.preloadScene("ChartEditor", (err) => {
+            if (err) {
+                console.log("SCENE::CHARTEDITOR: Failed");
+                return;
+            }
+            console.log("SCENE::CHARTEDITOR: Preloaded");
         });
     }
 
@@ -112,6 +125,8 @@ export class CustomChart extends Component {
     }
 
     edit() {
+        this.filter.opacity = 0;
+        tween(this.filter).to(0.25, {opacity: 255}).start();
         director.loadScene("ChartEditor");
     }
     
