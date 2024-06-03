@@ -1,16 +1,16 @@
 {
-	"database": {
-		"rules": "database.rules.json"
-	},
-	"hosting": {
-		"public": "build/web-desktop",
-		"ignore": [
+    "database": {
+        "rules": "database.rules.json"
+    },
+    "hosting": {
+        "public": "build/web-desktop",
+        "ignore": [
             "firebase.json",
             "**/.*",
             "**/node_modules/**"
         ]
-	},
-	"storage": {
-		"rules": "storage.rules"
-	}
+    },
+    "storage": {
+        "rules": "storage.rules"
+    }
 }

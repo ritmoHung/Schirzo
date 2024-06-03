@@ -31,5 +31,9 @@ node_modules/
 # Materials
 materials/
 
-# .DS_Store
+# Others
 **/.DS_Store*
+**/*.docx
+**/*.pptx
+**/*.pdf
+**/*.pkf

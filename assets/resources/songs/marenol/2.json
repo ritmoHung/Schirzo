@@ -1,0 +1,104 @@
+{
+	"formatVersion": 1.1,
+	"offset": 0,
+	"bpm": [140.0, 4, 4],
+	"bpmEvents": [
+		{
+			"startTime": [0, 0],
+			"endTime": [87, 0],
+			"bpm": [140.0, 4, 4]
+		}
+	],
+	"judgePointList": [
+		{
+			"isInvisible": false,
+			"noteList": [
+				{
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 0]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 120]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 240]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 360]
+			    },
+				{
+			        "type": 0,
+			        "direction": 1,
+			        "time": [2, 0]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [2, 120]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [2, 240]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [2, 360]
+			    },
+				{
+			        "type": 0,
+			        "direction": 1,
+			        "time": [3, 0]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [3, 120]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [3, 240]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [3, 360]
+			    },
+				{
+			        "type": 0,
+			        "direction": 1,
+			        "time": [4, 0]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [4, 120]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [4, 240]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [4, 360]
+			    }
+			],
+			"speedEvents": [],
+			"positionEvents": [],
+			"rotateEvents": [],
+			"opacityEvents": []
+		}
+	],
+	"textEventList": []
+}

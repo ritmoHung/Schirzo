@@ -402,6 +402,9 @@
     "__prefab": {
       "__id__": 19
     },
+    "uiOpacity": {
+      "__id__": 20
+    },
     "sfx": {
       "__uuid__": "6c5a4436-703f-4c64-8310-3f13dfa4c88e",
       "__expectedType__": "cc.AudioClip"

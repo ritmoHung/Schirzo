@@ -1,0 +1,35 @@
+{
+	"id": "luna",
+	"index": 0,
+	"name": "Luna",
+	"songs": [
+		{
+			"id": "mopemope",
+			"index": 0
+		},
+		{
+			"id": "tpvsshark",
+			"index": 1
+		},
+		{
+			"id": "alephzero",
+			"index": 2
+		},
+		{
+			"id": "miserable",
+			"index": 3
+		},
+		{
+			"id": "marenol",
+			"index": 4
+		},
+		{
+			"id": "rip",
+			"index": 5
+		},
+		{
+			"id": "hopefortheflowers",
+			"index": 6
+		},
+	]
+}
