@@ -1,5 +1,5 @@
-import { _decorator, Button, Component, director, JsonAsset, Label, Node, resources } from "cc";
-import { GlobalSettings } from "./settings/GlobalSettings";
+import { _decorator, Button, Component, director, Label, Node } from "cc";
+import { GlobalSettings } from "../settings/GlobalSettings";
 const { ccclass, property } = _decorator;
 
 @ccclass("ChapterSelect")
@@ -29,18 +29,10 @@ export class ChapterSelect extends Component {
 
     // # Functions
     loadChapters() {
-        resources.loadDir("chapters", JsonAsset, (error, assets) => {
-            if (error) {
-                console.error(`CHAPTERS: Failed to load JSON, reason: ${error.message}`);
-                return;
-            }
-
-            const chapters = assets.map((asset: JsonAsset) => asset.json);
-            chapters.sort((a, b) => a.index - b.index);
-            chapters.forEach(chapterData => {
-                this.createChapterButton(chapterData);
-            });
-        })
+        this.globalSettings.chapters.sort((a, b) => a.index - b.index);
+        this.globalSettings.chapters.forEach(chapterData => {
+            this.createChapterButton(chapterData);
+        });
     }
 
     createChapterButton(chapterData: any) {

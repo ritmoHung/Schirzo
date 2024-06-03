@@ -1,7 +1,24 @@
 {
 	"id": "rip",
+	"chapter_id": "luna",
 	"name": "R.I.P.",
 	"artist": "eicateve",
 	"bpm": "192",
-	"default_unlocked": false
+	"default_unlocked": false,
+	"unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "marenol",
+			"required_score": 900000
+		},
+		{
+			"type": "chapter_status",
+			"chapter_id": "luna",
+			"required_status": 1
+		}
+	],
+	"log_ids": [
+		"luna-05-00",
+		"luna-05-01",
+	]
 }

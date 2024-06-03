@@ -1,0 +1,16 @@
+{
+	"id": "luna-05-01",
+	"contents": [
+		{
+			"type": "",
+			"content": ""
+		}
+	],
+	"unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "rip",
+			"required_score": 950000
+		}
+	]
+}

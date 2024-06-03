@@ -36,9 +36,15 @@ export class Intro extends Component {
 
 
     // # Lifecycle
-    onLoad() {
+    async onLoad() {
         this.globalSettings = GlobalSettings.getInstance();
         input.on(Input.EventType.MOUSE_MOVE, this.onMouseMove, this);
+
+        try {
+            await this.globalSettings.initialize();
+        } catch (error) {
+            console.error("Failed to initialize:", error);
+        }
     }
 
     start() {
@@ -92,7 +98,7 @@ export class Intro extends Component {
         try {
             this.isSignOutProcess = true;
             await AuthManager.signOut();
-            this.globalSettings.userData = {};
+            this.globalSettings.reset();
             director.loadScene(director.getScene().name);
         } catch (error) {
             this.isSignOutProcess = false;

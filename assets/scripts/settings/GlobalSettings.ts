@@ -1,9 +1,15 @@
+import { JsonAsset, resources } from "cc";
+import { UnlockManager } from "../lib/unlock/UnlockManager";
 import { SelectedSong } from "./song"
 
 export class GlobalSettings {
     private static instance: GlobalSettings
 
     // Game Logic
+    private _unlockManager: UnlockManager;
+    private _chapters: any[] = []
+    private _songs: any[] = []
+    private _logs: any[] = []
     private _selectedChapterId: string = ""
     private _selectedSong: SelectedSong
 
@@ -17,6 +23,7 @@ export class GlobalSettings {
     // # Constructor
     private constructor() {
         // Private constructor to prevent direct construction calls with the `new` operator.
+        this._unlockManager = new UnlockManager();
     }
 
     public static getInstance(): GlobalSettings {
@@ -29,17 +36,128 @@ export class GlobalSettings {
 
 
     // # Functions
-    public saveSettings() {
-        localStorage.setItem("flowSpeed", this.flowSpeed.toString());
-        localStorage.setItem("offset", this.offset.toString());
+    public async initialize(): Promise<void> {
+        try {
+            await this.loadChapters();
+            await this.loadSongs();
+            await this.loadLogMetadata();
+            this.initializeUnlocks();
+        } catch (error) {
+            console.log("Error initializing:", error);
+            throw error;
+        }
     }
 
-    public loadSettings() {
-        const flowSpeed = parseFloat(localStorage.getItem("flowSpeed") ?? "4.0");
-        const offset = parseInt(localStorage.getItem("offset") ?? "0", 10);
+    public reset(): void {
+        // Game Logic
+        this._unlockManager = new UnlockManager();
+        this._chapters = [];
+        this._songs = [];
+        this._logs = [];
+        this._selectedChapterId = "";
+        this._selectedSong = null;
 
-        this.flowSpeed = flowSpeed;
-        this.offset = offset;
+        // User Settings
+        this._userData = {};
+    }
+
+    // Game Logic
+    private async loadChapters(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            resources.loadDir("chapters", JsonAsset, (error, assets) => {
+                if (error) {
+                    console.error(`CHAPTERS: Failed to load JSON, reason: ${error.message}`);
+                    reject(error);
+                    return;
+                }
+
+                this._chapters = assets.map((asset: JsonAsset) => asset.json);
+                resolve();
+            });
+        })
+    }
+    get chapters(): any[] {
+        return this._chapters;
+    }
+
+    private async loadSongs(): Promise<void> {
+        const songIds = this.getSongsIdsByChapter(this._chapters);
+
+        const promises = songIds.map(songId => {
+            return new Promise<void>((resolve, reject) => {
+                const path = `songs/${songId}/info`;
+
+                resources.load(path, JsonAsset, (error, asset) => {
+                    if (error) {
+                        console.error(`SONG::${songId}: Failed to load JSON, reason: ${error.message}`);
+                        reject(error);
+                        return;
+                    }
+    
+                    this._songs.push(asset.json);
+                    resolve();
+                });
+            });
+        })
+
+        return Promise.all(promises).then(() => {
+            console.log("All song info JSONs loaded");
+        })
+    }
+    public getSongsIdsByChapter(chapters: any[]): string[] {
+        const songIds: string[] = [];
+        chapters.forEach(chapter => {
+            chapter.songs.forEach((song: any) => {
+                songIds.push(song.id);
+            });
+        });
+        return songIds;
+    }
+    get songs(): any[] {
+        return this._songs;
+    }
+
+    private async loadLogMetadata(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            resources.loadDir("logs", JsonAsset, (error, assets) => {
+                if (error) {
+                    console.error(`LOGS: Failed to load JSON, reason: ${error.message}`);
+                    reject(error);
+                    return;
+                }
+
+                this._logs = assets.map((asset: JsonAsset) => {
+                    const log = asset.json;
+                    const { contents, ...filteredLog } = log;
+                    return filteredLog;
+                });
+                resolve();
+            });
+        });
+    }
+    
+    public initializeUnlocks(): void {
+        this._songs.forEach(song => {
+            if (song && song.id && song.unlock_requirements) {
+                this._unlockManager.addUnlockTarget({
+                    id: song.id,
+                    type: "song",
+                    unlock_requirements: song.unlock_requirements
+                });
+            }
+        });
+        this._logs.forEach(log => {
+            if (log && log.id && log.unlock_requirements) {
+                this._unlockManager.addUnlockTarget({
+                    id: log.id,
+                    type: "log",
+                    unlock_requirements: log.unlock_requirements
+                });
+            }
+        });
+    }
+    get unlockManager(): UnlockManager {
+        return this._unlockManager;
     }
 
     // User Settings

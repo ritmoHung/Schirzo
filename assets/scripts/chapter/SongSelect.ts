@@ -1,11 +1,14 @@
 import { _decorator, Button, Component, director, JsonAsset, Label, Node, resources } from "cc";
-import { GlobalSettings } from "./settings/GlobalSettings";
+import { GlobalSettings } from "../settings/GlobalSettings";
 const { ccclass, property } = _decorator;
 
 @ccclass("SongSelect")
 export class SongSelect extends Component {
     @property(Node)
     songContainer: Node = null;
+
+    @property(Button)
+    logsButton: Button
 
     private globalSettings: GlobalSettings
 
@@ -15,6 +18,8 @@ export class SongSelect extends Component {
     onLoad() {
         this.globalSettings = GlobalSettings.getInstance();
         this.loadSongs(this.globalSettings.selectedChapterId);
+
+        this.logsButton.node.on(Button.EventType.CLICK, this.loadChapterLogsScene, this);
 
         director.preloadScene("ChartPlayer", (err) => {
             if (err) {
@@ -63,5 +68,9 @@ export class SongSelect extends Component {
             });
             this.songContainer.addChild(songButton);
         });
+    }
+
+    loadChapterLogsScene() {
+        director.loadScene("ChapterLogs");
     }
 }

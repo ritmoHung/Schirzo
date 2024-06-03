@@ -1,7 +1,12 @@
 {
 	"id": "tpvsshark",
+	"chapter_id": "luna",
 	"name": "T+ VS SHARK",
 	"artist": "t+pazolite",
 	"bpm": "200",
-	"default_unlocked": true
+	"default_unlocked": true,
+	"log_ids": [
+		"luna-01-00",
+		"luna-01-01",
+	]
 }
