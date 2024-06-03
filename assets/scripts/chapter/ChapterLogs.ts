@@ -21,6 +21,9 @@ export class ChapterLogs extends Component {
     closeLogButton: Button
 
     @property(SpriteFrame)
+    logLockedSprite: SpriteFrame
+
+    @property(SpriteFrame)
     logNoteSprite: SpriteFrame
 
     private globalSettings: GlobalSettings
@@ -42,11 +45,13 @@ export class ChapterLogs extends Component {
     loadLogs() {
         const selectedChapterId = this.globalSettings.selectedChapterId;
         const songs = this.globalSettings.songs.filter(song => song.chapter_id === selectedChapterId);
+        const logs = this.globalSettings.userData?.logs || {};
 
         songs.forEach(song => {
             if (song.log_ids && Array.isArray(song.log_ids)) {
                 song.log_ids.forEach((logId: string) => {
-                    this.createLogButton(logId);
+                    const unlocked = logs[`${logId}`] && logs[`${logId}`].unlocked;
+                    this.createLogButton(logId, unlocked);
                 })
             }
         });
@@ -54,16 +59,25 @@ export class ChapterLogs extends Component {
         this.logContainer.setPosition(new Vec3(0, 0, 0));
     }
 
-    createLogButton(logId: string) {
+    createLogButton(logId: string, unlocked: boolean) {
         const logButton = instantiate(this.buttonSquare);
         const buttonSquareComponent = logButton.getComponent(ButtonSquare);
-        buttonSquareComponent.iconSprite = this.logNoteSprite;
         buttonSquareComponent.labelText = logId.toUpperCase();
+        if (unlocked) {
+            buttonSquareComponent.iconSprite = this.logNoteSprite;
+        } else {
+            buttonSquareComponent.iconSprite = this.logLockedSprite;
+        }
 
         const buttonComponent = buttonSquareComponent.button;
-        buttonComponent.node.on(Button.EventType.CLICK, () => {
-            this.openLog(logId);
-        });
+        if (unlocked) {
+            buttonComponent.node.on(Button.EventType.CLICK, () => {
+                this.openLog(logId);
+            });
+        } else {
+            buttonComponent.enabled = false;
+        }
+
         this.logContainer.addChild(logButton);
     }
 
