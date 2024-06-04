@@ -1,9 +1,13 @@
 import { _decorator, Button, Component, director, Label, Node } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
+import { SceneTransition } from "../ui/SceneTransition";
 const { ccclass, property } = _decorator;
 
 @ccclass("ChapterSelect")
 export class ChapterSelect extends Component {
+    @property(SceneTransition)
+    sceneTransition: SceneTransition
+
     @property(Node)
     chapterContainer: Node = null;
 
@@ -15,14 +19,6 @@ export class ChapterSelect extends Component {
     onLoad() {
         this.globalSettings = GlobalSettings.getInstance();
         this.loadChapters();
-
-        director.preloadScene("SongSelect", (err) => {
-            if (err) {
-                console.log("SCENE::SONGSELECT: Failed");
-                return;
-            }
-            console.log("SCENE::SONGSELECT: Preloaded");
-        });
     }
 
 
@@ -43,7 +39,7 @@ export class ChapterSelect extends Component {
 
         buttonComponent.node.on(Button.EventType.CLICK, () => {
             this.globalSettings.selectedChapterId = chapterData.id;
-            director.loadScene("SongSelect");
+            this.sceneTransition.fadeOutAndLoadScene("SongSelect");
         });
         this.chapterContainer.addChild(chapterButton);
     }

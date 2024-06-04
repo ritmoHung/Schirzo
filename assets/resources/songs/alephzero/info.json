@@ -1,10 +1,13 @@
 {
 	"id": "alephzero",
-	"chapter_id": "luna",
 	"name": "Aleph-0",
 	"artist": "LeaF",
 	"bpm": "35~400",
 	"default_unlocked": false,
+	"chapter": {
+		"id": "luna",
+		"index": 2
+	},
 	"unlock_requirements": [
 		{
 			"type": "song_score",

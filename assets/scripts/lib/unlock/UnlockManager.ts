@@ -25,6 +25,7 @@ export class UnlockManager {
         const unlockedLogs: string[] = [];
 
         this.unlockTargets.forEach(target => {
+            console.log("TARGET: ", target);
             const alreadyUnlocked = userData[`${target.type}s`].some((item: any) => item.id === target.id && item.unlocked);
             
             if (!alreadyUnlocked) {

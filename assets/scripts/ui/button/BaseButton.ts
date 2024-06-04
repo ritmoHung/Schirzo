@@ -1,4 +1,5 @@
-import { _decorator, Button, Component, Node, tween, Vec3 } from "cc";
+import { _decorator, AudioClip, Button, Component, Node, tween, Vec3 } from "cc";
+import { GlobalSettings } from "../../settings/GlobalSettings";
 const { ccclass, property, executeInEditMode } = _decorator;
 
 @ccclass("BaseButton")
@@ -7,6 +8,10 @@ export class BaseButton extends Component {
     @property(Button)
     button: Button
 
+    @property(AudioClip)
+    sfx: AudioClip
+
+    private globalSettings: GlobalSettings
     private cursorClass: string = "cursor-pointer"
     private initialScale: Vec3 = new Vec3()
     private scaleFactor: number = 0.95
@@ -15,6 +20,7 @@ export class BaseButton extends Component {
 
     // # Lifecycle
     onLoad() {
+        this.globalSettings = GlobalSettings.getInstance();
         this.initialScale.set(this.node.scale);
 
         this.button.node.on(Node.EventType.MOUSE_ENTER, this.onMouseEnter, this);
@@ -47,6 +53,9 @@ export class BaseButton extends Component {
 
     onTouchStart() {
         this.scaleDown();
+        if (this.sfx) {
+            this.globalSettings.audioManager.playSFX(this.sfx);
+        }
     }
     onTouchEnd() {
         this.scaleUp();

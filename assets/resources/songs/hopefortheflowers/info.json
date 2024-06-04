@@ -1,10 +1,13 @@
 {
 	"id": "hopefortheflowers",
-	"chapter_id": "luna",
 	"name": "花たちに希望を",
 	"artist": "Sound piercer feat.DAZBEE",
 	"bpm": "187",
 	"default_unlocked": false,
+	"chapter": {
+		"id": "luna",
+		"index": 6
+	},
 	"unlock_requirements": [
 		{
 			"type": "song_score",

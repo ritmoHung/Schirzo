@@ -1,10 +1,13 @@
 {
 	"id": "rip",
-	"chapter_id": "luna",
 	"name": "R.I.P.",
 	"artist": "eicateve",
 	"bpm": "192",
 	"default_unlocked": false,
+	"chapter": {
+		"id": "luna",
+		"index": 5
+	},
 	"unlock_requirements": [
 		{
 			"type": "song_score",

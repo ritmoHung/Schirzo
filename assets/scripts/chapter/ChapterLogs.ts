@@ -1,10 +1,14 @@
 import { _decorator, Button, Component, director, instantiate, JsonAsset, Node, Prefab, resources, RichText, SpriteFrame, tween, UIOpacity, UITransform, Vec3 } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
+import { SceneTransition } from "../ui/SceneTransition";
 import { ButtonSquare } from "../ui/button/ButtonSquare";
 const { ccclass, property } = _decorator;
 
 @ccclass("ChapterLogs")
 export class ChapterLogs extends Component {
+    @property(SceneTransition)
+    sceneTransition: SceneTransition
+
     @property(Node)
     logContainer: Node
 
@@ -82,7 +86,7 @@ export class ChapterLogs extends Component {
     }
 
     loadPreviousScene() {
-        director.loadScene("SongSelect");
+        this.sceneTransition.fadeOutAndLoadScene("SongSelect");
     }
 
     openLog(logId: string) {

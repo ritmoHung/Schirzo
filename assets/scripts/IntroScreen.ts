@@ -1,4 +1,4 @@
-import { _decorator, Button, Camera, Component, director, EventMouse, Input, input, RichText, Tween, tween, UIOpacity, Vec3 } from "cc";
+import { _decorator, AudioClip, Button, Camera, Component, director, EventMouse, Input, input, RichText, Tween, tween, UIOpacity, Vec3 } from "cc";
 import { AuthManager } from "./lib/AuthManager";
 import { DatabaseManager } from "./lib/DatabaseManager";
 import { GlobalSettings } from "./settings/GlobalSettings";
@@ -9,6 +9,9 @@ const { ccclass, property } = _decorator;
 export class Intro extends Component {
     @property(Camera)
     camera: Camera
+
+    @property(AudioClip)
+    bgm: AudioClip
 
     @property(Button)
     logoutButton: Button
@@ -48,6 +51,7 @@ export class Intro extends Component {
     }
 
     start() {
+        this.playIntroBGM();
         this.camera.node.setPosition(new Vec3(0, 0, 0));
         tween(this.camera.node)
             .to(4, { position: new Vec3(0, 0, this.zPosition) }, { easing: "quartOut" })
@@ -133,8 +137,14 @@ export class Intro extends Component {
                 }).start();
             })
             .start();
+        this.globalSettings.audioManager.fadeOutBGM();
     }
 
+    playIntroBGM() {
+        // const chapterStatus = this.globalSettings.userData.chapters["luna"].chapter_status;
+        this.globalSettings.audioManager.playBGM(this.bgm);
+    }
+    
     loadScene() {
         const isNewPlayer = this.globalSettings.userData?.isNewPlayer;
         if (isNewPlayer) {

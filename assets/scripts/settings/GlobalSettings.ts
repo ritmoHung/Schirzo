@@ -1,4 +1,5 @@
 import { JsonAsset, resources } from "cc";
+import { AudioManager } from "./AudioManager";
 import { UnlockManager } from "../lib/unlock/UnlockManager";
 import { SelectedSong } from "./song"
 
@@ -6,6 +7,7 @@ export class GlobalSettings {
     private static instance: GlobalSettings
 
     // Game Logic
+    private _audioManager: AudioManager
     private _unlockManager: UnlockManager;
     private _chapters: any[] = []
     private _songs: any[] = []
@@ -23,6 +25,7 @@ export class GlobalSettings {
     // # Constructor
     private constructor() {
         // Private constructor to prevent direct construction calls with the `new` operator.
+        this._audioManager = new AudioManager();
         this._unlockManager = new UnlockManager();
     }
 
@@ -134,6 +137,10 @@ export class GlobalSettings {
                 resolve();
             });
         });
+    }
+    
+    get audioManager(): AudioManager {
+        return this._audioManager;
     }
     
     public initializeUnlocks(): void {

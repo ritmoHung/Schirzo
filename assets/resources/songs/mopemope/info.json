@@ -1,10 +1,13 @@
 {
 	"id": "mopemope",
-	"chapter_id": "luna",
 	"name": "もぺもぺ",
 	"artist": "LeaF",
 	"bpm": "100",
 	"default_unlocked": true,
+	"chapter": {
+		"id": "luna",
+		"index": 0
+	},
 	"log_ids": [
 		"luna-00-00",
 		"luna-00-01",

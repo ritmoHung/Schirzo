@@ -1,10 +1,13 @@
 {
 	"id": "miserable",
-	"chapter_id": "luna",
 	"name": "You are the Miserable",
 	"artist": "t+pazolite",
 	"bpm": "163",
 	"default_unlocked": false,
+	"chapter": {
+		"id": "luna",
+		"index": 3
+	},
 	"unlock_requirements": [
 		{
 			"type": "song_score",

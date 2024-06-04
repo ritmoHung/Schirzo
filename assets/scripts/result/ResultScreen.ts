@@ -1,29 +1,41 @@
-import { _decorator, Button, Component, director } from "cc";
+import { _decorator, Button, Component } from "cc";
+import { GlobalSettings } from "../settings/GlobalSettings";
+import { SceneTransition } from "../ui/SceneTransition";
 const { ccclass, property } = _decorator;
 
 @ccclass("ResultScreen")
 export class ResultScreen extends Component {
-    @property(Button)
-    retryButton: Button | null = null
+    @property(SceneTransition)
+    sceneTransition: SceneTransition
 
     @property(Button)
     backButton: Button | null = null
 
+    @property(Button)
+    retryButton: Button | null = null
+
+    private globalSettings: GlobalSettings
+
+
 
     // # Lifecycle
     onLoad() {
+        this.globalSettings = GlobalSettings.getInstance();
+
         this.retryButton.node.on("click", () => this.retry());
         this.backButton.node.on("click", () => this.back());
+
+        this.globalSettings.unlockManager.checkUnlocks();
     }
 
 
 
     // # Functions
     retry() {
-        director.loadScene("ChartPlayer");
+        this.sceneTransition.fadeOutAndLoadScene("ChartPlayer");
     }
 
     back() {
-        director.loadScene("SongSelect");
+        this.sceneTransition.fadeOutAndLoadScene("SongSelect");
     }
 }
