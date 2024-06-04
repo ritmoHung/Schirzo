@@ -25,8 +25,9 @@ export class UnlockManager {
         const unlockedLogs: string[] = [];
 
         this.unlockTargets.forEach(target => {
-            console.log("TARGET: ", target);
-            const alreadyUnlocked = userData[`${target.type}s`].some((item: any) => item.id === target.id && item.unlocked);
+            const items = userData[`${target.type}s`] || [];
+            const item = items[target.id];
+            const alreadyUnlocked = item && item.unlocked;
             
             if (!alreadyUnlocked) {
                 const isUnlocked = UnlockRequirement.allRequirementsMet(target.unlock_requirements, userData);

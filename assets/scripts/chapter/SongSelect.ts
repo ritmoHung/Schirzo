@@ -20,6 +20,12 @@ export class SongSelect extends Component {
     @property(RichText)
     songArtist: RichText
 
+    @property(RichText)
+    songScore: RichText
+
+    @property(RichText)
+    songAccuracy: RichText
+
     @property(Sprite)
     songJacket: Sprite
     @property(SpriteFrame)
@@ -67,6 +73,7 @@ export class SongSelect extends Component {
 
         // Key Down
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+        input.on(Input.EventType.KEY_PRESSING, this.onKeyDown, this);
 
         director.preloadScene("ChartPlayer", (err) => {
             if (err) {
@@ -155,26 +162,38 @@ export class SongSelect extends Component {
         const songData = this.songs[songIndex];
         const songUnlocked = this.isSongUnlocked(songData);
 
+        // Song Info
         this.songTitle.string = songUnlocked ? songData.name : this.getRandomString();
         this.songArtist.string = songUnlocked ? songData.artist : this.getRandomString();
 
+        // Song Scores
+        const songRecord = this.globalSettings.userData.songs[songData.id];
+        const score = songRecord?.score !== undefined ? songRecord.score.toString().padStart(6, "0") : "000000";
+        const accuracy = songRecord?.accuracy !== undefined ? songRecord.accuracy.toFixed(2) : "00.00";
+        this.songScore.string = score;
+        this.songAccuracy.string = `${accuracy}%`;
+
+        // Song Jacket & Preview Audio
+        let sprite: SpriteFrame;
         if (songUnlocked) {
-            const jacketSprite = await this.getSongJacket(songData.id);
+            sprite = await this.getSongJacket(songData.id);
+
             const previewClip = await this.getSongPreview(songData.id);
-            tween(this.songJacket.getComponent(UIOpacity))
+            this.globalSettings.audioManager.transitionBGM(previewClip);
+        } else {
+            sprite = this.jacketLockedSprite;
+
+            this.globalSettings.audioManager.fadeOutBGM(0.5);
+        }
+        tween(this.songJacket.getComponent(UIOpacity))
                 .to(0.15, { opacity: 0 }, { easing: "smooth"})
                 .call(() => {
-                    this.songJacket.spriteFrame = jacketSprite;
+                    this.songJacket.spriteFrame = sprite;
                     tween(this.songJacket.getComponent(UIOpacity))
                         .to(0.15, { opacity: 255 }, { easing: "smooth"})
                         .start();
                 })
                 .start();
-            this.globalSettings.audioManager.transitionBGM(previewClip);
-        } else {
-            this.songJacket.spriteFrame = this.jacketLockedSprite;
-            this.globalSettings.audioManager.fadeOutBGM(0.5);
-        }
     }
 
     getRandomString(): string {
@@ -223,6 +242,7 @@ export class SongSelect extends Component {
 
         if (songUnlocked) {
             this.globalSettings.selectedSong = { type: "vanilla", id: songData.id };
+            this.globalSettings.audioManager.fadeOutBGM(0.5);
             this.sceneTransition.fadeOutAndLoadScene("ChartPlayer");
         } else {
             // TODO: Do something

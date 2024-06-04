@@ -16,6 +16,7 @@ export class GlobalSettings {
     private _selectedSong: SelectedSong
 
     // User Settings
+    private _user: any = {}
     private _userData: any = {}
     public flowSpeed: number = 4.0
     public offset: number = 0.0
@@ -168,6 +169,13 @@ export class GlobalSettings {
     }
 
     // User Settings
+    get user(): any {
+        return this._user;
+    }
+    set user(u: firebase.User) {
+        this._user = u;
+    }
+
     get userData(): any {
         return this._userData;
     }

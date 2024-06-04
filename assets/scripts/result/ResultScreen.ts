@@ -1,5 +1,6 @@
 import { _decorator, Button, Component } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
+import { DatabaseManager } from "../lib/DatabaseManager";
 import { SceneTransition } from "../ui/SceneTransition";
 const { ccclass, property } = _decorator;
 
@@ -25,7 +26,26 @@ export class ResultScreen extends Component {
         this.retryButton.node.on("click", () => this.retry());
         this.backButton.node.on("click", () => this.back());
 
-        this.globalSettings.unlockManager.checkUnlocks();
+        const songId = this.globalSettings.selectedSong.id;
+        this.globalSettings.userData.songs[songId] = {
+            score: 1000000,
+            accuracy: 100.00,
+        };
+        const { songIds, logIds } = this.globalSettings.unlockManager.checkUnlocks();
+        songIds.forEach(songId => {
+            if (!this.globalSettings.userData.songs[songId]) {
+                this.globalSettings.userData.songs[songId] = {};
+            }
+            this.globalSettings.userData.songs[songId].unlocked = true;
+        });
+        
+        logIds.forEach(logId => {
+            if (!this.globalSettings.userData.logs[logId]) {
+                this.globalSettings.userData.logs[logId] = {};
+            }
+            this.globalSettings.userData.logs[logId].unlocked = true;
+        });
+        DatabaseManager.setUserData(this.globalSettings.user.uid, this.globalSettings.userData);
     }
 
 

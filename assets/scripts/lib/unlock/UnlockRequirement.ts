@@ -5,16 +5,21 @@ export namespace UnlockRequirement {
     }
 
     export function isRequirementMet(requirement: Requirement, data: any): boolean {
+        let chapters: any, songs: any;
         let chapter: any, song: any;
+
         switch (requirement.type) {
             case "song_score":
-                song = data.songs.find((s: any) => s.id === requirement.song_id);
+                songs = data.songs || [];
+                song = songs[requirement.song_id];
                 return song && song.score >= requirement.required_score;
             case "song_accuracy":
-                song = data.songs.find((s: any) => s.id === requirement.song_id);
+                songs = data.songs || [];
+                song = songs[requirement.song_id];
                 return song && song.accuracy >= requirement.required_accuracy;
             case "chapter_status":
-                chapter = data.chapters.find((c: any) => c.id === requirement.chapter_id);
+                chapters = data.chapters || [];
+                chapter = chapters[requirement.chapter_id];
                 return chapter && chapter.status >= requirement.required_status;
             default:
                 return false;

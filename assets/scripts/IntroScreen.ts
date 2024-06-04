@@ -16,11 +16,15 @@ export class Intro extends Component {
     @property(Button)
     logoutButton: Button
 
+    // UIOpacity
     @property(UIOpacity)
     uiOpacity: UIOpacity
 
     @property(UIOpacity)
-    subUIOpacity: UIOpacity
+    startUIOpacity: UIOpacity
+
+    @property(UIOpacity)
+    contUIOpacity: UIOpacity
 
     @property(UIOpacity)
     coverUIOpacity: UIOpacity
@@ -41,7 +45,7 @@ export class Intro extends Component {
     // # Lifecycle
     async onLoad() {
         this.globalSettings = GlobalSettings.getInstance();
-        input.on(Input.EventType.MOUSE_MOVE, this.onMouseMove, this);
+        this.applyBlink(this.startUIOpacity);
 
         try {
             await this.globalSettings.initialize();
@@ -51,6 +55,14 @@ export class Intro extends Component {
     }
 
     start() {
+        // input.on(Input.EventType.MOUSE_MOVE, this.onMouseMove, this);
+        input.on(Input.EventType.TOUCH_END, this.onStartTouchEnd, this);
+    }
+
+
+
+    // # Functions
+    startIntro() {
         this.playIntroBGM();
         this.camera.node.setPosition(new Vec3(0, 0, 0));
         tween(this.camera.node)
@@ -69,20 +81,27 @@ export class Intro extends Component {
             .start();
     }
 
-
-
-    // # Functions
     async onUserSignedIn(user: firebase.User) {
         const userData = await DatabaseManager.createUserData(user.uid);
+        this.globalSettings.user = user;
         this.globalSettings.userData = userData;
+        if (!this.globalSettings.userData.songs) {
+            this.globalSettings.userData.songs = {};
+        }
+        if (!this.globalSettings.userData.chapters) {
+            this.globalSettings.userData.chapters = {};
+        }
+        if (!this.globalSettings.userData.logs) {
+            this.globalSettings.userData.logs = {};
+        }
 
         // Update loader status
         this.loader.showStatus("success");
         this.statusText.string = `useR: ${user.displayName}`;
         
         // Attach on touch listener
-        input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
-        this.applySubtitleBlink();
+        input.on(Input.EventType.TOUCH_END, this.onContinueTouchEnd, this);
+        this.applyBlink(this.contUIOpacity);
     }
 
     async onUserSignedOut() {
@@ -113,15 +132,25 @@ export class Intro extends Component {
     onMouseMove(e: EventMouse) {
         // console.log(e.getLocation());
     }
-    
-    onTouchEnd() {
-        input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
 
-        if (this.blinkTween) {
-            this.blinkTween.stop();
-            this.blinkTween = null;
-        }
-        tween(this.subUIOpacity)
+    onStartTouchEnd() {
+        input.off(Input.EventType.TOUCH_END, this.onStartTouchEnd, this);
+        this.removeBlink();
+
+        tween(this.startUIOpacity)
+            .to(1.5, { opacity: 0 }, { easing: "smooth" })
+            .call(() => {
+                this.coverUIOpacity.opacity = 0;
+                this.startIntro();
+            })
+            .start();
+    }
+    
+    onContinueTouchEnd() {
+        input.off(Input.EventType.TOUCH_END, this.onContinueTouchEnd, this);
+        this.removeBlink();
+
+        tween(this.contUIOpacity)
             .to(0.25, { opacity: 0 }, { easing: "smooth" })
             .call(() => {
                 const cameraTween = tween(this.camera.node)
@@ -154,14 +183,21 @@ export class Intro extends Component {
         }
     }
 
-    applySubtitleBlink() {
-        this.subUIOpacity.opacity = 255;
-        this.blinkTween = tween(this.subUIOpacity)
-        .repeatForever(
-            tween()
-            .to(2, { opacity: 0 }, { easing: "smooth" })
-            .to(2, { opacity: 255 }, { easing: "smooth" })
-        )
+    applyBlink(uiOpacity: UIOpacity) {
+        uiOpacity.opacity = 255;
+        this.blinkTween = tween(uiOpacity)
+            .repeatForever(
+                tween()
+                .to(2, { opacity: 0 }, { easing: "smooth" })
+                .to(2, { opacity: 255 }, { easing: "smooth" })
+            )
         .start();
+    }
+
+    removeBlink() {
+        if (this.blinkTween) {
+            this.blinkTween.stop();
+            this.blinkTween = null;
+        }
     }
 }

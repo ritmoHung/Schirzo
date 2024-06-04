@@ -11,6 +11,11 @@
 	"unlock_requirements": [
 		{
 			"type": "song_score",
+			"song_id": "mopemope",
+			"required_score": 800000
+		},
+		{
+			"type": "song_score",
 			"song_id": "tpvsshark",
 			"required_score": 800000
 		}
