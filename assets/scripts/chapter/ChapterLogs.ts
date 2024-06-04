@@ -1,4 +1,4 @@
-import { _decorator, Button, Component, director, instantiate, JsonAsset, Node, Prefab, resources, RichText, SpriteFrame, tween, UIOpacity, UITransform, Vec3 } from "cc";
+import { _decorator, Button, Component, instantiate, JsonAsset, Node, Prefab, resources, RichText, SpriteFrame, tween, UIOpacity, UITransform, Vec3 } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { SceneTransition } from "../ui/SceneTransition";
 import { ButtonSquare } from "../ui/button/ButtonSquare";
@@ -47,9 +47,10 @@ export class ChapterLogs extends Component {
 
     // # Functions
     loadLogs() {
+        console.log("LOAD LOGS");
         const selectedChapterId = this.globalSettings.selectedChapterId;
-        const songs = this.globalSettings.songs.filter(song => song.chapter_id === selectedChapterId);
-        const logs = this.globalSettings.userData?.logs || {};
+        const songs = this.globalSettings.songs.filter(song => song.chapter.id === selectedChapterId);
+        const logs = this.globalSettings.userData.logs;
 
         songs.forEach(song => {
             if (song.log_ids && Array.isArray(song.log_ids)) {
