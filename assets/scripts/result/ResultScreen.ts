@@ -26,11 +26,17 @@ export class ResultScreen extends Component {
     // # Lifecycle
     onLoad() {
         this.globalSettings = GlobalSettings.getInstance();
+        const selectedSong = this.globalSettings.selectedSong;
 
-        this.retryButton.node.on("click", () => this.retry());
+        // Buttons
         this.backButton.node.on("click", () => this.back());
+        if (!selectedSong.anomaly) {
+            this.retryButton.node.on("click", () => this.retry());
+        } else{
+            this.retryButton.getComponentInChildren(Button).interactable = false;
+        }
 
-        const songId = this.globalSettings.selectedSong.id;
+        const songId = selectedSong.id;
         this.globalSettings.patchUserData({ key: "songs", id: songId, data: {
             score: 900000,
             accuracy: 100.00,

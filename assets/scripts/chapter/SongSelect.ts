@@ -1,4 +1,4 @@
-import { _decorator, AudioClip, Button, Component, director, EventKeyboard, Input, input, JsonAsset, KeyCode, Label, Node, resources, RichText, Sprite, SpriteFrame, tween, UIOpacity } from "cc";
+import { _decorator, AudioClip, Button, Component, director, EventKeyboard, Input, input, KeyCode, Node, resources, RichText, Sprite, SpriteFrame, tween, UIOpacity } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { SceneTransition } from "../ui/SceneTransition";
 import { BackgroundController } from "../ui/bg/BackgroundController";
