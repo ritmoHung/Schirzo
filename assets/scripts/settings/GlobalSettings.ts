@@ -63,6 +63,7 @@ export class GlobalSettings {
 
         // User Settings
         this._userData = {};
+        localStorage.clear();
     }
 
     // Game Logic
