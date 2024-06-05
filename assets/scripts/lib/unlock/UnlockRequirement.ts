@@ -17,10 +17,10 @@ export namespace UnlockRequirement {
                 songs = data.songs || [];
                 song = songs[requirement.song_id];
                 return song && song.accuracy >= requirement.required_accuracy;
-            case "chapter_status":
+            case "chapter_state":
                 chapters = data.chapters || [];
                 chapter = chapters[requirement.chapter_id];
-                return chapter && chapter.status >= requirement.required_status;
+                return chapter && chapter.progress_state >= requirement.required_state;
             default:
                 return false;
         }
@@ -28,5 +28,17 @@ export namespace UnlockRequirement {
 
     export function allRequirementsMet(requirements: Requirement[], data: any): boolean {
         return requirements.every(requirement => isRequirementMet(requirement, data))
+    }
+
+    export function getUnlockLevel(requirements: Requirement[], data: any): number {
+        let unlockLevel = 0;
+
+        requirements.forEach(requirement => {
+            if (isRequirementMet(requirement, data)) {
+                unlockLevel = Math.max(unlockLevel, requirement.unlock_level);
+            }
+        });
+
+        return unlockLevel;
     }
 }

@@ -6,10 +6,13 @@ const { ccclass, property, executeInEditMode } = _decorator;
 @executeInEditMode
 export class BackgroundController extends Component {
     @property(Sprite)
-    spriteComponent: Sprite
+    bgSpriteComponent: Sprite
+
+    @property(Sprite)
+    charSpriteComponent: Sprite
 
     @property
-    spriteName: string = "luna"
+    type: string = "luna"
 
     @property
     blur: boolean = false
@@ -21,27 +24,49 @@ export class BackgroundController extends Component {
 
     // # Lifecycle
     onLoad() {
-        if (this.spriteName) {
-            this.loadSprite(this.spriteName);
+        if (this.type) {
+            this.loadSprite(this.type);
         }
     }
 
     
     
     // # Functions
-    loadSprite(spriteName: string) {
-        const spritePath = `images/bg/bg_${spriteName}${this.blur ? "_blur" : ""}/spriteFrame`;
-
+    loadSprite(type: string) {
         if (EDITOR) {
             // TODO: Able to preview in editor
         } else {
-            resources.load(spritePath, SpriteFrame, (error, spriteFrame) => {
+            // Resolve sprite paths
+            let bgSpritePath: string = "", charSpritePath: string = "";
+            if (!this.blur) {
+                bgSpritePath = `images/bg/${this.type}/bg/spriteFrame`;
+
+                // Character Sprite
+                if (this.showCharacter) {
+                    charSpritePath = `images/bg/${this.type}/character/spriteFrame`;
+                }
+            } else {
+                bgSpritePath = `images/bg/${this.type}/bg${this.showCharacter ? "" : "_nc"}_blur/spriteFrame`;
+            }
+
+            // Load background sprite frame
+            bgSpritePath && resources.load(bgSpritePath, SpriteFrame, (error, spriteFrame) => {
                 if (error) {
-                    console.error(`BG::${spriteName.toUpperCase()}: Failed to load sprite, reason: ${error.message}`);
+                    console.error(`BG::${type.toUpperCase()}::BG: Failed to load sprite, reason: ${error.message}`);
                     return;
                 }
     
-                this.spriteComponent.spriteFrame = spriteFrame;
+                this.bgSpriteComponent.spriteFrame = spriteFrame;
+            });
+
+            // Load character sprite frame
+            charSpritePath && resources.load(charSpritePath, SpriteFrame, (error, spriteFrame) => {
+                if (error) {
+                    console.error(`BG::${type.toUpperCase()}::CHAR: Failed to load sprite, reason: ${error.message}`);
+                    return;
+                }
+    
+                this.charSpriteComponent.spriteFrame = spriteFrame;
             });
         }
     }

@@ -1,5 +1,6 @@
 {
 	"id": "luna-01-01",
+	"name": "大逃鯊",
 	"contents": [
 		{
 			"type": "text",
@@ -7,18 +8,31 @@
 		},
 		{
 			"type": "text",
-			"content": "他們吵架的時候，不開心的時候，就關起門來"
+			"content": "他們{2: 吵架}的時候，不開心的時候，就關起門來"
 		},
 		{
 			"type": "text",
-			"content": "開始作曲、演奏，從童年到現在都是一個出口"
+			"content": "開始{3: 作曲、演奏}，從童年到現在都是一個出口"
 		}
 	],
 	"unlock_requirements": [
 		{
 			"type": "song_score",
 			"song_id": "tpvsshark",
-			"required_score": 950000
+			"required_score": 600000,
+			"unlock_level": 1
+		},
+		{
+			"type": "song_score",
+			"song_id": "tpvsshark",
+			"required_score": 800000,
+			"unlock_level": 2
+		},
+		{
+			"type": "song_score",
+			"song_id": "tpvsshark",
+			"required_score": 950000,
+			"unlock_level": 3
 		}
 	]
 }

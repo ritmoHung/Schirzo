@@ -4,6 +4,7 @@ import { JudgePointPool } from "./JudgePointPool";
 import { ProgressSlider } from "./ProgressSlider";
 import { ChartText } from "./ChartText";
 import { FirebaseManager } from "../lib/FirebaseManager";
+import { SceneTransition } from "../ui/SceneTransition";
 const { ccclass, property } = _decorator;
 
 interface BPMEvent {
@@ -30,6 +31,9 @@ interface JudgePoint {
 
 @ccclass("ChartPlayer")
 export class ChartPlayer extends Component {
+    @property(SceneTransition)
+    sceneTransition: SceneTransition
+
     @property(Button)
     pauseButton: Button | null = null
     @property(Button)
@@ -81,7 +85,8 @@ export class ChartPlayer extends Component {
         ChartPlayer.instance = this;
         this.song = this.globalSettings.selectedSong
             ? this.globalSettings.selectedSong
-            : { type: "vanilla", id: "tpvsshark" }
+            : { type: "vanilla", id: "tpvsshark", anomaly: false }
+        console.log(`CHART::${this.song.type.toUpperCase()}: ${this.song.id}, anomaly: ${this.song.anomaly}`);
 
         // Load song audio & chart
         FirebaseManager.loadChartFromFirebaseStorage(this.song.type, this.song.id, (chartData) => {
@@ -112,9 +117,8 @@ export class ChartPlayer extends Component {
 
     onAudioEnded() {
         console.log(`SONG::${this.song.id.toUpperCase()}: Ended`);
-        this.scheduleOnce(function() {
-            director.loadScene("ResultScreen");
-        }, 3);
+
+        this.checkAnomaly();
     }
 
     update(deltaTime: number) {
@@ -334,5 +338,61 @@ export class ChartPlayer extends Component {
 
     getGlobalTime() {
         return this.globalTime;
+    }
+    
+    checkAnomaly(songId: string = this.song.id) {
+        const selectedChapterId = this.globalSettings.selectedChapterId;
+        const chapterProgressState = this.globalSettings.getUserData("chapters", selectedChapterId)?.progress_state ?? 0;
+        const songScore = this.globalSettings.getUserData("songs", songId)?.score ?? 0;
+
+        if (songId === "marenol" && songScore >= 900000) {  // TODO: Change last condition
+            switch (chapterProgressState) {
+                // ? To: R.I.P.
+                case 0:
+                    console.warn("ANOMALY");
+                    this.globalSettings.patchUserData({
+                        key: "chapters",
+                        id: selectedChapterId,
+                        data: { progress_state: 1 }
+                    });
+                    this.scheduleOnce(() => {
+                        this.globalSettings.selectedSong = { type: "vanilla", id: "rip", anomaly: true };
+                        this.sceneTransition.fadeOutAndLoadScene(director.getScene().name);
+                    }, 3);
+                    break;
+                // ? To: Hope for the Flowers
+                case 2:
+                    console.warn("ANOMALY");
+                    this.globalSettings.patchUserData({
+                        key: "chapters",
+                        id: selectedChapterId,
+                        data: { progress_state: 3 }
+                    });
+                    this.scheduleOnce(() => {
+                        this.globalSettings.selectedSong = { type: "vanilla", id: "hopefortheflowers", anomaly: true };
+                        this.sceneTransition.fadeOutAndLoadScene(director.getScene().name);
+                    }, 3);
+                    break;
+                default: break;
+            }
+        } else {
+            if (songId === "rip" && chapterProgressState === 1 && this.globalSettings.selectedSong.anomaly) {
+                this.globalSettings.patchUserData({
+                    key: "chapters",
+                    id: this.globalSettings.selectedChapterId,
+                    data: { progress_state: 2 }
+                });
+            } else if (songId === "hopefortheflowers" && chapterProgressState === 3 && this.globalSettings.selectedSong.anomaly) {
+                this.globalSettings.patchUserData({
+                    key: "chapters",
+                    id: this.globalSettings.selectedChapterId,
+                    data: { progress_state: 4 }
+                });
+            }
+
+            this.scheduleOnce(function() {
+                director.loadScene("ResultScreen");
+            }, 3);
+        }
     }
 }

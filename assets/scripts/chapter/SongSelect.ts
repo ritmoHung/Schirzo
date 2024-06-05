@@ -50,6 +50,7 @@ export class SongSelect extends Component {
     private globalSettings: GlobalSettings
     private songs: any = []
     private selectedSongIndex: number = 0
+    private keyPressed: boolean = false;
     private jacketCache: { [key: string]: SpriteFrame } = {};
     private previewCache: { [key: string]: AudioClip } = {};
 
@@ -58,10 +59,11 @@ export class SongSelect extends Component {
     // # Lifecycle
     onLoad() {
         this.globalSettings = GlobalSettings.getInstance();
-        this.background.spriteName = this.globalSettings.selectedChapterId;
+        this.background.type = this.globalSettings.selectedChapterId;
         this.loadSongs(this.globalSettings.selectedChapterId);
 
         // Song Info
+        this.selectedSongIndex = parseInt(localStorage.getItem(`${this.globalSettings.selectedChapterId}SelectedSongIndex`) || "0");
         this.setSongInfo(this.selectedSongIndex);
 
         // Buttons
@@ -70,10 +72,11 @@ export class SongSelect extends Component {
         this.backButton.node.on(Button.EventType.CLICK, this.loadPreviousScene, this);
         this.logsButton.node.on(Button.EventType.CLICK, this.loadChapterLogsScene, this);
         this.settingsButton.node.on(Button.EventType.CLICK, this.loadChapterLogsScene, this);
+        this.songJacket.node.on(Node.EventType.TOUCH_END, this.loadChartPlayerScene, this)
 
         // Key Down
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
-        input.on(Input.EventType.KEY_PRESSING, this.onKeyDown, this);
+        input.on(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
 
         director.preloadScene("ChartPlayer", (err) => {
             if (err) {
@@ -105,8 +108,20 @@ export class SongSelect extends Component {
             case KeyCode.SPACE:
                 this.loadChartPlayerScene();
                 break;
+            case KeyCode.ESCAPE:
+                this.loadPreviousScene();
+                break;
             default:
                 break;
+        }
+    }
+    onKeyPressing(event: EventKeyboard) {
+        if (!this.keyPressed) {
+            this.keyPressed = true;
+            setTimeout(() => {
+                this.keyPressed = false;
+            }, 50);
+            this.onKeyDown(event);
         }
     }
 
@@ -159,6 +174,7 @@ export class SongSelect extends Component {
     }
 
     async setSongInfo(songIndex: number) {
+        localStorage.setItem(`${this.globalSettings.selectedChapterId}SelectedSongIndex`, songIndex.toString());
         const songData = this.songs[songIndex];
         const songUnlocked = this.isSongUnlocked(songData);
 
@@ -186,11 +202,11 @@ export class SongSelect extends Component {
             this.globalSettings.audioManager.fadeOutBGM(0.5);
         }
         tween(this.songJacket.getComponent(UIOpacity))
-                .to(0.15, { opacity: 0 }, { easing: "smooth"})
+                .to(0.1, { opacity: 0 }, { easing: "smooth"})
                 .call(() => {
                     this.songJacket.spriteFrame = sprite;
                     tween(this.songJacket.getComponent(UIOpacity))
-                        .to(0.15, { opacity: 255 }, { easing: "smooth"})
+                        .to(0.1, { opacity: 255 }, { easing: "smooth"})
                         .start();
                 })
                 .start();
@@ -241,7 +257,11 @@ export class SongSelect extends Component {
         const songUnlocked = this.isSongUnlocked(songData);
 
         if (songUnlocked) {
-            this.globalSettings.selectedSong = { type: "vanilla", id: songData.id };
+            this.globalSettings.selectedSong = { 
+                type: "vanilla",
+                id: songData.id,
+                anomaly: false,
+            };
             this.globalSettings.audioManager.fadeOutBGM(0.5);
             this.sceneTransition.fadeOutAndLoadScene("ChartPlayer");
         } else {

@@ -1,4 +1,4 @@
-import { _decorator, AudioClip, Button, Component, Node, tween, Vec3 } from "cc";
+import { _decorator, AudioClip, Button, Component, Node, tween, UIOpacity, Vec3 } from "cc";
 import { GlobalSettings } from "../../settings/GlobalSettings";
 const { ccclass, property, executeInEditMode } = _decorator;
 
@@ -7,6 +7,9 @@ const { ccclass, property, executeInEditMode } = _decorator;
 export class BaseButton extends Component {
     @property(Button)
     button: Button
+
+    @property(UIOpacity)
+    uiOpacity: UIOpacity
 
     @property(AudioClip)
     sfx: AudioClip
@@ -45,23 +48,31 @@ export class BaseButton extends Component {
 
     // # Functions
     onMouseEnter() {
-        document.body.classList.add(this.cursorClass);
+        if (this.button.interactable) {
+            document.body.classList.add(this.cursorClass);
+        }
     }
     onMouseLeave() {
         document.body.classList.remove(this.cursorClass);
     }
 
     onTouchStart() {
-        this.scaleDown();
-        if (this.sfx) {
-            this.globalSettings.audioManager.playSFX(this.sfx);
+        if (this.button.interactable) {
+            this.scaleDown();
+            if (this.sfx) {
+                this.globalSettings.audioManager.playSFX(this.sfx);
+            }
         }
     }
     onTouchEnd() {
-        this.scaleUp();
+        if (this.button.interactable) {
+            this.scaleUp();
+        }
     }
     onTouchCancel() {
-        this.scaleUp();
+        if (this.button.interactable) {
+            this.scaleUp();
+        }
     }
 
     scaleDown() {

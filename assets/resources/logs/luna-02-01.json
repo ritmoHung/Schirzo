@@ -1,16 +1,30 @@
 {
 	"id": "luna-02-01",
+	"name": "誰要跟你們內捲",
 	"contents": [
 		{
-			"type": "",
-			"content": ""
+			"type": "text",
+			"content": "少一分{2: 打一下}\n都幫你安排好了，要做這個要做這個"
 		}
 	],
 	"unlock_requirements": [
 		{
 			"type": "song_score",
 			"song_id": "alephzero",
-			"required_score": 950000
+			"required_score": 600000,
+			"unlock_level": 1
+		},
+		{
+			"type": "song_score",
+			"song_id": "alephzero",
+			"required_score": 800000,
+			"unlock_level": 2
+		},
+		{
+			"type": "song_score",
+			"song_id": "alephzero",
+			"required_score": 950000,
+			"unlock_level": 3
 		}
 	]
 }

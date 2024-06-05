@@ -1,7 +1,9 @@
-import { _decorator, Button, Component, instantiate, JsonAsset, Node, Prefab, resources, RichText, SpriteFrame, tween, UIOpacity, UITransform, Vec3 } from "cc";
+import { _decorator, Button, Component, EventKeyboard, Input, input, instantiate, JsonAsset, KeyCode, Node, Prefab, resources, ScrollView, SpriteFrame, tween, UIOpacity, Vec3 } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { SceneTransition } from "../ui/SceneTransition";
-import { ButtonSquare } from "../ui/button/ButtonSquare";
+import { DatabaseManager } from "../lib/DatabaseManager";
+import { ButtonLog } from "../ui/button/ButtonLog";
+import { TextLog } from "../ui/text/TextLog";
 const { ccclass, property } = _decorator;
 
 @ccclass("ChapterLogs")
@@ -9,155 +11,243 @@ export class ChapterLogs extends Component {
     @property(SceneTransition)
     sceneTransition: SceneTransition
 
+    // Nodes
     @property(Node)
-    logContainer: Node
-
+    logsLayout: Node
+    @property(Node)
+    logPanel: Node
     @property(Node)
     logContents: Node
 
+    // Prefabs
     @property(Prefab)
-    buttonSquare: Prefab
+    buttonLogPrefab: Prefab
 
+    @property(Prefab)
+    textLogPrefab: Prefab
+
+    // ScrollView
+    @property(ScrollView)
+    scrollView: ScrollView
+
+    // Buttons
     @property(Button)
     backButton: Button
-
     @property(Button)
     closeLogButton: Button
 
+    // Sprites
     @property(SpriteFrame)
     logLockedSprite: SpriteFrame
-
     @property(SpriteFrame)
     logNoteSprite: SpriteFrame
 
     private globalSettings: GlobalSettings
+    private logCache: { [key: string]: any } = {}
+    private buttonStates: Map<Node, boolean> = new Map()
 
 
 
     // # Lifecycle
     onLoad() {
         this.globalSettings = GlobalSettings.getInstance();
-        this.loadLogs();
+        this.scrollView.enabled = false;
+        this.loadChapterLogs();
 
+        // Buttons
         this.backButton.node.on(Button.EventType.CLICK, this.loadPreviousScene, this);
         this.closeLogButton.node.on(Button.EventType.CLICK, this.closeLog, this);
+        
+        // Key Down
+        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+    }
+
+    onKeyDown(event: EventKeyboard) {
+        switch (event.keyCode) {
+            case KeyCode.ESCAPE:
+                this.loadPreviousScene();
+                break;
+            default:
+                break;
+        }
     }
 
 
 
     // # Functions
-    loadLogs() {
-        console.log("LOAD LOGS");
+    loadChapterLogs() {
         const selectedChapterId = this.globalSettings.selectedChapterId;
         const songs = this.globalSettings.songs.filter(song => song.chapter.id === selectedChapterId);
-        const logs = this.globalSettings.userData.logs;
+        songs.sort((a, b) => a.index - b.index);
 
         songs.forEach(song => {
             if (song.log_ids && Array.isArray(song.log_ids)) {
                 song.log_ids.forEach((logId: string) => {
-                    const unlocked = logs[`${logId}`] && logs[`${logId}`].unlocked;
-                    this.createLogButton(logId, unlocked);
+                    this.createLogButton(logId);
                 })
             }
         });
-
-        this.logContainer.setPosition(new Vec3(0, 0, 0));
     }
 
-    createLogButton(logId: string, unlocked: boolean) {
-        const logButton = instantiate(this.buttonSquare);
-        const buttonSquareComponent = logButton.getComponent(ButtonSquare);
-        buttonSquareComponent.labelText = logId.toUpperCase();
-        if (unlocked) {
-            buttonSquareComponent.iconSprite = this.logNoteSprite;
-        } else {
-            buttonSquareComponent.iconSprite = this.logLockedSprite;
-        }
+    createLogButton(logId: string) {
+        const log = this.globalSettings.getUserData("logs", logId);
+        const unlockLevel: number = log?.unlock_level ?? 0;
+        const unlocked: boolean = unlockLevel > 0;
+        const hasRead: boolean = log?.has_read ?? false;
 
-        const buttonComponent = buttonSquareComponent.button;
+        const logButton = instantiate(this.buttonLogPrefab);
+        const logButtonComponent = logButton.getComponent(ButtonLog);
+        logButtonComponent.labelText = logId.toUpperCase();
+        logButtonComponent.iconSprite = unlocked ? this.logNoteSprite : this.logLockedSprite;
+        logButtonComponent.uiOpacity.opacity = unlocked ? 255 : 127;
+        logButtonComponent.showNotificationDot = unlocked && !hasRead;
+
+        const buttonComponent = logButtonComponent.button;
         if (unlocked) {
             buttonComponent.node.on(Button.EventType.CLICK, () => {
-                this.openLog(logId);
+                logButtonComponent.showNotificationDot = false;
+                this.openLog(logId, unlockLevel, hasRead);
             });
         } else {
-            buttonComponent.enabled = false;
+            buttonComponent.interactable = false;
         }
 
-        this.logContainer.addChild(logButton);
+        this.logsLayout.addChild(logButton);
+    }
+
+    async openLog(logId: string, unlockLevel: number, hasRead: boolean) {
+        this.disableLogButtons();
+        this.scrollView.enabled = true;
+
+        const log = await this.getLog(logId);
+        this.renderLog(log, unlockLevel);
+        
+        this.logPanel.setPosition(new Vec3(0, -100, 0));
+        tween(this.logPanel)
+            .to(0.25, { position: new Vec3(0, 0, 0) }, { easing: "sineOut" })
+            .start();
+        tween(this.logPanel.getComponent(UIOpacity))
+            .to(0.25, { opacity: 255 }, { easing: "sineOut" })
+            .start();
+
+        // Patch and save log opened state
+        if (!hasRead) {
+            this.globalSettings.patchUserData({ key: "logs", id: logId, data: { has_read: true } });
+            DatabaseManager.updateData();
+        }
+    }
+
+    getLog(logId: string): Promise<any> {
+        if (this.logCache[logId]) {
+            return Promise.resolve(this.logCache[logId]);
+        }
+
+        return new Promise((resolve, reject) => {
+            const path = `logs/${logId}`;
+            resources.load(path, JsonAsset, (error, asset) => {
+                if (error) {
+                    console.error(`LOG::${logId}: Failed to load JSON, reason: ${error.message}`);
+                    reject(error);
+                    return;
+                }
+
+                this.logCache[logId] = asset.json!;
+                resolve(asset.json!);
+            });
+        });
+    }
+
+    renderLog(log: any, unlockLevel: number) {
+        this.logContents.removeAllChildren();
+
+        log.contents.forEach((contentData: any) => {
+            const textLog = instantiate(this.textLogPrefab);
+            const textLogComponent = textLog.getComponent(TextLog);
+            
+            switch (contentData.type) {
+                case "text":
+                default:
+                    textLogComponent.text = this.parseNestedContent(contentData.content, unlockLevel);
+            }
+
+            this.logContents.addChild(textLog);
+        });
+    }
+
+    parseNestedContent(content: string, unlockLevel: number): any {
+        // Regular expression to find all {key: value} pairs
+        const regex = /\{([^{}]+)\}/g;
+        let match: any;
+        let parsedContent = content;
+    
+        while ((match = regex.exec(content)) !== null) {
+            const pair = match[1]; // Get the content inside the braces
+            let [key, value] = pair.split(/:\s*/);
+            key = key.trim();
+            value = value.trim();
+    
+            const keyNumber = parseInt(key);
+
+            let replacement = "";
+            if (!isNaN(keyNumber)) {
+                if (keyNumber <= unlockLevel) {
+                    replacement = value;
+                } else {
+                    replacement = `<color=#D85C5C>${this.getRandomString(2 * value.length)}</color>`;
+                }
+            }
+
+            parsedContent = parsedContent.replace(match[0], replacement);
+        }
+    
+        return parsedContent;
+    }
+    getRandomString(length: number): string {
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?";
+        let result = "";
+
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+
+        return result;
+    }
+    
+    closeLog() {
+
+        tween(this.logPanel)
+            .to(0.25, { position: new Vec3(0, -100, 0) }, { easing: "sineOut" })
+            .start();
+        tween(this.logPanel.getComponent(UIOpacity))
+            .to(0.25, { opacity: 0 }, { easing: "sineOut" })
+            .call(() => {
+                this.scrollView.enabled = false;
+                this.logContents.removeAllChildren();
+                this.enableLogButtons();
+            })
+            .start();
+    }
+
+    disableLogButtons() {
+        this.buttonStates.clear();
+        const buttons = this.logsLayout.getComponentsInChildren(Button);
+        buttons.forEach(button => {
+            this.buttonStates.set(button.node, button.interactable);
+            button.interactable = false;
+        })
+    }
+
+    enableLogButtons() {
+        this.buttonStates.forEach((state, node) => {
+            const button = node.getComponent(Button);
+            if (button) {
+                button.interactable = state;
+            }
+        });
     }
 
     loadPreviousScene() {
         this.sceneTransition.fadeOutAndLoadScene("SongSelect");
-    }
-
-    openLog(logId: string) {
-        resources.load(`logs/${logId}`, JsonAsset, (error, asset) => {
-            if (error) {
-                console.error(`LOG::${logId}: Failed to load JSON, reason: ${error.message}`);
-                return;
-            }
-
-            const logData = asset.json!;
-            logData.contents.forEach((contentData: any) => {
-                this.renderContent(contentData);
-            })
-        });
-
-        tween(this.logContainer.getComponent(UIOpacity))
-            .to(0.25, { opacity: 0 }, { easing: "sineOut" })
-            .call(() => {
-                this.logContainer.children.forEach(child => {
-                    const button = child.getComponent(Button);
-                    if (button) {
-                        button.interactable = false;
-                    }
-                });
-            })
-            .start();
-        
-        this.logContents.setPosition(new Vec3(0, -100, 0));
-        tween(this.logContents)
-            .to(0.25, { position: new Vec3(0, 0, 0) }, { easing: "sineOut" })
-            .start();
-        tween(this.logContents.getComponent(UIOpacity))
-            .to(0.25, { opacity: 255 }, { easing: "sineOut" })
-            .start();
-    }
-
-    renderContent(contentData: any) {
-        const content = new Node();
-        content.addComponent(UITransform);
-        const richText = content.addComponent(RichText);
-        switch (contentData.type) {
-            case "text":
-            default:
-                richText.string = contentData.content;
-                break;
-        }
-        this.logContents.getChildByName("LogContentContainer").addChild(content);
-    }
-
-    closeLog() {
-        tween(this.logContainer.getComponent(UIOpacity))
-            .to(0.25, { opacity: 255 }, { easing: "sineOut" })
-            .call(() => {
-                this.logContainer.children.forEach(child => {
-                    const button = child.getComponent(Button);
-                    if (button) {
-                        button.interactable = true;
-                    }
-                });
-            })
-            .start();
-
-        tween(this.logContents)
-            .to(0.25, { position: new Vec3(0, -100, 0) }, { easing: "sineOut" })
-            .start();
-        tween(this.logContents.getComponent(UIOpacity))
-            .to(0.25, { opacity: 0 }, { easing: "sineOut" })
-            .call(() => {
-                this.logContents.getChildByName("LogContentContainer").destroyAllChildren();
-            })
-            .start();
     }
 }

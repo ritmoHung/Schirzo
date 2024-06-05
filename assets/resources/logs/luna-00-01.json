@@ -1,5 +1,6 @@
 {
 	"id": "luna-00-01",
+	"name": "temp",
 	"contents": [
 		{
 			"type": "text",
@@ -7,14 +8,27 @@
 		},
 		{
 			"type": "text",
-			"content": "會突然發瘋，亂砸東西，拿刀子"
+			"content": "會突然發瘋，亂{2: 砸東西}，拿{3: 刀子}"
 		}
 	],
 	"unlock_requirements": [
 		{
 			"type": "song_score",
 			"song_id": "mopemope",
-			"required_score": 950000
+			"required_score": 600000,
+			"unlock_level": 1
+		},
+		{
+			"type": "song_score",
+			"song_id": "mopemope",
+			"required_score": 800000,
+			"unlock_level": 2
+		},
+		{
+			"type": "song_score",
+			"song_id": "mopemope",
+			"required_score": 950000,
+			"unlock_level": 3
 		}
 	]
 }

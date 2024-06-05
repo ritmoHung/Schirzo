@@ -1,4 +1,4 @@
-import { _decorator, Button, Component, director, Label, Node } from "cc";
+import { _decorator, Button, Component, EventKeyboard, Input, input, KeyCode, Label, Node } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { SceneTransition } from "../ui/SceneTransition";
 const { ccclass, property } = _decorator;
@@ -11,6 +11,10 @@ export class ChapterSelect extends Component {
     @property(Node)
     chapterContainer: Node = null;
 
+    // Buttons
+    @property(Button)
+    backButton: Button
+
     private globalSettings: GlobalSettings
 
 
@@ -19,6 +23,22 @@ export class ChapterSelect extends Component {
     onLoad() {
         this.globalSettings = GlobalSettings.getInstance();
         this.loadChapters();
+
+        // Buttons
+        this.backButton.node.on(Button.EventType.CLICK, this.loadPreviousScene, this);
+
+        // Key Down
+        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+    }
+
+    onKeyDown(event: EventKeyboard) {
+        switch (event.keyCode) {
+            case KeyCode.ESCAPE:
+                this.loadPreviousScene();
+                break;
+            default:
+                break;
+        }
     }
 
 
@@ -42,5 +62,9 @@ export class ChapterSelect extends Component {
             this.sceneTransition.fadeOutAndLoadScene("SongSelect");
         });
         this.chapterContainer.addChild(chapterButton);
+    }
+
+    loadPreviousScene() {
+        this.sceneTransition.fadeOutAndLoadScene("IntroScreen");
     }
 }

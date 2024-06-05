@@ -1,9 +1,10 @@
 {
 	"id": "luna-01-00",
+	"name": "temp",
 	"contents": [
 		{
 			"type": "text",
-			"content": "男朋友跟好閨蜜劈腿，"
+			"content": "男朋友跟好閨蜜劈腿"
 		},
 		{
 			"type": "text",
@@ -12,6 +13,14 @@
 		{
 			"type": "text",
 			"content": "開始透過創作來轉換心情，想要去投新人獎之類的"
+		}
+	],
+	"unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "tpvsshark",
+			"required_score": 600000,
+			"unlock_level": 1
 		}
 	]
 }

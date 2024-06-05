@@ -1,9 +1,38 @@
 {
 	"id": "luna-06-00",
+	"name": "夠沉重才能創造「太陽」",
 	"contents": [
 		{
-			"type": "",
-			"content": ""
+			"type": "text",
+			"content": "聽著歌眼淚枯乾了，\n{1: 開始把這段故事，這些想像唱成歌}，\n{2: 當我一唱起歌，天空就放晴了}"
+		},
+		{
+			"type": "text",
+			"content": "這很艱難，很痛苦，但帶出來的{1: 音樂共感}，{2: 救贖了我}\n我似乎理解了{2: 那位評審說的「靈魂」}是什麼"
+		},
+		{
+			"type": "text",
+			"content": "你們的這些攻擊都無法，去改變我許的願，我對於創作的執念，我從小到大被音樂的安慰\n他們以前沒有打敗我，現在也不能打敗我。{2: 我要繼續創作，繼續向前。}"
+		}
+	],
+	"unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "hopefortheflowers",
+			"required_score": 600000,
+			"unlock_level": 1
+		},
+		{
+			"type": "song_score",
+			"song_id": "hopefortheflowers",
+			"required_score": 800000,
+			"unlock_level": 2
+		},
+		{
+			"type": "song_score",
+			"song_id": "hopefortheflowers",
+			"required_score": 950000,
+			"unlock_level": 3
 		}
 	]
 }

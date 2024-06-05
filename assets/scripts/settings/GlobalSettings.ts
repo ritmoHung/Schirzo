@@ -42,10 +42,10 @@ export class GlobalSettings {
     // # Functions
     public async initialize(): Promise<void> {
         try {
-            await this.loadChapters();
-            await this.loadSongs();
-            await this.loadLogMetadata();
-            this.initializeUnlocks();
+            if (this._chapters.length === 0) await this.loadChapters();
+            if (this._songs.length === 0) await this.loadSongs();
+            if (this._logs.length === 0) await this.loadLogMetadata();
+            if (this.unlockManager.unlockTargets.length === 0) this.initializeUnlocks();
         } catch (error) {
             console.log("Error initializing:", error);
             throw error;
@@ -105,7 +105,7 @@ export class GlobalSettings {
         })
 
         return Promise.all(promises).then(() => {
-            console.log("All song info JSONs loaded");
+            // console.log("All song info JSONs loaded");
         })
     }
     public getSongsIdsByChapter(chapters: any[]): string[] {
@@ -168,25 +168,6 @@ export class GlobalSettings {
         return this._unlockManager;
     }
 
-    // User Settings
-    get user(): any {
-        return this._user;
-    }
-    set user(u: firebase.User) {
-        this._user = u;
-    }
-
-    get userData(): any {
-        return this._userData;
-    }
-    set userData(data: any) {
-        if (typeof data === "object") {
-            this._userData = data;
-        } else {
-            throw new Error("Invalid data object");
-        }
-    }
-
     get selectedChapterId(): string {
         return this._selectedChapterId;
     }
@@ -208,7 +189,82 @@ export class GlobalSettings {
         return (
             typeof song === "object" &&
             song.type === "vanilla" || song.type === "custom" &&
-            typeof song.id === "string"
+            typeof song.id === "string" &&
+            typeof song.anomaly === "boolean"
         );
+    }
+
+
+
+    // User Settings
+    get user(): any {
+        return this._user;
+    }
+    set user(u: firebase.User) {
+        this._user = u;
+    }
+
+    get userData(): any {
+        return this._userData;
+    }
+    set userData(data: any) {
+        if (typeof data === "object") {
+            this._userData = data;
+        } else {
+            throw new Error("Invalid data object");
+        }
+    }
+    getUserData(key: string, id: string = ""): any {
+        if (!key) {
+            return this._userData;
+        }
+
+        if (id) {
+            if (this._userData[key] && this._userData[key][id]) {
+                return this._userData[key][id];
+            } else {
+                return {};
+            }
+        } else {
+            // Check if the key exists in _userData
+            return this._userData[key] || {};
+        }
+    }
+    setUserData({ key, id, data }: { key: string, id?: string, data: any }) {
+        if (!key) {
+            console.error("Key is required to set user data");
+            return;
+        }
+
+        if (id) {
+            // Ensure key exists
+            if (!this._userData[key]) {
+                this._userData[key] = {};
+            }
+            this._userData[key][id] = data;
+        } else {
+            this._userData[key] = data;
+        }
+    }
+    patchUserData({ key, id, data }: { key: string, id?: string, data: any }) {
+        if (!key) {
+            console.error("Key is required to patch user data");
+            return;
+        }
+
+        // Ensure key exists
+        if (!this._userData[key]) {
+            this._userData[key] = {};
+        }
+
+        if (id) {
+            // Ensure id exists
+            if (!this._userData[key][id]) {
+                this._userData[key][id] = {};
+            }
+            this._userData[key][id] = { ...this._userData[key][id], ...data };
+        } else {
+            this._userData[key] = { ...this._userData[key], ...data };
+        }
     }
 }

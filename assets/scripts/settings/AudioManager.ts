@@ -14,6 +14,7 @@ export class AudioManager {
             this.bgmAudioSource.stop();
             this.bgmAudioSource.clip = clip;
             this.bgmAudioSource.loop = loop;
+            this.bgmAudioSource.volume = 1;
             this.bgmAudioSource.play();
         } else {
             console.warn("AUDIO::BGM: Clip is not provided");

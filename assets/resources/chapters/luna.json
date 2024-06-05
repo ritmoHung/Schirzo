@@ -2,6 +2,7 @@
 	"id": "luna",
 	"index": 0,
 	"name": "Luna",
+	"default_unlocked": true,
 	"songs": [
 		{
 			"id": "mopemope",
