@@ -5,7 +5,7 @@ declare const firebase: any;
 const USER_BASE_PATH = "users"
 
 export module DatabaseManager {
-    // Scope: user/{userId}
+    // # Scope: user/{userId}
     export async function createUserData(userId: string) {
         const userData = await getUserData(userId);
         if (!userData) {
@@ -14,7 +14,7 @@ export module DatabaseManager {
                 chapters: [],
                 songs: [],
                 settings: {
-                    flowSpeed: 4.0,
+                    flow_speed: 4.0,
                     offset: 0.0,
                 },
                 createdAt: firebase.database.ServerValue.TIMESTAMP,

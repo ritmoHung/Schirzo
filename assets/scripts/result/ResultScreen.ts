@@ -1,13 +1,17 @@
-import { _decorator, Button, Component, EventKeyboard, KeyCode, RichText, tween, UIOpacity } from "cc";
+import { _decorator, Button, Component, EventKeyboard, Input, input, KeyCode, resources, RichText, Sprite, SpriteFrame, tween, UIOpacity } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { DatabaseManager } from "../lib/DatabaseManager";
 import { SceneTransition } from "../ui/SceneTransition";
+import { ButtonIconOutline } from "../ui/button/ButtonIcon";
 const { ccclass, property } = _decorator;
 
 @ccclass("ResultScreen")
 export class ResultScreen extends Component {
     @property(SceneTransition)
     sceneTransition: SceneTransition
+
+    @property(Sprite)
+    bgSprite: Sprite
 
     // Buttons
     @property(Button)
@@ -28,32 +32,40 @@ export class ResultScreen extends Component {
         this.globalSettings = GlobalSettings.getInstance();
         const selectedSong = this.globalSettings.selectedSong;
 
-        // Buttons
-        this.backButton.node.on("click", () => this.back());
-        if (!selectedSong.anomaly) {
-            this.retryButton.node.on("click", () => this.retry());
-        } else{
-            this.retryButton.getComponentInChildren(Button).interactable = false;
-        }
+        // Set background image to song jacket (blurred)
+        this.setBackground(selectedSong.id).then(() => {
+            // Buttons
+            this.backButton.node.on(Button.EventType.CLICK, this.back, this);
+            if (!selectedSong.anomaly) {
+                this.retryButton.interactable = true;
+                this.retryButton.node.on(Button.EventType.CLICK, this.retry, this);
+            }
 
-        const songId = selectedSong.id;
-        this.globalSettings.patchUserData({ key: "songs", id: songId, data: {
-            score: 900000,
-            accuracy: 100.00,
-        }})
-        const { unlockedSongIds, unlockedLogs } = this.globalSettings.unlockManager.checkUnlocks();
-        this.unlockedSongIds = unlockedSongIds;
-        this.unlockedLogs = unlockedLogs;
-        unlockedSongIds.forEach(songId => {
-            this.globalSettings.patchUserData({ key: "songs", id: songId, data: { unlocked: true } });
-        });
-        
-        unlockedLogs.forEach(log => {
-            this.globalSettings.patchUserData({ key: "logs", id: log.id, data: { unlock_level: log.unlock_level, has_read: false } });
-        });
+            // Key Down
+            input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
 
-        // Save patched log data to database
-        DatabaseManager.updateData();
+            // Result & Unlocks
+            const songId = selectedSong.id;
+            this.globalSettings.patchUserData({ key: "songs", id: songId, data: {
+                score: 900000,
+                accuracy: 100.00,
+            }})
+            const { unlockedSongIds, unlockedLogs } = this.globalSettings.unlockManager.checkUnlocks();
+            this.unlockedSongIds = unlockedSongIds;
+            this.unlockedLogs = unlockedLogs;
+            unlockedSongIds.forEach(songId => {
+                this.globalSettings.patchUserData({ key: "songs", id: songId, data: { unlocked: true } });
+            });
+            
+            unlockedLogs.forEach(log => {
+                this.globalSettings.patchUserData({ key: "logs", id: log.id, data: { unlock_level: log.unlock_level, has_read: false } });
+            });
+    
+            // Save patched log data to database
+            DatabaseManager.updateData();
+        }).catch(error => {
+            console.error(error);
+        });
     }
 
     start() {
@@ -63,6 +75,7 @@ export class ResultScreen extends Component {
     onKeyDown(event: EventKeyboard) {
         switch (event.keyCode) {
             case KeyCode.ESCAPE:
+                this.globalSettings.audioManager.playSFX(this.backButton.getComponent(ButtonIconOutline).sfx);
                 this.back();
                 break;
             default:
@@ -73,6 +86,26 @@ export class ResultScreen extends Component {
 
 
     // # Functions
+    async setBackground(songId: string) {
+        const bgSpriteFrame = await this.getSongJacketBlur(songId);
+        this.bgSprite.spriteFrame = bgSpriteFrame;
+    }
+    
+    getSongJacketBlur(songId: string): Promise<SpriteFrame> {
+        return new Promise((resolve, reject) => {
+            const path = `songs/${songId}/jacket_blur/spriteFrame`;
+            resources.load(path, SpriteFrame, (error, spriteFrame) => {
+                if (error) {
+                    console.error(`RESULT::${songId}::JACKET: Failed to load sprite, reason: ${error.message}`);
+                    reject(error);
+                    return;
+                }
+
+                resolve(spriteFrame);
+            });
+        });
+    }
+
     showUnlockedItems(unlockedSongIds: string[], unlockedLogs: any[]) {
         const songIdsCopy = [...unlockedSongIds];
         const tweenNextSong = () => {
@@ -108,10 +141,15 @@ export class ResultScreen extends Component {
     }
 
     retry() {
-        this.sceneTransition.fadeOutAndLoadScene("ChartPlayer");
+        this.loadScene("ChartPlayer");
     }
 
     back() {
-        this.sceneTransition.fadeOutAndLoadScene("SongSelect");
+        this.loadScene("SongSelect");
+    }
+
+    loadScene(sceneName: string) {
+        this.globalSettings.audioManager.fadeOutBGM(0.5);
+        this.sceneTransition.fadeOutAndLoadScene(sceneName);
     }
 }

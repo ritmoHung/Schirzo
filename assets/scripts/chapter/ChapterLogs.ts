@@ -25,7 +25,6 @@ export class ChapterLogs extends Component {
     // Prefabs
     @property(Prefab)
     buttonLogPrefab: Prefab
-
     @property(Prefab)
     textLogPrefab: Prefab
 
@@ -236,7 +235,7 @@ export class ChapterLogs extends Component {
     closeLog() {
         this.logOpened = false;
         tween(this.logPanel)
-            .to(0.25, { position: new Vec3(0, -60, 0) }, { easing: "sineIn" })
+            .to(0.25, { position: new Vec3(0, -60, 0) }, { easing: "sineOut" })
             .start();
         tween(this.logPanel.getComponent(UIOpacity))
             .to(0.25, { opacity: 0 }, { easing: "sineIn" })
@@ -268,7 +267,7 @@ export class ChapterLogs extends Component {
 
     loadPreviousScene() {
         tween(this.tablet)
-            .to(1, { position: new Vec3(0, -1000, 0), angle: 5 }, { easing: "sineOut" })
+            .to(1, { position: new Vec3(0, -1000, 0), angle: 5 }, { easing: "sineIn" })
             .start();
         this.sceneTransition.fadeOutAndLoadScene("SongSelect");
     }

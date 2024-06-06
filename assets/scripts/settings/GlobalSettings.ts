@@ -17,11 +17,9 @@ export class GlobalSettings {
 
     public lastSceneName: string
 
-    // User Settings
+    // User Data
     private _user: any = {}
     private _userData: any = {}
-    public flowSpeed: number = 4.0
-    public offset: number = 0.0
 
 
 
@@ -269,5 +267,9 @@ export class GlobalSettings {
         } else {
             this._userData[key] = { ...this._userData[key], ...data };
         }
+    }
+
+    getUserSettings() {
+        return this._userData.settings;
     }
 }

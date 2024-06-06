@@ -23,7 +23,7 @@
 		{
 			"type": "song_score",
 			"song_id": "miserable",
-			"required_score": 600000,
+			"required_score": 800000,
 			"unlock_level": 1
 		}
 	]

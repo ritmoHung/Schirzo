@@ -141,7 +141,8 @@ export class JudgePoint extends Component {
             offset = targetTime;
         }
         
-        return this.settings.flowSpeed * this.PXPS * offset;
+        const flowSpeed = this.settings.getUserData("settings", "flow_speed");
+        return flowSpeed * this.PXPS * offset;
     }
 
     getPropValueByTime(property: string, time: number) {

@@ -19,13 +19,13 @@
 		{
 			"type": "song_score",
 			"song_id": "tpvsshark",
-			"required_score": 600000,
+			"required_score": 800000,
 			"unlock_level": 1
 		},
 		{
 			"type": "song_score",
 			"song_id": "tpvsshark",
-			"required_score": 800000,
+			"required_score": 850000,
 			"unlock_level": 2
 		},
 		{

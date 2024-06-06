@@ -148,7 +148,7 @@ export class SongSelect extends Component {
         this.previewCache = {}
     }
 
-    
+
     
     // # Functions
     loadSongs(chapterId: string) {
@@ -280,6 +280,7 @@ export class SongSelect extends Component {
         const songUnlocked = this.isSongUnlocked(songData);
 
         if (songUnlocked) {
+            this.globalSettings.audioManager.playSFX(this.enterSFX);
             this.globalSettings.selectedSong = { 
                 type: "vanilla",
                 id: songData.id,

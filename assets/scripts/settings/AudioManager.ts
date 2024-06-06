@@ -28,7 +28,7 @@ export class AudioManager {
         }
 
         tween(this.bgmAudioSource)
-            .to(duration, { volume: 1 })
+            .to(duration, { volume: 1 }, { easing: "quadIn" })
             .start();
     }
     // Stop current BGM immediately; fade in next BGM
@@ -41,7 +41,7 @@ export class AudioManager {
             this.bgmAudioSource.volume = 0;
             this.bgmAudioSource.play();
             tween(this.bgmAudioSource)
-                .to(duration, { volume: 1 })
+                .to(duration, { volume: 1 }, { easing: "quadIn" })
                 .start();
         } else {
             console.warn("AUDIO::BGM: Clip is not provided");
@@ -56,13 +56,13 @@ export class AudioManager {
     // Fade out current BGM
     public fadeOut(duration: number = 1) {
         tween(this.bgmAudioSource)
-            .to(duration, { volume: 0 })
+            .to(duration, { volume: 0 }, { easing: "quadOut" })
             .start();
     }
     // Fade out and stop current BGM
     public fadeOutBGM(duration: number = 1) {
         tween(this.bgmAudioSource)
-            .to(duration, { volume: 0 })
+            .to(duration, { volume: 0 }, { easing: "quadOut" })
             .call(() => {
                 this.bgmAudioSource.stop();
             })
@@ -72,7 +72,7 @@ export class AudioManager {
     // Transition between current and next BGM
     public transitionBGM(clip: AudioClip, fadeOutDuration: number = 0.5, fadeInDuration: number = 0.5, loop: boolean = true) {
         tween(this.bgmAudioSource)
-            .to(fadeOutDuration, { volume: 0 })
+            .to(fadeOutDuration, { volume: 0 }, { easing: "quadOut" })
             .call(() => {
                 this.fadeInBGM(clip, fadeInDuration, loop);
             })

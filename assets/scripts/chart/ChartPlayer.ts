@@ -1,11 +1,13 @@
-import { _decorator, AudioClip, AudioSource, Button, Component, director, JsonAsset, Prefab, resources } from "cc";
+import { _decorator, AudioClip, AudioSource, Button, Component, director, EventKeyboard, input, Input, JsonAsset, KeyCode, Prefab, resources, tween, UIOpacity } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
-import { JudgePointPool } from "./JudgePointPool";
-import { ProgressSlider } from "./ProgressSlider";
-import { ChartText } from "./ChartText";
 import { FirebaseManager } from "../lib/FirebaseManager";
 import { SceneTransition } from "../ui/SceneTransition";
 import { ChartData } from "../settings/song";
+import { JudgePointPool } from "./JudgePointPool";
+import { ProgressSlider } from "./ProgressSlider";
+import { ChartText } from "./ChartText";
+import { ButtonIconOutline } from "../ui/button/ButtonIcon";
+import { ButtonSquare } from "../ui/button/ButtonSquare";
 const { ccclass, property } = _decorator;
 
 interface BPMEvent {
@@ -52,14 +54,25 @@ export class ChartPlayer extends Component {
 
     // Buttons
     @property(Button)
-    pauseButton: Button | null = null
+    pauseButton: Button
     @property(Button)
-    startButton: Button | null = null
+    resumeButton: Button
     @property(Button)
-    restartButton: Button | null = null
+    retryButton: Button
+    @property(Button)
+    quitButton: Button
+
+    // UIOpacity
+    @property(UIOpacity)
+    loadUiOpacity: UIOpacity
+    @property(UIOpacity)
+    menuUiOpacity: UIOpacity
 
     @property(AudioSource)
-    audioSource: AudioSource | null = null
+    audioSource: AudioSource
+
+    @property(AudioClip)
+    hintSFX: AudioClip
 
     @property(JudgePointPool)
     judgePointPool: JudgePointPool
@@ -72,14 +85,16 @@ export class ChartPlayer extends Component {
 
     private static instance: ChartPlayer
     private globalSettings: GlobalSettings
+    private menuOpened: boolean = false
     private dataSource: DataSource = DataSource.Firebase
     private chartData: ChartData
     private song: any = {}
+    private hintDuration: number = 0
+    private hintAmount: number = 4
     private songDuration: number = 0
     private globalTime: number = 0
+    private offset: number = 0;
     private UPB = 120  // Units per beat
-
-    private initializing = true
 
 
 
@@ -95,13 +110,23 @@ export class ChartPlayer extends Component {
 
     onLoad() {
         ChartPlayer.instance = this;
+        this.loadUiOpacity.opacity = 255;
+        this.offset = this.globalSettings.getUserSettings()?.offset ?? 0;
         this.song = this.globalSettings.selectedSong
             ? this.globalSettings.selectedSong
-            : { type: "vanilla", id: "marenol", anomaly: false }
-        console.log(`CHART::${this.song.type.toUpperCase()}: ${this.song.id}\nAnomaly: ${this.song.anomaly}\nMode: `);
+            : { type: "vanilla", id: "rip", mode: "gameplay", anomaly: false };
 
         // Get chart & audio from source, then execute callback (load chart)
-        this.loadChartData();
+        this.loadChartData().then(() => {
+            tween(this.loadUiOpacity)
+                .to(1, { opacity: 0 }, { easing: "smooth" })
+                .call(() => {
+                    this.startGame();
+                })
+                .start();
+        }).catch((error) => {
+            console.error(error);
+        });
 
         // Preload ResultScreen
         director.preloadScene("ResultScreen", (error) => {
@@ -113,19 +138,41 @@ export class ChartPlayer extends Component {
         });
     }
 
+    update(deltaTime: number) {
+        if (this.audioSource.playing) {
+            this.globalTime += deltaTime;
+
+            const progress = this.audioSource.currentTime / this.songDuration;
+            this.progressSlider.updateProgress(progress);
+        }
+    }
+
     onAudioEnded() {
-        console.log(`SONG::${this.song.id.toUpperCase()}: Ended`);
+        console.log(`CHART::SONG: Ended`);
 
         const sceneName = this.processAndGetNextScene();
         this.sceneTransition.fadeOutAndLoadScene(sceneName);
     }
 
-    update(deltaTime: number) {
-        if (this.audioSource && this.audioSource.playing) {
-            this.globalTime += deltaTime;
-
-            const progress = this.audioSource.currentTime / this.songDuration;
-            this.progressSlider.updateProgress(progress);
+    onKeyDown(event: EventKeyboard) {
+        switch (event.keyCode) {
+            case KeyCode.KEY_Q:
+                if (this.menuOpened) {
+                    this.globalSettings.audioManager.playSFX(this.quitButton.getComponent(ButtonSquare).sfx);
+                    this.quitGame();
+                }
+                break;
+            case KeyCode.ESCAPE:
+                if (this.menuOpened) {
+                    this.globalSettings.audioManager.playSFX(this.resumeButton.getComponent(ButtonSquare).sfx);
+                    this.resumeGame();
+                } else {
+                    this.globalSettings.audioManager.playSFX(this.pauseButton.getComponent(ButtonIconOutline).sfx);
+                    this.pauseGame();
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -138,30 +185,18 @@ export class ChartPlayer extends Component {
     // # Functions
     // * Game related
     async loadChartData() {
-        this.getChartData(this.dataSource, (chartData: ChartData) => {
+        await this.getChartData(this.dataSource, (chartData: ChartData) => {
             // Save to cache
             this.chartData = chartData;
 
-            // Prepare chart
-            this.loadChart(chartData.chart);
-
-            // Prepare audio
-            if (this.audioSource) {
-                this.audioSource.clip = chartData.audio;
-                this.songDuration = chartData.audio.getDuration();
-                this.audioSource.node.on("ended", this.onAudioEnded, this);
-            }
-
-            // Buttons
-            this.pauseButton.node.on("click", () => this.pauseMusic());
-            this.startButton.node.on("click", () => this.startGame());
-            this.restartButton.node.on("click", () => this.restartGame());
+            // Prepare game (including chart / audio / onClick / onKeyDown)
+            this.prepareGame();
         });
     }
 
     async getChartData(source: DataSource, callback: (chartData: ChartData) => void) {
         try {
-            let chartData: ChartData
+            let chartData: ChartData = { chart: {}, audio: null };
             switch (source) {
                 case DataSource.Firebase:
                     chartData = await FirebaseManager.getChartData("vanilla", this.song.id);
@@ -179,34 +214,111 @@ export class ChartPlayer extends Component {
         }
     }
 
+    prepareGame() {
+        this.loadChart();
+
+        if (this.audioSource) {
+            this.audioSource.clip = this.chartData.audio;
+            this.songDuration = this.chartData.audio.getDuration();
+            this.audioSource.node.on(AudioSource.EventType.ENDED, this.onAudioEnded, this);
+        }
+
+        // Buttons
+        this.setMenuButtonsInteractive(false);
+        this.pauseButton.node.on(Button.EventType.CLICK, this.pauseGame, this);
+        this.resumeButton.node.on(Button.EventType.CLICK, this.resumeGame, this);
+        this.retryButton.node.on(Button.EventType.CLICK, this.restartGame, this);
+        this.quitButton.node.on(Button.EventType.CLICK, this.quitGame, this);
+
+        // Key Down
+        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+    }
+
     startGame() {
-        if (!this.audioSource.playing) {
-            this.globalTime = 0;
-            this.progressSlider.updateProgress(0);
+        this.globalTime = 0;
+        this.progressSlider.updateProgress(0);
+
+        this.scheduleOnce(() => {
+            for(let i = 0; i < this.hintAmount; i++) {
+                const delay = (i + this.hintAmount) * this.hintDuration;
+                this.scheduleOnce(() => {
+                    this.playSfx(this.hintSFX);
+                }, delay);
+            }
 
             this.scheduleOnce(() => {
-                this.playMusic();
-            }, 1);
-        }
+                if (this.audioSource.clip) {
+                    this.audioSource.play();
+                }
+            }, 2 * this.hintAmount * this.hintDuration);
+        }, this.hintDuration * this.hintAmount);
+    }
+
+    pauseGame() {
+        // Pause music, chart will also be stopped automatically
+        this.pauseMusic();
+        this.openMenu();
     }
 
     resumeGame() {
-        if (!this.audioSource.playing) {
-            this.resumeMusic();
-        }
+        this.closeMenu(() => {
+            // Resume music, chart will also continue automatically
+            this.scheduleOnce(() => {
+                this.resumeMusic();
+            }, 3);
+        });
     }
 
     restartGame() {
         this.audioSource.stop();
+        this.closeMenu();
 
         // Prepare chart
-        this.loadChart(this.chartData.chart);
+        this.loadChart();
 
         this.startGame();
     }
 
+    quitGame() {
+        // Clear judgepoints
+        this.judgePointPool.reset();
+        this.chartData = null;
+        this.sceneTransition.fadeOutAndLoadScene("SongSelect");
+    }
+
     getGlobalTime() {
         return this.globalTime;
+    }
+
+    openMenu() {
+        if (!this.menuOpened) {
+            this.menuOpened = true;
+            this.setMenuButtonsInteractive(true);
+            tween(this.menuUiOpacity)
+                .to(0.5, { opacity: 255 }, { easing: "smooth" })
+                .start();
+        }
+    }
+
+    closeMenu(callback?: () => void) {
+        if (this.menuOpened) {
+            this.menuOpened = false;
+            this.setMenuButtonsInteractive(false);
+            tween(this.menuUiOpacity)
+                .to(0.5, { opacity: 0 }, { easing: "smooth" })
+                .call(() => {
+                    if (callback) {
+                        callback();
+                    }
+                })
+                .start();
+        }
+    }
+
+    setMenuButtonsInteractive(state: boolean) {
+        this.resumeButton.interactable = state;
+        this.retryButton.interactable = state;
+        this.quitButton.interactable = state;
     }
 
 
@@ -228,15 +340,17 @@ export class ChartPlayer extends Component {
         });
     }
 
-    loadChart(chart: Record<string, any>) {
+    loadChart(chart: Record<string, any> = this.chartData.chart) {
         // Clear judgepoints
         this.judgePointPool.reset();
 
         const bpmEvents = chart.bpmEvents;
-        const textEvents = chart.textEventList.map(textEvent =>
+        this.hintDuration = this.convertToSeconds([0, this.UPB], chart.bpmEvents);
+        this.hintAmount = chart.bpmEvents[0].bpm[2] ?? 4;
+        const textEvents = chart.textEventList.map((textEvent: any) =>
             this.covertTextEvent(textEvent, bpmEvents)
         )
-        const judgePoints = chart.judgePointList.map(judgePoint =>
+        const judgePoints = chart.judgePointList.map((judgePoint: any) =>
             this.convertJudgePointEvents(judgePoint, bpmEvents)
         );
 
@@ -248,8 +362,8 @@ export class ChartPlayer extends Component {
         return {
             ...textEvent,
             time: Array.isArray(textEvent.time)
-                ? this.convertToSeconds(textEvent.time, bpmEvents) + this.globalSettings.offset
-                : textEvent.time + this.globalSettings.offset,
+                ? this.convertToSeconds(textEvent.time, bpmEvents) + this.offset
+                : textEvent.time + this.offset,
         }
     }
 
@@ -258,11 +372,11 @@ export class ChartPlayer extends Component {
             events.map(event => ({
                 ...event,
                 startTime: Array.isArray(event.startTime)
-                    ? this.convertToSeconds(event.startTime, bpmEvents) + this.globalSettings.offset
-                    : event.startTime + this.globalSettings.offset,
+                    ? this.convertToSeconds(event.startTime, bpmEvents) + this.offset
+                    : event.startTime + this.offset,
                 endTime: Array.isArray(event.endTime)
-                    ? this.convertToSeconds(event.endTime, bpmEvents) + this.globalSettings.offset
-                    : event.endTime + this.globalSettings.offset,
+                    ? this.convertToSeconds(event.endTime, bpmEvents) + this.offset
+                    : event.endTime + this.offset,
             }))
 
         const convertNoteTimings = (notes: any[]): any[] => {
@@ -270,14 +384,14 @@ export class ChartPlayer extends Component {
                 const convertedNote = {
                     ...note, 
                     time: Array.isArray(note.time)
-                        ? this.convertToSeconds(note.time, bpmEvents) + this.globalSettings.offset
-                        : note.time + this.globalSettings.offset,
+                        ? this.convertToSeconds(note.time, bpmEvents) + this.offset
+                        : note.time + this.offset,
                 };
 
                 if (note.endTime) {
                     convertedNote.endTime = Array.isArray(note.endTime)
-                        ? this.convertToSeconds(note.endTime, bpmEvents) + this.globalSettings.offset
-                        : note.endTime + this.globalSettings.offset;
+                        ? this.convertToSeconds(note.endTime, bpmEvents) + this.offset
+                        : note.endTime + this.offset;
                 }
 
                 return convertedNote;
@@ -341,24 +455,6 @@ export class ChartPlayer extends Component {
         });
     }
 
-    playMusic() {
-        if (this.audioSource && this.audioSource.clip) {
-            this.audioSource.play();
-        }
-    }
-
-    pauseMusic() {
-        if (this.audioSource && this.audioSource.playing) {
-            this.audioSource.pause();
-        }
-    }
-
-    resumeMusic() {
-        if (this.audioSource) {
-            this.audioSource.play();
-        }
-    }
-
     setGlobalTimeByProgress(progress: number) {
         if (this.audioSource && this.audioSource.clip) {
             this.audioSource.pause();
@@ -366,6 +462,18 @@ export class ChartPlayer extends Component {
             const time = progress * this.songDuration;
             this.audioSource.currentTime = time;
             this.globalTime = time;
+            this.audioSource.play();
+        }
+    }
+
+    pauseMusic() {
+        if (this.audioSource.playing) {
+            this.audioSource.pause();
+        }
+    }
+
+    resumeMusic() {
+        if (!this.audioSource.playing) {
             this.audioSource.play();
         }
     }

@@ -118,6 +118,10 @@
     "__prefab": null,
     "sceneTransition": null,
     "background": null,
+    "enterSFX": {
+      "__uuid__": "a601b673-afe5-4e8f-9841-1edf85c86b3d",
+      "__expectedType__": "cc.AudioClip"
+    },
     "errorSFX": {
       "__uuid__": "03cac9b1-c3ac-4140-88cb-e8cf84d29c57",
       "__expectedType__": "cc.AudioClip"
