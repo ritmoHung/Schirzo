@@ -260,6 +260,7 @@ export class SongSelect extends Component {
             this.globalSettings.selectedSong = { 
                 type: "vanilla",
                 id: songData.id,
+                mode: "gameplay",
                 anomaly: false,
             };
             this.globalSettings.audioManager.fadeOutBGM(0.5);

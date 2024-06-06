@@ -5,6 +5,7 @@ import { ProgressSlider } from "./ProgressSlider";
 import { ChartText } from "./ChartText";
 import { FirebaseManager } from "../lib/FirebaseManager";
 import { SceneTransition } from "../ui/SceneTransition";
+import { ChartData } from "../settings/song";
 const { ccclass, property } = _decorator;
 
 interface BPMEvent {
@@ -29,18 +30,17 @@ interface JudgePoint {
     opacityEvents: Event[];
 }
 
+enum DataSource {
+    Local = 0,
+    Firebase = 1,
+}
+
 @ccclass("ChartPlayer")
 export class ChartPlayer extends Component {
     @property(SceneTransition)
     sceneTransition: SceneTransition
 
-    @property(Button)
-    pauseButton: Button | null = null
-    @property(Button)
-    startButton: Button | null = null
-    @property(Button)
-    restartButton: Button | null = null
-
+    // Prefabs
     @property(Prefab)
     clickNotePrefab: Prefab | null = null
     @property(Prefab)
@@ -49,6 +49,14 @@ export class ChartPlayer extends Component {
     dragNotePrefab: Prefab | null = null
     @property(Prefab)
     holdNotePrefab: Prefab | null = null
+
+    // Buttons
+    @property(Button)
+    pauseButton: Button | null = null
+    @property(Button)
+    startButton: Button | null = null
+    @property(Button)
+    restartButton: Button | null = null
 
     @property(AudioSource)
     audioSource: AudioSource | null = null
@@ -63,13 +71,17 @@ export class ChartPlayer extends Component {
     chartText: ChartText
 
     private static instance: ChartPlayer
+    private globalSettings: GlobalSettings
+    private dataSource: DataSource = DataSource.Firebase
+    private chartData: ChartData
     private song: any = {}
     private songDuration: number = 0
     private globalTime: number = 0
-    private globalSettings: GlobalSettings
     private UPB = 120  // Units per beat
 
     private initializing = true
+
+
 
     // # Lifecycle
     constructor() {
@@ -85,25 +97,11 @@ export class ChartPlayer extends Component {
         ChartPlayer.instance = this;
         this.song = this.globalSettings.selectedSong
             ? this.globalSettings.selectedSong
-            : { type: "vanilla", id: "tpvsshark", anomaly: false }
-        console.log(`CHART::${this.song.type.toUpperCase()}: ${this.song.id}, anomaly: ${this.song.anomaly}`);
+            : { type: "vanilla", id: "marenol", anomaly: false }
+        console.log(`CHART::${this.song.type.toUpperCase()}: ${this.song.id}\nAnomaly: ${this.song.anomaly}\nMode: `);
 
-        // Load song audio & chart
-        FirebaseManager.loadChartFromFirebaseStorage(this.song.type, this.song.id, (chartData) => {
-            this.loadChartFrom(chartData.chart);
-            this.pauseButton.node.on("click", () => this.pauseMusic());
-            this.startButton.node.on("click", () => this.startGame());
-            this.restartButton.node.on("click", () => this.restartGame());
-
-            if (this.audioSource) {
-                this.loadMusicFrom(chartData.audio);
-                this.audioSource.node.on("ended", this.onAudioEnded, this);
-            } else {
-                console.error("AudioSource component is not attached.");
-            }
-
-            this.initializing = false;
-        });
+        // Get chart & audio from source, then execute callback (load chart)
+        this.loadChartData();
 
         // Preload ResultScreen
         director.preloadScene("ResultScreen", (err) => {
@@ -137,96 +135,101 @@ export class ChartPlayer extends Component {
 
 
     // # Functions
-    loadMusic() {
-        resources.load(`songs/${this.song.id}/base`, AudioClip, (error, clip: AudioClip) => {
-            if (error) {
-                console.error("Failed to load music:", error);
-                return;
-            }
+    // * Game related
+    async loadChartData() {
+        this.getChartData(this.dataSource, (chartData: ChartData) => {
+            // Save to cache
+            this.chartData = chartData;
 
+            // Prepare chart
+            this.loadChart(chartData.chart);
+
+            // Prepare audio
             if (this.audioSource) {
-                this.audioSource.clip = clip;
-                this.songDuration = clip.getDuration();
+                this.audioSource.clip = chartData.audio;
+                this.songDuration = chartData.audio.getDuration();
+                this.audioSource.node.on("ended", this.onAudioEnded, this);
             }
+
+            // Buttons
+            this.pauseButton.node.on("click", () => this.pauseMusic());
+            this.startButton.node.on("click", () => this.startGame());
+            this.restartButton.node.on("click", () => this.restartGame());
         });
     }
 
-    loadMusicFrom(clip: AudioClip) {
-        if (!clip) {
-            console.error("Failed to load music");
-            return;
-        }
-        if (this.audioSource) {
-            this.audioSource.clip = clip;
-            this.songDuration = clip.getDuration();
-        }
-    }
-
-    playMusic() {
-        if (this.audioSource && this.audioSource.clip) {
-            this.audioSource.play();
-        }
-    }
-
-    pauseMusic() {
-        if (this.audioSource && this.audioSource.playing) {
-            this.audioSource.pause();
-        }
-    }
-
-    resumeMusic() {
-        if (this.audioSource) {
-            this.audioSource.play();
-        }
-    }
-
-    setGlobalTimeByProgress(progress: number) {
-        if (this.audioSource && this.audioSource.clip) {
-            this.audioSource.pause();
-
-            const time = progress * this.songDuration;
-            this.audioSource.currentTime = time;
-            this.globalTime = time;
-            this.audioSource.play();
-        }
-    }
-
-    playSfx(clip: AudioClip) {
-        if (this.audioSource && clip) {
-            this.audioSource.playOneShot(clip, 1.0);
-        } else {
-            console.log("ERROR");
-        }
-    }
-
-    loadChart() {
-        this.judgePointPool.reset();
-        resources.load(`songs/${this.song.id}/2`, JsonAsset, (error, res: JsonAsset) => {
-            if (error) {
-                console.error("Failed to load chart:", error);
-                return;
+    async getChartData(source: DataSource, callback: (chartData: ChartData) => void) {
+        try {
+            let chartData: ChartData
+            switch (source) {
+                case DataSource.Firebase:
+                    chartData = await FirebaseManager.getChartData("vanilla", this.song.id);
+                    break;
+                case DataSource.Local:
+                default:
+                    chartData.chart = await this.getChartFromLocal(this.song.id);
+                    chartData.audio = await this.getSongFromLocal(this.song.id);
+                    break;
             }
 
-            const chartData = res.json!;
-            const bpmEvents = chartData.bpmEvents;
-            const textEvents = chartData.textEventList.map(textEvent =>
-                this.covertTextEvent(textEvent, bpmEvents)
-            )
-            const judgePoints = chartData.judgePointList.map(judgePoint =>
-                this.convertJudgePointEvents(judgePoint, bpmEvents)
-            );
+            callback(chartData);
+        } catch (error) {
+            console.error(`CHART::LOAD: Failed to load chart data, reason: ${error.message}`);
+        }
+    }
 
-            this.judgePointPool.createJudgePoints(judgePoints);
-            this.chartText.initialize(textEvents);
+    startGame() {
+        if (!this.audioSource.playing) {
+            this.globalTime = 0;
+            this.progressSlider.updateProgress(0);
+
+            this.scheduleOnce(() => {
+                this.playMusic();
+            }, 1);
+        }
+    }
+
+    resumeGame() {
+        if (!this.audioSource.playing) {
+            this.resumeMusic();
+        }
+    }
+
+    restartGame() {
+        this.audioSource.stop();
+
+        // Prepare chart
+        this.loadChart(this.chartData.chart);
+
+        this.startGame();
+    }
+
+    getGlobalTime() {
+        return this.globalTime;
+    }
+
+
+
+    // * Chart related
+    getChartFromLocal(songId: string): Promise<Record<string, any>> {
+        return new Promise((resolve, reject) => {
+            const path = `songs/${songId}/2`;
+            resources.load(path, JsonAsset, (error, asset) => {
+                if (error) {
+                    console.error(`CHART::CHART: Failed to load JSON, reason: ${error.message}`);
+                    reject(error);
+                    return;
+                }
+
+                const chart = asset.json!;
+                resolve(chart);
+            });
         });
     }
 
-    loadChartFrom(chart: Record<string, any>) {
+    loadChart(chart: Record<string, any>) {
+        // Clear judgepoints
         this.judgePointPool.reset();
-        if (!chart) {
-            console.error("Failed to load chart.");
-            return;
-        }
 
         const bpmEvents = chart.bpmEvents;
         const textEvents = chart.textEventList.map(textEvent =>
@@ -319,27 +322,64 @@ export class ChartPlayer extends Component {
         return totalTime;
     }
 
-    startGame() {
-        if (!this.audioSource.playing) {
-            this.globalTime = 0;
-            this.progressSlider.updateProgress(0);
 
-            this.scheduleOnce(() => {
-                this.playMusic();
-            }, 1);
+
+    // * Audio related
+    getSongFromLocal(songId: string): Promise<AudioClip> {
+        return new Promise((resolve, reject) => {
+            const path = `songs/${songId}/base`;
+            resources.load(path, AudioClip, (error, audioClip) => {
+                if (error) {
+                    console.error(`CHART::SONG: Failed to load audio clip, reason: ${error.message}`);
+                    reject(error);
+                    return;
+                }
+    
+                resolve(audioClip);
+            });
+        });
+    }
+
+    playMusic() {
+        if (this.audioSource && this.audioSource.clip) {
+            this.audioSource.play();
         }
     }
 
-    restartGame() {
-        this.audioSource.stop();
-        this.loadChart();
-        this.startGame();
+    pauseMusic() {
+        if (this.audioSource && this.audioSource.playing) {
+            this.audioSource.pause();
+        }
     }
 
-    getGlobalTime() {
-        return this.globalTime;
+    resumeMusic() {
+        if (this.audioSource) {
+            this.audioSource.play();
+        }
     }
+
+    setGlobalTimeByProgress(progress: number) {
+        if (this.audioSource && this.audioSource.clip) {
+            this.audioSource.pause();
+
+            const time = progress * this.songDuration;
+            this.audioSource.currentTime = time;
+            this.globalTime = time;
+            this.audioSource.play();
+        }
+    }
+
+    playSfx(clip: AudioClip) {
+        if (this.audioSource && clip) {
+            this.audioSource.playOneShot(clip, 1.0);
+        } else {
+            console.log("ERROR");
+        }
+    }
+
+
     
+    // * Anomaly
     checkAnomaly(songId: string = this.song.id) {
         const selectedChapterId = this.globalSettings.selectedChapterId;
         const chapterProgressState = this.globalSettings.getUserData("chapters", selectedChapterId)?.progress_state ?? 0;
