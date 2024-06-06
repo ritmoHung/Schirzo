@@ -3,6 +3,7 @@ import { GlobalSettings } from "../settings/GlobalSettings";
 import { SceneTransition } from "../ui/SceneTransition";
 import { BackgroundController } from "../ui/bg/BackgroundController";
 import { BaseButton } from "../ui/button/BaseButton";
+import { ButtonIconOutline } from "../ui/button/ButtonIcon";
 const { ccclass, property } = _decorator;
 
 @ccclass("SongSelect")
@@ -12,6 +13,11 @@ export class SongSelect extends Component {
 
     @property(BackgroundController)
     background: BackgroundController
+
+    @property(AudioClip)
+    enterSFX: AudioClip
+    @property(AudioClip)
+    errorSFX: AudioClip
 
     // Song Info
     @property(RichText)
@@ -69,27 +75,23 @@ export class SongSelect extends Component {
         // Buttons
         this.prevButton.node.on(Button.EventType.CLICK, this.selectPreviousSong, this);
         this.nextButton.node.on(Button.EventType.CLICK, this.selectNextSong, this);
-        this.backButton.node.on(Button.EventType.CLICK, this.loadPreviousScene, this);
-        this.logsButton.node.on(Button.EventType.CLICK, this.loadChapterLogsScene, this);
-        this.settingsButton.node.on(Button.EventType.CLICK, this.loadChapterLogsScene, this);
+        this.backButton.node.on(Button.EventType.CLICK, () => this.loadScene("ChapterSelect"), this);
+        this.logsButton.node.on(Button.EventType.CLICK, () => this.loadScene("ChapterLogs"), this);
+        this.settingsButton.node.on(Button.EventType.CLICK, () => this.loadScene("SettingsScreen"), this);
         this.songJacket.node.on(Node.EventType.TOUCH_END, this.loadChartPlayerScene, this)
 
         // Key Down
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
 
-        director.preloadScene("ChartPlayer", (err) => {
-            if (err) {
+        // Preload ChartPlayer
+        director.preloadScene("ChartPlayer", (error) => {
+            if (error) {
                 console.log("SCENE::CHARTPLAYER: Failed");
                 return;
             }
             console.log("SCENE::CHARTPLAYER: Preloaded");
         });
-    }
-
-    onDestroy() {
-        this.jacketCache = {}
-        this.previewCache = {}
     }
 
     onKeyDown(event: EventKeyboard) {
@@ -104,12 +106,21 @@ export class SongSelect extends Component {
                 this.globalSettings.audioManager.playSFX(this.nextButton.getComponent(BaseButton).sfx);
                 this.selectNextSong();
                 break;
+            case KeyCode.KEY_L:
+                this.globalSettings.audioManager.playSFX(this.logsButton.getComponent(ButtonIconOutline).sfx);
+                this.loadScene("ChapterLogs");
+                break;
+            case KeyCode.KEY_S:
+                this.globalSettings.audioManager.playSFX(this.settingsButton.getComponent(ButtonIconOutline).sfx);
+                this.loadScene("SettingsScreen");
+                break;
             case KeyCode.ENTER:
             case KeyCode.SPACE:
                 this.loadChartPlayerScene();
                 break;
             case KeyCode.ESCAPE:
-                this.loadPreviousScene();
+                this.globalSettings.audioManager.playSFX(this.backButton.getComponent(ButtonIconOutline).sfx);
+                this.loadScene("ChapterSelect");
                 break;
             default:
                 break;
@@ -121,8 +132,20 @@ export class SongSelect extends Component {
             setTimeout(() => {
                 this.keyPressed = false;
             }, 50);
-            this.onKeyDown(event);
+
+            if (event.keyCode === KeyCode.KEY_A ||
+                event.keyCode === KeyCode.ARROW_LEFT ||
+                event.keyCode === KeyCode.KEY_D ||
+                event.keyCode === KeyCode.ARROW_RIGHT
+            ) {
+                this.onKeyDown(event);
+            }
         }
+    }
+
+    onDestroy() {
+        this.jacketCache = {}
+        this.previewCache = {}
     }
 
     
@@ -263,20 +286,15 @@ export class SongSelect extends Component {
                 mode: "gameplay",
                 anomaly: false,
             };
-            this.globalSettings.audioManager.fadeOutBGM(0.5);
-            this.sceneTransition.fadeOutAndLoadScene("ChartPlayer");
+            this.loadScene("ChartPlayer");
         } else {
-            // TODO: Do something
+            this.globalSettings.audioManager.playSFX(this.errorSFX);
         }
     }
 
-    loadPreviousScene() {
+    loadScene(sceneName: string) {
+        this.globalSettings.lastSceneName = director.getScene().name;
         this.globalSettings.audioManager.fadeOutBGM(0.5);
-        this.sceneTransition.fadeOutAndLoadScene("ChapterSelect");
-    }
-
-    loadChapterLogsScene() {
-        this.globalSettings.audioManager.fadeOutBGM(0.5);
-        this.sceneTransition.fadeOutAndLoadScene("ChapterLogs");
+        this.sceneTransition.fadeOutAndLoadScene(sceneName);
     }
 }

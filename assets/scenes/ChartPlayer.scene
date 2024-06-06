@@ -98,7 +98,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 960,
+      "x": 959.9999999999999,
       "y": 540,
       "z": 0
     },
@@ -627,15 +627,6 @@
     "_enabled": true,
     "__prefab": null,
     "sceneTransition": null,
-    "pauseButton": {
-      "__id__": 18
-    },
-    "startButton": {
-      "__id__": 62
-    },
-    "restartButton": {
-      "__id__": 69
-    },
     "clickNotePrefab": {
       "__uuid__": "fd5fc84a-cbfa-4391-b71f-e99aff8d1e7e",
       "__expectedType__": "cc.Prefab"
@@ -651,6 +642,15 @@
     "holdNotePrefab": {
       "__uuid__": "4c2e1426-46c9-4c47-8560-b244afe7849f",
       "__expectedType__": "cc.Prefab"
+    },
+    "pauseButton": {
+      "__id__": 18
+    },
+    "startButton": {
+      "__id__": 62
+    },
+    "restartButton": {
+      "__id__": 69
     },
     "audioSource": {
       "__id__": 76
@@ -3066,7 +3066,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 1920,
+      "width": 1919.9999999999998,
       "height": 1080
     },
     "_anchorPoint": {

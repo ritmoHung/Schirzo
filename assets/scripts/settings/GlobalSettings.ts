@@ -15,6 +15,8 @@ export class GlobalSettings {
     private _selectedChapterId: string = ""
     private _selectedSong: SelectedSong
 
+    public lastSceneName: string
+
     // User Settings
     private _user: any = {}
     private _userData: any = {}

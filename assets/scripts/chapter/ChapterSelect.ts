@@ -1,6 +1,7 @@
-import { _decorator, Button, Component, EventKeyboard, Input, input, KeyCode, Label, Node } from "cc";
+import { _decorator, AudioClip, Button, Component, director, EventKeyboard, Input, input, KeyCode, Label, Node } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { SceneTransition } from "../ui/SceneTransition";
+import { ButtonIconOutline } from "../ui/button/ButtonIcon";
 const { ccclass, property } = _decorator;
 
 @ccclass("ChapterSelect")
@@ -11,9 +12,14 @@ export class ChapterSelect extends Component {
     @property(Node)
     chapterContainer: Node = null;
 
+    @property(AudioClip)
+    bgm: AudioClip
+
     // Buttons
     @property(Button)
     backButton: Button
+    @property(Button)
+    settingsButton: Button
 
     private globalSettings: GlobalSettings
 
@@ -25,16 +31,35 @@ export class ChapterSelect extends Component {
         this.loadChapters();
 
         // Buttons
-        this.backButton.node.on(Button.EventType.CLICK, this.loadPreviousScene, this);
+        this.backButton.node.on(Button.EventType.CLICK, () => this.loadScene("IntroScreen"), this);
+        this.settingsButton.node.on(Button.EventType.CLICK, () => this.loadScene("SettingsScreen"), this);
 
         // Key Down
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+
+        // Preload SongSelect
+        director.preloadScene("SongSelect", (error) => {
+            if (error) {
+                console.log("SCENE::SONGSELECT: Failed");
+                return;
+            }
+            console.log("SCENE::SONGSELECT: Preloaded");
+        });
+    }
+
+    start() {
+        this.globalSettings.audioManager.playBGM(this.bgm);
     }
 
     onKeyDown(event: EventKeyboard) {
         switch (event.keyCode) {
+            case KeyCode.KEY_S:
+                this.globalSettings.audioManager.playSFX(this.settingsButton.getComponent(ButtonIconOutline).sfx);
+                this.loadScene("SettingsScreen");
+                break;
             case KeyCode.ESCAPE:
-                this.loadPreviousScene();
+                this.globalSettings.audioManager.playSFX(this.backButton.getComponent(ButtonIconOutline).sfx);
+                this.loadScene("IntroScreen");
                 break;
             default:
                 break;
@@ -64,7 +89,9 @@ export class ChapterSelect extends Component {
         this.chapterContainer.addChild(chapterButton);
     }
 
-    loadPreviousScene() {
-        this.sceneTransition.fadeOutAndLoadScene("IntroScreen");
+    loadScene(sceneName: string) {
+        this.globalSettings.lastSceneName = director.getScene().name;
+        this.globalSettings.audioManager.fadeOutBGM(0.5);
+        this.sceneTransition.fadeOutAndLoadScene(sceneName);
     }
 }
