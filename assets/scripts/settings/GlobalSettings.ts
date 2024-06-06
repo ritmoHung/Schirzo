@@ -8,8 +8,10 @@ export class GlobalSettings {
     private _selectedSong: SelectedSong
 
     // User Settings
+    private _userData: any = {}
     public flowSpeed: number = 4.0
     public offset: number = 0.0
+
 
 
     // # Constructor
@@ -38,6 +40,18 @@ export class GlobalSettings {
 
         this.flowSpeed = flowSpeed;
         this.offset = offset;
+    }
+
+    // User Settings
+    get userData(): any {
+        return this._userData;
+    }
+    set userData(data: any) {
+        if (typeof data === "object") {
+            this._userData = data;
+        } else {
+            throw new Error("Invalid data object");
+        }
     }
 
     get selectedChapterId(): string {
