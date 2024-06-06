@@ -104,8 +104,8 @@ export class ChartPlayer extends Component {
         this.loadChartData();
 
         // Preload ResultScreen
-        director.preloadScene("ResultScreen", (err) => {
-            if (err) {
+        director.preloadScene("ResultScreen", (error) => {
+            if (error) {
                 console.log("SCENE::RESULTSCREEN: Failed");
                 return;
             }
@@ -116,7 +116,8 @@ export class ChartPlayer extends Component {
     onAudioEnded() {
         console.log(`SONG::${this.song.id.toUpperCase()}: Ended`);
 
-        this.checkAnomaly();
+        const sceneName = this.processAndGetNextScene();
+        this.sceneTransition.fadeOutAndLoadScene(sceneName);
     }
 
     update(deltaTime: number) {
@@ -370,17 +371,14 @@ export class ChartPlayer extends Component {
     }
 
     playSfx(clip: AudioClip) {
-        if (this.audioSource && clip) {
-            this.audioSource.playOneShot(clip, 1.0);
-        } else {
-            console.log("ERROR");
-        }
+        this.audioSource.playOneShot(clip, 1.0);
     }
 
 
     
-    // * Anomaly
-    checkAnomaly(songId: string = this.song.id) {
+    // * Scene transitions
+    // ? Also checks for anomaly
+    processAndGetNextScene(songId: string = this.song.id): string {
         const selectedChapterId = this.globalSettings.selectedChapterId;
         const chapterProgressState = this.globalSettings.getUserData("chapters", selectedChapterId)?.progress_state ?? 0;
         const songScore = this.globalSettings.getUserData("songs", songId)?.score ?? 0;
@@ -395,11 +393,14 @@ export class ChartPlayer extends Component {
                         id: selectedChapterId,
                         data: { progress_state: 1 }
                     });
-                    this.scheduleOnce(() => {
-                        this.globalSettings.selectedSong = { type: "vanilla", id: "rip", anomaly: true };
-                        this.sceneTransition.fadeOutAndLoadScene(director.getScene().name);
-                    }, 3);
-                    break;
+
+                    this.globalSettings.selectedSong = {
+                        type: "vanilla",
+                        id: "rip",
+                        mode: "gameplay",
+                        anomaly: true
+                    };
+                    return director.getScene().name;
                 // ? To: Hope for the Flowers
                 case 2:
                     console.warn("ANOMALY");
@@ -408,12 +409,16 @@ export class ChartPlayer extends Component {
                         id: selectedChapterId,
                         data: { progress_state: 3 }
                     });
-                    this.scheduleOnce(() => {
-                        this.globalSettings.selectedSong = { type: "vanilla", id: "hopefortheflowers", anomaly: true };
-                        this.sceneTransition.fadeOutAndLoadScene(director.getScene().name);
-                    }, 3);
-                    break;
-                default: break;
+
+                    this.globalSettings.selectedSong = {
+                        type: "vanilla",
+                        id: "hopefortheflowers",
+                        mode: "gameplay",
+                        anomaly: true
+                    };
+                    return director.getScene().name;
+                default:
+                    return "ResultScreen";
             }
         } else {
             if (songId === "rip" && chapterProgressState === 1 && this.globalSettings.selectedSong.anomaly) {
@@ -430,9 +435,7 @@ export class ChartPlayer extends Component {
                 });
             }
 
-            this.scheduleOnce(function() {
-                director.loadScene("ResultScreen");
-            }, 3);
+            return "ResultScreen";
         }
     }
 }
