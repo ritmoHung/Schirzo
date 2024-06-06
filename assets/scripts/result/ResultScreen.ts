@@ -18,6 +18,18 @@ export class ResultScreen extends Component {
     @property(RichText)
     unlockText: RichText
 
+    @property(RichText)
+    SongName: RichText
+
+    @property(RichText)
+    SongArtist: RichText
+
+    @property(RichText)
+    SongScore: RichText
+
+    @property(RichText)
+    SongAccuracy: RichText
+
     private globalSettings: GlobalSettings
     private unlockedSongIds: string[] = []
     private unlockedLogs: any[] = []
@@ -58,6 +70,8 @@ export class ResultScreen extends Component {
 
     start() {
         this.showUnlockedItems(this.unlockedSongIds, this.unlockedLogs);
+        // Show result info
+        this.showResultInfo(this.globalSettings.selectedSong.id);
     }
 
     onKeyDown(event: EventKeyboard) {
@@ -73,6 +87,33 @@ export class ResultScreen extends Component {
 
 
     // # Functions
+    showResultInfo(SongId: string){
+        const tweenResultInfo = () => {
+            const songData = this.globalSettings.songs.find(song => SongId === song.id);
+            this.SongName.string = `SONG NAME: ${songData.name}`;
+            this.SongArtist.string = `Artist: ${songData.artist}`;
+
+            const songRecord = this.globalSettings.userData.songs[songData.id];
+            const score = songRecord?.score !== undefined ? songRecord.score.toString().padStart(6, "0") : "000000";
+            const accuracy = songRecord?.accuracy !== undefined ? songRecord.accuracy.toFixed(2) : "00.00";
+            this.SongScore.string = `SCORE: ${score}`;
+            this.SongAccuracy.string = `ACCURACY: ${accuracy}%`;
+
+            tween(this.SongName.getComponent(UIOpacity))
+                .to(0.5, { opacity: 255 }, { easing: "smooth" })
+                .start();
+            tween(this.SongArtist.getComponent(UIOpacity))
+                .to(0.5, { opacity: 255 }, { easing: "smooth" })
+                .start();
+            tween(this.SongScore.getComponent(UIOpacity))
+                .to(0.5, { opacity: 255 }, { easing: "smooth" })
+                .start();
+            tween(this.SongAccuracy.getComponent(UIOpacity))
+                .to(0.5, { opacity: 255 }, { easing: "smooth" })
+                .start();
+        }
+        tweenResultInfo();
+    }
     showUnlockedItems(unlockedSongIds: string[], unlockedLogs: any[]) {
         const songIdsCopy = [...unlockedSongIds];
         const tweenNextSong = () => {
