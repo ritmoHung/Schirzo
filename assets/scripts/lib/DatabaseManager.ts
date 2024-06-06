@@ -1,3 +1,5 @@
+import { GlobalSettings } from "../settings/GlobalSettings";
+
 declare const firebase: any;
 
 const USER_BASE_PATH = "users"
@@ -26,7 +28,19 @@ export module DatabaseManager {
         const snapshot = await firebase.database().ref(`${USER_BASE_PATH}/${userId}`).once("value");
         return snapshot.exists() ? snapshot.val() : null;
     }
-    export function setUserData(userId: string, data: any) {
+    export async function setUserData(userId: string, data: any): Promise<void> {
         return firebase.database().ref(`${USER_BASE_PATH}/${userId}`).set(data);
+    }
+    export async function updateData() {
+        const globalSettings = GlobalSettings.getInstance();
+        const userId = globalSettings.user.uid;
+        const data = globalSettings.userData;
+
+        try {
+            await setUserData(userId, data);
+            console.log("DATABASE::UPDATE: Success");
+        } catch (error) {
+            console.error(`DATABASE::UPDATE: Failed, reason: ${error.message}`);
+        }
     }
 }

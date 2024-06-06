@@ -1,0 +1,34 @@
+{
+	"id": "luna-02-00",
+	"name": "temp",
+	"contents": [
+		{
+			"type": "text",
+			"content": "考前 3 天才開始讀。"
+		},
+		{
+			"type": "text",
+			"content": "都在創作，逃避著學習"
+		},
+		{
+			"type": "text",
+			"content": "心情變好了，似乎找到自己的出路"
+		},
+		{
+			"type": "text",
+			"content": "考試都不會寫"
+		},
+		{
+			"type": "text",
+			"content": "我想要做一件大事情，我這一輩子就做這一首歌，所以犧牲微積分沒關係\n第一次要好好順著自己的興趣去學習，去反抗這個大架構"
+		},
+	],
+	"unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "alephzero",
+			"required_score": 600000,
+			"unlock_level": 1
+		}
+	]
+}
