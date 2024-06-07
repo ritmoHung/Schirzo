@@ -1,4 +1,4 @@
-import { _decorator, Button, Component, EventKeyboard, KeyCode, RichText, tween, UIOpacity } from "cc";
+import { _decorator, Button, Component, EventKeyboard, KeyCode, RichText, tween, UIOpacity, Layout } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { DatabaseManager } from "../lib/DatabaseManager";
 import { SceneTransition } from "../ui/SceneTransition";
@@ -63,6 +63,8 @@ export class ResultScreen extends Component {
         unlockedLogs.forEach(log => {
             this.globalSettings.patchUserData({ key: "logs", id: log.id, data: { unlock_level: log.unlock_level, has_read: false } });
         });
+
+        
 
         // Save patched log data to database
         DatabaseManager.updateData();

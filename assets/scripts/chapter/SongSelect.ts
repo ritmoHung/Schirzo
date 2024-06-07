@@ -47,6 +47,9 @@ export class SongSelect extends Component {
     @property(Button)
     settingsButton: Button
 
+    @property(Button)
+    LeaderBoardButton: Button
+
     private globalSettings: GlobalSettings
     private songs: any = []
     private selectedSongIndex: number = 0
@@ -72,6 +75,7 @@ export class SongSelect extends Component {
         this.backButton.node.on(Button.EventType.CLICK, this.loadPreviousScene, this);
         this.logsButton.node.on(Button.EventType.CLICK, this.loadChapterLogsScene, this);
         this.settingsButton.node.on(Button.EventType.CLICK, this.loadChapterLogsScene, this);
+        this.LeaderBoardButton.node.on(Button.EventType.CLICK, this.loadLeaderBoardScene, this);
         this.songJacket.node.on(Node.EventType.TOUCH_END, this.loadChartPlayerScene, this)
 
         // Key Down
@@ -277,5 +281,10 @@ export class SongSelect extends Component {
     loadChapterLogsScene() {
         this.globalSettings.audioManager.fadeOutBGM(0.5);
         this.sceneTransition.fadeOutAndLoadScene("ChapterLogs");
+    }
+
+    loadLeaderBoardScene() {
+        this.globalSettings.audioManager.fadeOutBGM(0.5);
+        this.sceneTransition.fadeOutAndLoadScene("LeaderBoard");
     }
 }

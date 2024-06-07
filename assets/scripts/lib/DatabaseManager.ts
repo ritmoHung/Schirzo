@@ -43,4 +43,9 @@ export module DatabaseManager {
             console.error(`DATABASE::UPDATE: Failed, reason: ${error.message}`);
         }
     }
+    //return the data of leaderboard
+    export async function getLeaderBoard(SongId: string): Promise<any> {
+        const snapshot = await firebase.database().ref(`leaderboard/songs/vanilla/${SongId}`).once("value");
+        return snapshot.exists() ? snapshot : null;
+    }
 }
