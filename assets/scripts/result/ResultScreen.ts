@@ -1,29 +1,155 @@
-import { _decorator, Button, Component, director } from "cc";
+import { _decorator, Button, Component, EventKeyboard, Input, input, KeyCode, resources, RichText, Sprite, SpriteFrame, tween, UIOpacity } from "cc";
+import { GlobalSettings } from "../settings/GlobalSettings";
+import { DatabaseManager } from "../lib/DatabaseManager";
+import { SceneTransition } from "../ui/SceneTransition";
+import { ButtonIconOutline } from "../ui/button/ButtonIcon";
 const { ccclass, property } = _decorator;
 
 @ccclass("ResultScreen")
 export class ResultScreen extends Component {
+    @property(SceneTransition)
+    sceneTransition: SceneTransition
+
+    @property(Sprite)
+    bgSprite: Sprite
+
+    // Buttons
+    @property(Button)
+    backButton: Button | null = null
     @property(Button)
     retryButton: Button | null = null
 
-    @property(Button)
-    backButton: Button | null = null
+    @property(RichText)
+    unlockText: RichText
+
+    private globalSettings: GlobalSettings
+    private unlockedSongIds: string[] = []
+    private unlockedLogs: any[] = []
 
 
     // # Lifecycle
     onLoad() {
-        this.retryButton.node.on("click", () => this.retry());
-        this.backButton.node.on("click", () => this.back());
+        this.globalSettings = GlobalSettings.getInstance();
+        const selectedSong = this.globalSettings.selectedSong;
+
+        // Set background image to song jacket (blurred)
+        this.setBackground(selectedSong.id).then(() => {
+            // Buttons
+            this.backButton.node.on(Button.EventType.CLICK, this.back, this);
+            if (!selectedSong.anomaly) {
+                this.retryButton.interactable = true;
+                this.retryButton.node.on(Button.EventType.CLICK, this.retry, this);
+            }
+
+            // Key Down
+            input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+
+            // Result & Unlocks
+            const songId = selectedSong.id;
+            this.globalSettings.patchUserData({ key: "songs", id: songId, data: {
+                score: 900000,
+                accuracy: 100.00,
+            }})
+            const { unlockedSongIds, unlockedLogs } = this.globalSettings.unlockManager.checkUnlocks();
+            this.unlockedSongIds = unlockedSongIds;
+            this.unlockedLogs = unlockedLogs;
+            unlockedSongIds.forEach(songId => {
+                this.globalSettings.patchUserData({ key: "songs", id: songId, data: { unlocked: true } });
+            });
+            
+            unlockedLogs.forEach(log => {
+                this.globalSettings.patchUserData({ key: "logs", id: log.id, data: { unlock_level: log.unlock_level, has_read: false } });
+            });
+    
+            // Save patched log data to database
+            DatabaseManager.updateData();
+        }).catch(error => {
+            console.error(error);
+        });
+    }
+
+    start() {
+        this.showUnlockedItems(this.unlockedSongIds, this.unlockedLogs);
+    }
+
+    onKeyDown(event: EventKeyboard) {
+        switch (event.keyCode) {
+            case KeyCode.ESCAPE:
+                this.globalSettings.audioManager.playSFX(this.backButton.getComponent(ButtonIconOutline).sfx);
+                this.back();
+                break;
+            default:
+                break;
+        }
     }
 
 
 
     // # Functions
+    async setBackground(songId: string) {
+        const bgSpriteFrame = await this.getSongJacketBlur(songId);
+        this.bgSprite.spriteFrame = bgSpriteFrame;
+    }
+    
+    getSongJacketBlur(songId: string): Promise<SpriteFrame> {
+        return new Promise((resolve, reject) => {
+            const path = `songs/${songId}/jacket_blur/spriteFrame`;
+            resources.load(path, SpriteFrame, (error, spriteFrame) => {
+                if (error) {
+                    console.error(`RESULT::${songId}::JACKET: Failed to load sprite, reason: ${error.message}`);
+                    reject(error);
+                    return;
+                }
+
+                resolve(spriteFrame);
+            });
+        });
+    }
+
+    showUnlockedItems(unlockedSongIds: string[], unlockedLogs: any[]) {
+        const songIdsCopy = [...unlockedSongIds];
+        const tweenNextSong = () => {
+            if (songIdsCopy.length > 0) {
+                const songId = songIdsCopy.shift();
+                const songName = this.globalSettings.songs.find(song => songId === song.id).name;
+                this.unlockText.string = `SONG UNLOCKED: ${songName}`;
+                tween(this.unlockText.getComponent(UIOpacity))
+                    .to(0.15, { opacity: 255 }, { easing: "smooth" })
+                    .delay(4)
+                    .to(0.15, { opacity: 0 }, { easing: "smooth" })
+                    .call(tweenNextSong)
+                    .start();
+            } else {
+                tweenNextLog();
+            }
+        }
+
+        const tweenNextLog = () => {
+            if (unlockedLogs.length > 0) {
+                const log = unlockedLogs.shift();
+                this.unlockText.string = `LOG UNLOCKED: ${log.id}, LEVEL ${log.unlock_level}`;
+                tween(this.unlockText.getComponent(UIOpacity))
+                    .to(0.5, { opacity: 255 }, { easing: "smooth" })
+                    .delay(4)
+                    .to(0.5, { opacity: 0 }, { easing: "smooth" })
+                    .call(tweenNextLog)
+                    .start();
+            }
+        };
+
+        tweenNextSong();
+    }
+
     retry() {
-        director.loadScene("ChartPlayer");
+        this.loadScene("ChartPlayer");
     }
 
     back() {
-        director.loadScene("SongSelect");
+        this.loadScene("SongSelect");
+    }
+
+    loadScene(sceneName: string) {
+        this.globalSettings.audioManager.fadeOutBGM(0.5);
+        this.sceneTransition.fadeOutAndLoadScene(sceneName);
     }
 }

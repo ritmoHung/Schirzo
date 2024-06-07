@@ -98,6 +98,231 @@
 			"positionEvents": [],
 			"rotateEvents": [],
 			"opacityEvents": []
+		},
+		{
+			"isInvisible": false,
+			"noteList": [
+				{ "type": 1, "direction": 1, "time": [83, 0], "key": "d" }
+			],
+			"speedEvents": [
+				{
+                	"startTime": [79, 0],
+                	"endTime": [79, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [79, 360],
+                	"endTime": [80, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [80, 0],
+                	"endTime": [80, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [80, 360],
+                	"endTime": [81, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [81, 0],
+                	"endTime": [81, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [81, 360],
+                	"endTime": [82, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [82, 0],
+                	"endTime": [82, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [82, 360],
+                	"endTime": [83, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				}
+			],
+            "positionEvents": [
+                {
+                	"startTime": [0, 0],
+                	"endTime": [83, 0],
+                	"easing": "constant",
+                	"start": [0.2, 0.2],
+                    "end": [0.2, 0.2]
+                }
+            ],
+			"rotateEvents": [],
+			"opacityEvents": []
+		},
+		{
+			"isInvisible": false,
+			"noteList": [
+				{ "type": 1, "direction": 1, "time": [83, 0], "key": "i" }
+			],
+			"speedEvents": [
+				{
+                	"startTime": [79, 0],
+                	"endTime": [79, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [79, 360],
+                	"endTime": [80, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [80, 0],
+                	"endTime": [80, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [80, 360],
+                	"endTime": [81, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [81, 0],
+                	"endTime": [81, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [81, 360],
+                	"endTime": [82, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [82, 0],
+                	"endTime": [82, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [82, 360],
+                	"endTime": [83, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				}
+			],
+            "positionEvents": [
+                {
+                	"startTime": [0, 0],
+                	"endTime": [83, 0],
+                	"easing": "constant",
+                	"start": [0.5, 0.2],
+                    "end": [0.5, 0.2]
+                }
+            ],
+			"rotateEvents": [],
+			"opacityEvents": []
+		},
+		{
+			"isInvisible": false,
+			"noteList": [
+				{ "type": 1, "direction": 1, "time": [83, 0], "key": "e" }
+			],
+			"speedEvents": [
+				{
+                	"startTime": [79, 0],
+                	"endTime": [79, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [79, 360],
+                	"endTime": [80, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [80, 0],
+                	"endTime": [80, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [80, 360],
+                	"endTime": [81, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [81, 0],
+                	"endTime": [81, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [81, 360],
+                	"endTime": [82, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [82, 0],
+                	"endTime": [82, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [82, 360],
+                	"endTime": [83, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				}
+			],
+            "positionEvents": [
+                {
+                	"startTime": [0, 0],
+                	"endTime": [83, 0],
+                	"easing": "constant",
+                	"start": [0.8, 0.2],
+                    "end": [0.8, 0.2]
+                }
+            ],
+			"rotateEvents": [],
+			"opacityEvents": []
 		}
 	],
 	"textEventList": []

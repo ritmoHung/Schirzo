@@ -6,7 +6,27 @@ const { ccclass, property } = _decorator;
 @ccclass("ClickNote")
 export class ClickNote extends Note {
     // # Lifecycle
-    protected onKeyDown(event: EventKeyboard) {
+    update() {
+        const globalTime = this.chartPlayer.getGlobalTime() || 0;
+
+        if (globalTime >= this.time) {
+            if (!this.hasPlayedSfx) {
+                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
+                this.hasPlayedSfx = true;
+            }
+
+            if (this.mode !== "autoplay") {
+                this.node.destroy();
+            }
+        } else {
+            this.hasPlayedSfx = false;
+        }
+
+        this.updateUI(globalTime);
+        this.lastGlobalTime = globalTime;
+    }
+
+    protected onKeyDown(event: EventKeyboard): void {
         const globalTime = this.chartPlayer.getGlobalTime() || 0;
         const dt = Math.abs(globalTime - this.time);
 
@@ -17,24 +37,12 @@ export class ClickNote extends Note {
         }
     }
 
-    update() {
-        const globalTime = this.chartPlayer.getGlobalTime() || 0;
+    protected onKeyPressing(event: EventKeyboard): void {
 
-        if (globalTime >= this.time) {
-            if (!this.hasPlayedSFX) {
-                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
-                this.hasPlayedSFX = true;
-            }
+    }
 
-            if (this.mode !== "autoplay") {
-                this.node.destroy();
-            }
-        } else {
-            this.hasPlayedSFX = false;
-        }
-
-        this.updateUI(globalTime);
-        this.lastGlobalTime = globalTime;
+    protected onKeyUp(event: EventKeyboard): void {
+        
     }
 
 

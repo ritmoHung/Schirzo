@@ -2,6 +2,7 @@
 	"id": "luna",
 	"index": 0,
 	"name": "Luna",
+	"default_unlocked": true,
 	"songs": [
 		{
 			"id": "mopemope",
@@ -30,6 +31,9 @@
 		{
 			"id": "hopefortheflowers",
 			"index": 6
-		},
-	]
+		}
+	],
+    "logs": [
+        
+    ]
 }

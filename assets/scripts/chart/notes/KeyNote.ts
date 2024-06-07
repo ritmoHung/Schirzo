@@ -42,28 +42,36 @@ export class KeyNote extends ClickNote {
 
 
     // # Lifecycle
-    protected onKeyDown(event: EventKeyboard) {
-        const globalTime = this.chartPlayer.getGlobalTime() || 0;
-    }
-
     update() {
         const globalTime = this.chartPlayer.getGlobalTime() || 0;
 
         if (globalTime >= this.time) {
-            if (!this.hasPlayedSFX) {
+            if (!this.hasPlayedSfx) {
                 if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
-                this.hasPlayedSFX = true;
+                this.hasPlayedSfx = true;
             }
 
             if (this.mode !== "autoplay") {
                 this.node.destroy();
             }
         } else {
-            this.hasPlayedSFX = false;
+            this.hasPlayedSfx = false;
         }
 
         this.updateUI(globalTime);
         this.lastGlobalTime = globalTime;
+    }
+
+    protected onKeyDown(event: EventKeyboard): void {
+        const globalTime = this.chartPlayer.getGlobalTime() || 0;
+    }
+
+    protected onKeyPressing(event: EventKeyboard): void {
+
+    }
+
+    protected onKeyUp(event: EventKeyboard): void {
+        
     }
 
 
@@ -72,8 +80,8 @@ export class KeyNote extends ClickNote {
     initialize(data: any, judgePoint: JudgePoint) {
         super.initialize(data, judgePoint);
 
-        const keyChar = data.key.toUpperCase();
-        this.key = keyCodeMap[keyChar];
+        const keyChar = data.key;
         this.richText.string = keyChar;
+        this.key = keyCodeMap[keyChar.toUpperCase()];
     }
 }

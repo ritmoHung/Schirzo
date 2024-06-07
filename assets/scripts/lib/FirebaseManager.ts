@@ -1,43 +1,39 @@
 import { assetManager, AudioClip } from "cc"
+import { ChartData, SelectedSong } from "../settings/song";
 
 declare const firebase: any;
 
-export interface ChartData {
-    chart: Record<string, any>,
-    audio: AudioClip
-}
-
-export interface CustomSongData {
-    id: string,
-    name: string,
-    artist: string
-}
-
 export module FirebaseManager {
-    export async function loadChartFromFirebaseStorage(type: "vanilla" | "custom", name: string, onComplete: ({ chart, audio }: ChartData) => void) {
-        const chartRef = firebase.storage().ref(`songs/${type}/${name}`);
+    export async function getChartData(type: "vanilla" | "custom", id: string): Promise<ChartData> {
+        const chartRef = firebase.storage().ref(`songs/${type}/${id}`);
         const chartUrl = await chartRef.child("2.json").getDownloadURL();
         const songUrl = await chartRef.child("base.ogg").getDownloadURL();
-        FirebaseManager.loadChartFromURL(chartUrl, songUrl, onComplete);
+        return getChartDataFromURL(chartUrl, songUrl);
     };
 
-    export async function loadChartFromURL(chartURL: string, songURL: string, onComplete: ({ chart, audio }: ChartData) => void) {
-        let chart: ChartData = {
-            chart: null,
-            audio: null
-        };
-        const res = await fetch(chartURL);
-        const chartJson = await res.json();
-        chart.chart = chartJson as Record<string, any>;
-        assetManager.loadRemote<AudioClip>(songURL, { "ext": ".ogg" }, (err, data) => {
-            if (!err) {
-                chart.audio = data;
-            }
-            onComplete(chart);
-        })
+    export async function getChartDataFromURL(chartURL: string, songURL: string): Promise<ChartData> {
+        const chartRes = await fetch(chartURL);
+        const chartJson = await chartRes.json();
+
+        const chartData: ChartData = {
+            chart: chartJson as Record<string, any>,
+            audio: null as any,
+        }
+
+        return new Promise((resolve, reject) => {
+            assetManager.loadRemote<AudioClip>(songURL, { "ext": ".ogg" }, (error, audioClip) => {
+                if (error) {
+                    console.error(`FIREBASE::AUDIO: Failed to load audio clip, reason: ${error.message}`);
+                    reject(error);
+                }
+
+                chartData.audio = audioClip;
+                resolve(chartData);
+            });
+        });
     }
 
-    export function loadCustomSongs(onComplete: (songs: CustomSongData[]) => void) {
+    export function loadCustomSongs(onComplete: (songs: SelectedSong[]) => void) {
         firebase.database().ref("custom_charts").on("value", (snapshot) => {
             const obj = snapshot.val();
             if (!obj) {
@@ -60,7 +56,7 @@ export module FirebaseManager {
         });
     }
 
-    export function publishCustomSong(songData: CustomSongData, chartFile: File, audioFile: File, onComplete: (err) => void) {
+    export function publishCustomSong(songData: SelectedSong, chartFile: File, audioFile: File, onComplete: (err) => void) {
         try {
             if (chartFile.type != "application/json") {
                 throw `Chart file type is not json! Received ${chartFile.type}`
@@ -84,7 +80,7 @@ export module FirebaseManager {
         }
     }
 
-    export function publishCustomSongDataToDB(songData: CustomSongData, onComplete: (id: string) => void) {
+    export function publishCustomSongDataToDB(songData: SelectedSong, onComplete: (id: string) => void) {
         checkCustomSongValidate(songData.id, (pass) => {
             let id = songData.id;
             if (!pass) {
