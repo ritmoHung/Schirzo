@@ -44,8 +44,22 @@ export module DatabaseManager {
         }
     }
     //return the data of leaderboard
-    export async function getLeaderBoard(SongId: string): Promise<any> {
-        const snapshot = await firebase.database().ref(`leaderboard/songs/vanilla/${SongId}`).once("value");
-        return snapshot.exists() ? snapshot : null;
+    export async function getLeaderBoard(SongId: string): Promise<object> {
+        let songRef = firebase.database().ref(`leaderboard/songs/vanilla/${SongId}/test`);
+
+        // console.log(`Fetching data from: leaderboard/songs/vanilla/${SongId}/test`);
+        
+        try {
+            let snapshot = await songRef.once("value");
+            console.log(`Snapshot value: `, snapshot.val());
+            return snapshot.val();
+        } catch (error) {
+            console.error("Error fetching data: ", error);
+            throw error;
+        }
+    }
+
+    export async function setLeaderBoard(SongId: string, data: any): Promise<void> {
+        return firebase.database().ref(`leaderboard/songs/vanilla/${SongId}/${this.globalSettings.user}`).set(data);
     }
 }

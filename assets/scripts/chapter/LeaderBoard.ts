@@ -109,32 +109,38 @@ export class LeaderBoard extends Component {
         this.leaderboard = await DatabaseManager.getLeaderBoard(SongId);
         //this.leaderboard = this.leaderboard.sort((a: any, b: any) => a.score.val() - b.score.val())
     }
+
     async setSongInfo(songIndex: number) {
         localStorage.setItem(`${this.globalSettings.selectedChapterId}SelectedSongIndex`, songIndex.toString());
         const songData = this.songs[songIndex];
+        console.log(songData);
+    
         const songUnlocked = this.isSongUnlocked(songData);
-        this.getLeaderBoard(songData.id);
-
-        // Song Info
+        console.log(songData.id);
+        
+        this.getLeaderBoard(songData.id).then(() => {
+            console.log("Leaderboard");
+            console.log(this.leaderboard);
+        });
+    
         this.songTitle.string = songUnlocked ? songData.name : this.getRandomString();
         this.songArtist.string = songUnlocked ? songData.artist : this.getRandomString();
 
-        //test
-        if(this.leaderboard){
-            this.ScoreList.string = this.leaderboard.test.score.val();
-        }
-        else{
+        if (this.leaderboard) {
+            this.ScoreList.string = `Score`;
+            this.ScoreNameList.string = `Name`;
+            for (const key in this.leaderboard) {
+                if (this.leaderboard.hasOwnProperty(key)) {
+                    const entry = this.leaderboard[key];
+                    this.ScoreList.string += `\n${entry.score}`;
+                    this.ScoreNameList.string += `\n${entry.name}`;
+                }
+            }
+        } else {
             this.ScoreList.string = `Nope`;
         }
-
-        //TODO:show the data
-        /*this.ScoreList.string = `Score`;
-        this.ScoreNameList.string = `Name`;
-        for(const lis of this.leaderboard){
-            this.ScoreList.string = this.ScoreList.string + `\n${lis.score.val()}`;
-            this.ScoreNameList.string = this.ScoreNameList.string + `\n${lis.name.val()}`;
-        }*/
     }
+    
 
     getRandomString(): string {
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?";

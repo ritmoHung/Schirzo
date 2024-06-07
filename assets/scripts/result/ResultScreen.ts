@@ -115,7 +115,10 @@ export class ResultScreen extends Component {
                 .start();
         }
         tweenResultInfo();
+        let user = this.globalSettings.user;
+        
     }
+
     showUnlockedItems(unlockedSongIds: string[], unlockedLogs: any[]) {
         const songIdsCopy = [...unlockedSongIds];
         const tweenNextSong = () => {
