@@ -15169,7 +15169,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 14.009994506835938,
+      "width": 22.199996948242188,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -15209,7 +15209,7 @@
     "_overflow": 0,
     "_enableWrapText": true,
     "_font": {
-      "__uuid__": "5c877fe1-ef76-4013-af4b-ef399c40e828",
+      "__uuid__": "bc3b3157-f5b0-44d5-b598-1d78202d5585",
       "__expectedType__": "cc.TTFFont"
     },
     "_isSystemFontUsed": false,
@@ -15256,8 +15256,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 42,
-      "height": 42
+      "width": 38,
+      "height": 38
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
