@@ -95,7 +95,338 @@
 			    }
 			],
 			"speedEvents": [],
-			"positionEvents": [],
+			"positionEvents": [
+				{
+                    "startTime": [0, 0],
+                    "endTime": [87, 0],
+                    "easing": "constant",
+                    "start": [0.3, 0.3],
+                    "end": [0.3, 0.3]
+                }
+			],
+			"rotateEvents": [],
+			"opacityEvents": []
+		},
+		{
+			"isInvisible": false,
+			"noteList": [
+				{
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 0]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 120]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 240]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [1, 360]
+			    },
+				{
+			        "type": 0,
+			        "direction": 1,
+			        "time": [2, 0]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [2, 120]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [2, 240]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [2, 360]
+			    },
+				{
+			        "type": 0,
+			        "direction": 1,
+			        "time": [3, 0]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [3, 120]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [3, 240]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [3, 360]
+			    },
+				{
+			        "type": 0,
+			        "direction": 1,
+			        "time": [4, 0]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [4, 120]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [4, 240]
+			    },
+			    {
+			        "type": 0,
+			        "direction": 1,
+			        "time": [4, 360]
+			    }
+			],
+			"speedEvents": [],
+			"positionEvents": [
+				{
+                    "startTime": [0, 0],
+                    "endTime": [87, 0],
+                    "easing": "constant",
+                    "start": [0.7, 0.3],
+                    "end": [0.7, 0.3]
+                }
+            ],
+			"rotateEvents": [],
+			"opacityEvents": []
+		},
+		
+		{
+			"isInvisible": false,
+			"noteList": [
+				{ "type": 1, "direction": 1, "time": [83, 0], "key": "d" }
+			],
+			"speedEvents": [
+				{
+                	"startTime": [79, 0],
+                	"endTime": [79, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [79, 360],
+                	"endTime": [80, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [80, 0],
+                	"endTime": [80, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [80, 360],
+                	"endTime": [81, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [81, 0],
+                	"endTime": [81, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [81, 360],
+                	"endTime": [82, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [82, 0],
+                	"endTime": [82, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [82, 360],
+                	"endTime": [83, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				}
+			],
+            "positionEvents": [
+                {
+                	"startTime": [0, 0],
+                	"endTime": [83, 0],
+                	"easing": "constant",
+                	"start": [0.2, 0.2],
+                    "end": [0.2, 0.2]
+                }
+            ],
+			"rotateEvents": [],
+			"opacityEvents": []
+		},
+		{
+			"isInvisible": false,
+			"noteList": [
+				{ "type": 1, "direction": 1, "time": [83, 0], "key": "i" }
+			],
+			"speedEvents": [
+				{
+                	"startTime": [79, 0],
+                	"endTime": [79, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [79, 360],
+                	"endTime": [80, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [80, 0],
+                	"endTime": [80, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [80, 360],
+                	"endTime": [81, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [81, 0],
+                	"endTime": [81, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [81, 360],
+                	"endTime": [82, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [82, 0],
+                	"endTime": [82, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [82, 360],
+                	"endTime": [83, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				}
+			],
+            "positionEvents": [
+                {
+                	"startTime": [0, 0],
+                	"endTime": [83, 0],
+                	"easing": "constant",
+                	"start": [0.5, 0.2],
+                    "end": [0.5, 0.2]
+                }
+            ],
+			"rotateEvents": [],
+			"opacityEvents": []
+		},
+		{
+			"isInvisible": false,
+			"noteList": [
+				{ "type": 1, "direction": 1, "time": [83, 0], "key": "e" }
+			],
+			"speedEvents": [
+				{
+                	"startTime": [79, 0],
+                	"endTime": [79, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [79, 360],
+                	"endTime": [80, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [80, 0],
+                	"endTime": [80, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [80, 360],
+                	"endTime": [81, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [81, 0],
+                	"endTime": [81, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [81, 360],
+                	"endTime": [82, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				},
+				{
+                	"startTime": [82, 0],
+                	"endTime": [82, 120],
+                	"easing": "linear",
+                	"start": 0.8,
+                    "end": 0.05
+				},
+				{
+                	"startTime": [82, 360],
+                	"endTime": [83, 0],
+                	"easing": "linear",
+                	"start": 0.05,
+                    "end": 0.8
+				}
+			],
+            "positionEvents": [
+                {
+                	"startTime": [0, 0],
+                	"endTime": [83, 0],
+                	"easing": "constant",
+                	"start": [0.8, 0.2],
+                    "end": [0.8, 0.2]
+                }
+            ],
 			"rotateEvents": [],
 			"opacityEvents": []
 		}

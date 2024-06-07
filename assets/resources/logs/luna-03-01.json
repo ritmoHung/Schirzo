@@ -4,20 +4,20 @@
 	"contents": [
 		{
 			"type": "",
-			"content": "{ 2: 母親節卡片 }被丟掉。\n自己最重要的東西也被嘲笑\n被劈腿男方：「你才是{ 3: 有病 }的那個人」\n其實最大的問題不是你父母，也不是那些，而是{ 3: 你自己 }"
+			"content": "{2: 母親節卡片}被丟掉。\n自己最重要的東西也被嘲笑\n被劈腿男方：「你才是{3: 有病}的那個人」\n其實最大的問題不是你父母，也不是那些，而是{3: 你自己}"
 		}
 	],
 	"unlock_requirements": [
 		{
 			"type": "song_score",
 			"song_id": "miserable",
-			"required_score": 600000,
+			"required_score": 800000,
 			"unlock_level": 1
 		},
 		{
 			"type": "song_score",
 			"song_id": "miserable",
-			"required_score": 800000,
+			"required_score": 850000,
 			"unlock_level": 2
 		},
 		{

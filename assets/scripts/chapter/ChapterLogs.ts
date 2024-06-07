@@ -4,6 +4,7 @@ import { SceneTransition } from "../ui/SceneTransition";
 import { DatabaseManager } from "../lib/DatabaseManager";
 import { ButtonLog } from "../ui/button/ButtonLog";
 import { TextLog } from "../ui/text/TextLog";
+import { ButtonIconOutline } from "../ui/button/ButtonIcon";
 const { ccclass, property } = _decorator;
 
 @ccclass("ChapterLogs")
@@ -12,6 +13,8 @@ export class ChapterLogs extends Component {
     sceneTransition: SceneTransition
 
     // Nodes
+    @property(Node)
+    tablet: Node
     @property(Node)
     logsLayout: Node
     @property(Node)
@@ -22,7 +25,6 @@ export class ChapterLogs extends Component {
     // Prefabs
     @property(Prefab)
     buttonLogPrefab: Prefab
-
     @property(Prefab)
     textLogPrefab: Prefab
 
@@ -45,6 +47,7 @@ export class ChapterLogs extends Component {
     private globalSettings: GlobalSettings
     private logCache: { [key: string]: any } = {}
     private buttonStates: Map<Node, boolean> = new Map()
+    private logOpened: boolean = false
 
 
 
@@ -65,11 +68,25 @@ export class ChapterLogs extends Component {
     onKeyDown(event: EventKeyboard) {
         switch (event.keyCode) {
             case KeyCode.ESCAPE:
-                this.loadPreviousScene();
+                if (this.logOpened) {
+                    this.globalSettings.audioManager.playSFX(this.closeLogButton.getComponent(ButtonIconOutline).sfx);
+                    this.closeLog();
+                } else {
+                    this.globalSettings.audioManager.playSFX(this.backButton.getComponent(ButtonIconOutline).sfx);
+                    this.loadPreviousScene();
+                }
                 break;
             default:
                 break;
         }
+    }
+
+    start() {
+        this.tablet.setPosition(new Vec3(0, -1000, 0));
+        this.tablet.angle = 5;
+        tween(this.tablet)
+            .to(1, { position: new Vec3(0, 0, 0), angle: 0 }, { easing: "sineOut" })
+            .start();
     }
 
 
@@ -116,13 +133,14 @@ export class ChapterLogs extends Component {
     }
 
     async openLog(logId: string, unlockLevel: number, hasRead: boolean) {
+        this.logOpened = true;
         this.disableLogButtons();
         this.scrollView.enabled = true;
 
         const log = await this.getLog(logId);
         this.renderLog(log, unlockLevel);
         
-        this.logPanel.setPosition(new Vec3(0, -100, 0));
+        this.logPanel.setPosition(new Vec3(0, -60, 0));
         tween(this.logPanel)
             .to(0.25, { position: new Vec3(0, 0, 0) }, { easing: "sineOut" })
             .start();
@@ -215,12 +233,12 @@ export class ChapterLogs extends Component {
     }
     
     closeLog() {
-
+        this.logOpened = false;
         tween(this.logPanel)
-            .to(0.25, { position: new Vec3(0, -100, 0) }, { easing: "sineOut" })
+            .to(0.25, { position: new Vec3(0, -60, 0) }, { easing: "sineOut" })
             .start();
         tween(this.logPanel.getComponent(UIOpacity))
-            .to(0.25, { opacity: 0 }, { easing: "sineOut" })
+            .to(0.25, { opacity: 0 }, { easing: "sineIn" })
             .call(() => {
                 this.scrollView.enabled = false;
                 this.logContents.removeAllChildren();
@@ -248,6 +266,9 @@ export class ChapterLogs extends Component {
     }
 
     loadPreviousScene() {
+        tween(this.tablet)
+            .to(1, { position: new Vec3(0, -1000, 0), angle: 5 }, { easing: "sineIn" })
+            .start();
         this.sceneTransition.fadeOutAndLoadScene("SongSelect");
     }
 }

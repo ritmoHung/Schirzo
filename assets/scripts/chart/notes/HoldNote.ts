@@ -22,34 +22,46 @@ export class HoldNote extends Note {
 
 
     // # Lifecycle
-    onKeyDown(event: EventKeyboard) {
-        // TODO
-    }
-
     update() {
         // TODO
         const globalTime = this.chartPlayer.getGlobalTime() || 0;
 
         if (globalTime >= this.time && globalTime < this.time + this.holdTime) {
             if (!this.hasPressed) {
-                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
-                this.hasPressed = true;
+                if (Math.abs(globalTime - this.lastGlobalTime) < 1) {
+                    // this.chartPlayer.playSfx(this.sfx);
+                    this.hasPressed = true;
+                }
             }
         } else if (globalTime >= this.time + this.holdTime) {
-            if (!this.hasPlayedSFX) {
-                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
-                this.hasPlayedSFX = true;
+            if (!this.hasPlayedSfx) {
+                if (Math.abs(globalTime - this.lastGlobalTime) < 1) {
+                    // this.chartPlayer.playSfx(this.sfx);
+                    this.hasPlayedSfx = true;
+                }
             }
 
             if (this.mode !== "autoplay") {
                 this.node.destroy();
             }
         } else {
-            this.hasPlayedSFX = false;
+            this.hasPlayedSfx = false;
         }
 
         this.updateUI(globalTime);
         this.lastGlobalTime = globalTime;
+    }
+
+    protected onKeyDown(event: EventKeyboard): void {
+        const globalTime = this.chartPlayer.getGlobalTime() || 0;
+    }
+
+    protected onKeyPressing(event: EventKeyboard): void {
+
+    }
+
+    protected onKeyUp(event: EventKeyboard): void {
+        
     }
 
 

@@ -15,18 +15,20 @@ export class GlobalSettings {
     private _selectedChapterId: string = ""
     private _selectedSong: SelectedSong
 
-    // User Settings
+    public lastSceneName: string
+    public musicVolume: number = 1
+    public sfxVolume: number = 1
+    public devMode: boolean = false
+
+    // User Data
     private _user: any = {}
     private _userData: any = {}
-    public flowSpeed: number = 4.0
-    public offset: number = 0.0
 
 
 
     // # Constructor
     private constructor() {
         // Private constructor to prevent direct construction calls with the `new` operator.
-        this._audioManager = new AudioManager();
         this._unlockManager = new UnlockManager();
     }
 
@@ -41,6 +43,10 @@ export class GlobalSettings {
 
     // # Functions
     public async initialize(): Promise<void> {
+        this.musicVolume = parseFloat(localStorage.getItem("musicVolume" || "1.0"));
+        this.sfxVolume = parseFloat(localStorage.getItem("sfxVolume" || "1.0"));
+        this._audioManager = new AudioManager(GlobalSettings.getInstance());
+
         try {
             if (this._chapters.length === 0) await this.loadChapters();
             if (this._songs.length === 0) await this.loadSongs();
@@ -267,5 +273,9 @@ export class GlobalSettings {
         } else {
             this._userData[key] = { ...this._userData[key], ...data };
         }
+    }
+
+    getUserSettings() {
+        return this._userData.settings;
     }
 }

@@ -37,33 +37,23 @@ export class KeyNote extends ClickNote {
     @property(RichText)
     richText: RichText
 
-    private key: KeyCode
-
 
 
     // # Lifecycle
-    protected onKeyDown(event: EventKeyboard) {
-        const globalTime = this.chartPlayer.getGlobalTime() || 0;
+    update() {
+        super.update();
     }
 
-    update() {
-        const globalTime = this.chartPlayer.getGlobalTime() || 0;
+    protected onKeyDown(event: EventKeyboard): void {
+        super.onKeyDown(event);
+    }
 
-        if (globalTime >= this.time) {
-            if (!this.hasPlayedSFX) {
-                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
-                this.hasPlayedSFX = true;
-            }
+    protected onKeyPressing(event: EventKeyboard): void {
+        super.onKeyPressing(event);
+    }
 
-            if (this.mode !== "autoplay") {
-                this.node.destroy();
-            }
-        } else {
-            this.hasPlayedSFX = false;
-        }
-
-        this.updateUI(globalTime);
-        this.lastGlobalTime = globalTime;
+    protected onKeyUp(event: EventKeyboard): void {
+        super.onKeyUp(event);
     }
 
 
@@ -72,8 +62,8 @@ export class KeyNote extends ClickNote {
     initialize(data: any, judgePoint: JudgePoint) {
         super.initialize(data, judgePoint);
 
-        const keyChar = data.key.toUpperCase();
-        this.key = keyCodeMap[keyChar];
+        const keyChar = data.key;
         this.richText.string = keyChar;
+        this.key = keyCodeMap[keyChar.toUpperCase()];
     }
 }
