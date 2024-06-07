@@ -1,7 +1,6 @@
 import { _decorator, AudioClip, Button, Component, director, EventKeyboard, Input, input, KeyCode, Node, resources, RichText, Sprite, SpriteFrame, tween, UIOpacity } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { SceneTransition } from "../ui/SceneTransition";
-import { BackgroundController } from "../ui/bg/BackgroundController";
 import { BaseButton } from "../ui/button/BaseButton";
 import { ButtonIconOutline } from "../ui/button/ButtonIcon";
 const { ccclass, property } = _decorator;
@@ -10,9 +9,6 @@ const { ccclass, property } = _decorator;
 export class SongSelect extends Component {
     @property(SceneTransition)
     sceneTransition: SceneTransition
-
-    @property(BackgroundController)
-    background: BackgroundController
 
     @property(AudioClip)
     enterSFX: AudioClip
@@ -40,18 +36,18 @@ export class SongSelect extends Component {
     // Buttons
     @property(Button)
     prevButton: Button
-
     @property(Button)
     nextButton: Button
-
     @property(Button)
     backButton: Button
-
     @property(Button)
     logsButton: Button
-
     @property(Button)
     settingsButton: Button
+
+    // UIOpacity
+    @property(UIOpacity)
+    notificationDot: UIOpacity
 
     private globalSettings: GlobalSettings
     private songs: any = []
@@ -65,7 +61,6 @@ export class SongSelect extends Component {
     // # Lifecycle
     onLoad() {
         this.globalSettings = GlobalSettings.getInstance();
-        this.background.type = this.globalSettings.selectedChapterId;
         this.loadSongs(this.globalSettings.selectedChapterId);
 
         // Song Info
@@ -73,6 +68,10 @@ export class SongSelect extends Component {
         this.setSongInfo(this.selectedSongIndex);
 
         // Buttons
+        const logs = this.globalSettings.getUserData("logs");
+        if (this.hasUnreadLogs(logs)) {
+            this.notificationDot.opacity = 255;
+        }
         this.prevButton.node.on(Button.EventType.CLICK, this.selectPreviousSong, this);
         this.nextButton.node.on(Button.EventType.CLICK, this.selectNextSong, this);
         this.backButton.node.on(Button.EventType.CLICK, () => this.loadScene("ChapterSelect"), this);
@@ -275,6 +274,16 @@ export class SongSelect extends Component {
         this.setSongInfo(this.selectedSongIndex);
     }
 
+    hasUnreadLogs(logs: { [key: string]: any }): boolean {
+        for (const logId in logs) {
+            const unlockLevel = logs[logId]?.unlock_level || 0;
+            if (unlockLevel > 0 && logs[logId]?.has_read === false) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     loadChartPlayerScene() {
         const songData = this.songs[this.selectedSongIndex];
         const songUnlocked = this.isSongUnlocked(songData);

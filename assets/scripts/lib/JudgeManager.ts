@@ -1,7 +1,7 @@
 import { KeyCode } from "cc";
 
 export enum JudgementType {
-    PDecrypt = "perfect decrypt",
+    PDecrypt = "perfect_decrypt",
     Decrypt = "decrypt",
     Good = "good",
     Cypher = "cypher",
@@ -21,6 +21,16 @@ export const DECRYPT_RANGE: number = 80;
 export const GOOD_RANGE: number = 120;
 export const ACTIVE_RANGE: number = 120;
 
+export const RANK_THRESHOLDS: { [key: string]: number } = {
+    "Fd": 1000000,
+    "s": 950000,
+    "A": 900000,
+    "b": 800000,
+    "c": 700000,
+    "d": 600000,
+    "F": 0
+}
+
 export class JudgeManager {
     private static instance: JudgeManager
     private _judgements: Judgements = {
@@ -32,7 +42,7 @@ export class JudgeManager {
 
     public activeKeys: Map<KeyCode, boolean> = new Map()
     public noteCount: number = 0
-    private maxCombo: number = 0
+    private _maxCombo: number = 0
     private _combo: number = 0
     private _score: number = 0
     private _accuracy: string = "0.00"
@@ -56,6 +66,15 @@ export class JudgeManager {
     // # Functions
     public addNoteCount() {
         this.noteCount++;
+    }
+
+    public getRank(score: number = this._score): string {
+        for (const rank in RANK_THRESHOLDS) {
+            if (score >= RANK_THRESHOLDS[rank]) {
+                return rank;
+            }
+        }
+        return "F";
     }
 
     public judgeNote(dt: number) {
@@ -95,7 +114,7 @@ export class JudgeManager {
             ((this._judgements[JudgementType.PDecrypt].count + this._judgements[JudgementType.Decrypt].count)
             + 0.7 * this._judgements[JudgementType.Good].count)
             * (BASE_SCORE / this.noteCount)
-        ) + this.maxCombo;
+        ) + this._maxCombo;
         this._accuracy = Number(
             (this._judgements[JudgementType.PDecrypt].count
             + 0.9 * this._judgements[JudgementType.Decrypt].count
@@ -106,8 +125,8 @@ export class JudgeManager {
 
     addCombo() {
         this._combo++;
-        if (this.combo > this.maxCombo) {
-            this.maxCombo = this.combo;
+        if (this.combo > this._maxCombo) {
+            this._maxCombo = this.combo;
         }
     }
 
@@ -119,6 +138,10 @@ export class JudgeManager {
         return this._judgements;
     }
 
+    get maxCombo(): number {
+        return this._maxCombo;
+    }
+    
     get combo(): number {
         return this._combo;
     }
@@ -141,7 +164,7 @@ export class JudgeManager {
     
         this.activeKeys = new Map();
         this.noteCount = 0;
-        this.maxCombo = 0;
+        this._maxCombo = 0;
         this._combo = 0;
         this._score = 0;
         this._accuracy = "00.00";

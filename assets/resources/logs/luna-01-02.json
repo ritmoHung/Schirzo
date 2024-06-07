@@ -1,0 +1,34 @@
+{
+    "id": "luna-01-02",
+    "name": "temp",
+    "contents": [
+        {
+            "type": "text",
+            "content": "<b>睡不著 2</b>"
+        },
+        {
+            "type": "text",
+            "content": "記憶中，{3:他們吵架的時候，或不開心的時候}，\n我就關起門來戴上{2: 耳機開始作曲、演奏}。\n\n從童年到現在，{2: 音樂}一直都是我的避風港。\n每當夜深人靜，只有我和{2: 鋼琴}時，我才能感受到一絲平靜。"
+        }
+    ],
+    "unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "tpvsshark",
+			"required_score": 800000,
+			"unlock_level": 1
+		},
+        {
+            "type": "song_score",
+            "song_id": "tpvsshark",
+            "required_score": 850000,
+            "unlock_level": 2
+        },
+        {
+            "type": "song_score",
+            "song_id": "tpvsshark",
+            "required_score": 900000,
+            "unlock_level": 3
+        }
+	]
+}

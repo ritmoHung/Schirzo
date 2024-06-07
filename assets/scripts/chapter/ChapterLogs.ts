@@ -211,7 +211,7 @@ export class ChapterLogs extends Component {
                 if (keyNumber <= unlockLevel) {
                     replacement = value;
                 } else {
-                    replacement = `<color=#D85C5C>${this.getRandomString(2 * value.length)}</color>`;
+                    replacement = `<color=#D85C5C>${this.getRandomString(value.length)}</color>`;
                 }
             }
 

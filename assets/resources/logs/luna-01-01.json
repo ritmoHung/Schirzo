@@ -1,38 +1,28 @@
 {
-	"id": "luna-01-01",
-	"name": "大逃鯊",
-	"contents": [
-		{
-			"type": "text",
-			"content": "逃鯊，逃避"
-		},
-		{
-			"type": "text",
-			"content": "他們{2: 吵架}的時候，不開心的時候，就關起門來"
-		},
-		{
-			"type": "text",
-			"content": "開始{3: 作曲、演奏}，從童年到現在都是一個出口"
-		}
-	],
-	"unlock_requirements": [
+    "id": "luna-01-01",
+    "name": "temp",
+    "contents": [
+        {
+            "type": "text",
+            "content": "<b>煩死了</b>"
+        },
+        {
+            "type": "text",
+            "content": "不可能跟家裡講\n也不可能{2: 再找 Venus} 談\n都是我自己自作多情\n\n我開始透過創作來轉換心情\n想要去投新人獎之類的。\n\n音樂成了我唯一的出口\n只有在創作的時候\n我才能暫時忘記那些{2: 混亂的情感。}"
+        }
+    ],
+    "unlock_requirements": [
 		{
 			"type": "song_score",
 			"song_id": "tpvsshark",
 			"required_score": 800000,
 			"unlock_level": 1
 		},
-		{
-			"type": "song_score",
-			"song_id": "tpvsshark",
-			"required_score": 850000,
-			"unlock_level": 2
-		},
-		{
-			"type": "song_score",
-			"song_id": "tpvsshark",
-			"required_score": 950000,
-			"unlock_level": 3
-		}
+        {
+            "type": "song_score",
+            "song_id": "tpvsshark",
+            "required_score": 850000,
+            "unlock_level": 2
+        }
 	]
 }

@@ -2,7 +2,7 @@ import { _decorator, Button, Component, EventKeyboard, Input, input, KeyCode, re
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { DatabaseManager } from "../lib/DatabaseManager";
 import { SceneTransition } from "../ui/SceneTransition";
-import { JudgeManager } from "../lib/JudgeManager";
+import { JudgeManager, JudgementType } from "../lib/JudgeManager";
 import { ButtonIconOutline } from "../ui/button/ButtonIcon";
 const { ccclass, property } = _decorator;
 
@@ -14,19 +14,54 @@ export class ResultScreen extends Component {
     @property(Sprite)
     bgSprite: Sprite
 
+    // RichText
+    @property(RichText)
+    rankText: RichText
+    @property(RichText)
+    scoreText: RichText
+    @property(RichText)
+    diffText: RichText
+    @property(RichText)
+    pdText: RichText
+    @property(RichText)
+    pdEarlyText: RichText
+    @property(RichText)
+    pdLateText: RichText
+    @property(RichText)
+    dText: RichText
+    @property(RichText)
+    dEarlyText: RichText
+    @property(RichText)
+    dLateText: RichText
+    @property(RichText)
+    goodText: RichText
+    @property(RichText)
+    goodEarlyText: RichText
+    @property(RichText)
+    goodLateText: RichText
+    @property(RichText)
+    cypherText: RichText
+    @property(RichText)
+    cypherEarlyText: RichText
+    @property(RichText)
+    cypherLateText: RichText
+    @property(RichText)
+    accuracyText: RichText
+
+    @property(RichText)
+    unlockText: RichText
+
     // Buttons
     @property(Button)
     backButton: Button | null = null
     @property(Button)
     retryButton: Button | null = null
 
-    @property(RichText)
-    unlockText: RichText
-
     private globalSettings: GlobalSettings
     private judgeManager: JudgeManager
     private unlockedSongIds: string[] = []
     private unlockedLogs: any[] = []
+
 
 
     // # Lifecycle
@@ -37,6 +72,15 @@ export class ResultScreen extends Component {
 
         // Set background image to song jacket (blurred)
         this.setBackground(selectedSong.id).then(() => {
+            // Result & Unlocks
+            this.updateUserSongData(selectedSong.id);
+            this.checkAndSaveUnlocks();
+
+            // Show result and unlocks
+            this.showResult(selectedSong.id);
+            this.showUnlockedItems(this.unlockedSongIds, this.unlockedLogs);
+            
+            // ! And finally attach the event listeners
             // Buttons
             this.backButton.node.on(Button.EventType.CLICK, this.back, this);
             if (!selectedSong.anomaly) {
@@ -46,33 +90,9 @@ export class ResultScreen extends Component {
 
             // Key Down
             input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
-
-            // Result & Unlocks
-            const songId = selectedSong.id;
-            this.globalSettings.patchUserData({ key: "songs", id: songId, data: {
-                score: 900000,
-                accuracy: 100.00,
-            }})
-            const { unlockedSongIds, unlockedLogs } = this.globalSettings.unlockManager.checkUnlocks();
-            this.unlockedSongIds = unlockedSongIds;
-            this.unlockedLogs = unlockedLogs;
-            unlockedSongIds.forEach(songId => {
-                this.globalSettings.patchUserData({ key: "songs", id: songId, data: { unlocked: true } });
-            });
-            
-            unlockedLogs.forEach(log => {
-                this.globalSettings.patchUserData({ key: "logs", id: log.id, data: { unlock_level: log.unlock_level, has_read: false } });
-            });
-    
-            // Save patched log data to database
-            DatabaseManager.updateData();
         }).catch(error => {
             console.error(error);
         });
-    }
-
-    start() {
-        this.showUnlockedItems(this.unlockedSongIds, this.unlockedLogs);
     }
 
     onKeyDown(event: EventKeyboard) {
@@ -109,6 +129,35 @@ export class ResultScreen extends Component {
         });
     }
 
+    showResult(songId: string) {
+        const judgements = this.judgeManager.judgements;
+        const oldScore = this.globalSettings.getUserData("songs", songId).score ?? 0;
+        const scoreDiff = (this.judgeManager.score - oldScore);
+
+        this.rankText.string = this.judgeManager.getRank();
+        this.scoreText.string = this.judgeManager.score.toString();
+        this.diffText.string = `${scoreDiff >= 0 ? "+" : ""}${scoreDiff.toString()}`;
+
+        this.pdText.string = judgements[JudgementType.PDecrypt].count.toString();
+        this.pdEarlyText.string = judgements[JudgementType.PDecrypt].early.toString();
+        this.pdLateText.string = judgements[JudgementType.PDecrypt].late.toString();
+
+        this.dText.string = judgements[JudgementType.Decrypt].count.toString();
+        this.dEarlyText.string = judgements[JudgementType.Decrypt].early.toString();
+        this.dLateText.string = judgements[JudgementType.Decrypt].late.toString();
+
+        this.goodText.string = judgements[JudgementType.Good].count.toString();
+        this.goodEarlyText.string = judgements[JudgementType.Good].early.toString();
+        this.goodLateText.string = judgements[JudgementType.Good].late.toString();
+
+        this.cypherText.string = judgements[JudgementType.Cypher].count.toString();
+        this.cypherEarlyText.string = judgements[JudgementType.Cypher].early.toString();
+        this.cypherLateText.string = judgements[JudgementType.Cypher].late.toString();
+
+        this.accuracyText.string = this.judgeManager.accuracy.toString();
+        // this.judgeManager.maxCombo
+    }
+
     showUnlockedItems(unlockedSongIds: string[], unlockedLogs: any[]) {
         const songIdsCopy = [...unlockedSongIds];
         const tweenNextSong = () => {
@@ -141,6 +190,36 @@ export class ResultScreen extends Component {
         };
 
         tweenNextSong();
+    }
+
+    updateUserSongData(songId: string) {
+        if (this.globalSettings.devMode) {
+            this.globalSettings.patchUserData({ key: "songs", id: songId, data: {
+                score: 900000,
+                accuracy: 100.00,
+            }});
+        } else {
+            this.globalSettings.patchUserData({ key: "songs", id: songId, data: {
+                score: this.judgeManager.score,
+                accuracy: parseFloat(this.judgeManager.accuracy),
+            }})
+        }
+    }
+
+    checkAndSaveUnlocks() {
+        const { unlockedSongIds, unlockedLogs } = this.globalSettings.unlockManager.checkUnlocks();
+        this.unlockedSongIds = unlockedSongIds;
+        this.unlockedLogs = unlockedLogs;
+        unlockedSongIds.forEach(songId => {
+            this.globalSettings.patchUserData({ key: "songs", id: songId, data: { unlocked: true } });
+        });
+        
+        unlockedLogs.forEach(log => {
+            this.globalSettings.patchUserData({ key: "logs", id: log.id, data: { unlock_level: log.unlock_level, has_read: false } });
+        });
+
+        // Save patched log data to database
+        DatabaseManager.updateData();
     }
 
     retry() {

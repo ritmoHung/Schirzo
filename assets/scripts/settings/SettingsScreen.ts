@@ -55,8 +55,9 @@ export class Settings extends Component {
         this.flowSpeedSlider.progress = this.globalSettings.getUserData("settings", "flow_speed") / 10;
         this.flowSpeedText.string = this.globalSettings.getUserData("settings", "flow_speed").toString();
         this.flowSpeedSlider.node.on("slide", this.onFlowSpeedSliderChange, this);
-        
-        const offsetSec = this.globalSettings.getUserData("settings", "offset") ?? 0;
+
+        let offsetSec = this.globalSettings.getUserData("settings", "offset");
+        offsetSec = (typeof offsetSec === "number") ? offsetSec : 0;
         this.chartOffsetSlider.progress = this.getSliderProgressByOffset(offsetSec);
         this.charOffsetText.string = (1000 * offsetSec).toFixed(0);
         this.chartOffsetSlider.node.on("slide", this.onChartOffsetSliderChange, this);
@@ -105,7 +106,6 @@ export class Settings extends Component {
     }
     setFlowSpeed(value: number) {
         this.globalSettings.setUserData({ key: "settings", id: "flow_speed", data: value });
-        console.log(this.globalSettings.getUserData("settings", "flow_speed"));
     }
 
     // * Chart Offset
@@ -123,7 +123,6 @@ export class Settings extends Component {
     }
     setChartOffset(value: number) {
         this.globalSettings.setUserData({ key: "settings", id: "offset", data: value });
-        console.log(this.globalSettings.getUserData("settings", "offset"));
     }
 
     // * Music Volume

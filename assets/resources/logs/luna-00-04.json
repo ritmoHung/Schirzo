@@ -1,0 +1,34 @@
+{
+    "id": "luna-00-04",
+    "name": "temp",
+    "contents": [
+        {
+            "type": "text",
+            "content": "<b>睡不著 1</b>"
+        },
+        {
+            "type": "text",
+            "content": "{2: 媽媽}平時都是笑笑的\n但有時候突然{2: 發瘋}，{2: 亂砸東西}，拿{3:刀子}亂揮\n\n「不要這樣...不要這樣...」\n\n在眼淚中驚醒\n就睡不著了"
+        }
+    ],
+    "unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "mopemope",
+			"required_score": 800000,
+			"unlock_level": 1
+		},
+        {
+            "type": "song_score",
+            "song_id": "mopemope",
+            "required_score": 850000,
+            "unlock_level": 2
+        },
+        {
+            "type": "song_score",
+            "song_id": "mopemope",
+            "required_score": 900000,
+            "unlock_level": 3
+        }
+	]
+}

@@ -283,7 +283,7 @@ export class ChartPlayer extends Component {
             for(let i = 0; i < this.hintAmount; i++) {
                 const delay = (i + this.hintAmount) * this.hintDuration;
                 this.scheduleOnce(() => {
-                    this.playSfx(this.hintSFX);
+                    this.playSfx(this.hintSFX, 1.0);
                 }, delay);
             }
 
@@ -567,8 +567,8 @@ export class ChartPlayer extends Component {
         }
     }
 
-    playSfx(clip: AudioClip) {
-        this.audioSource.playOneShot(clip, this.globalSettings.sfxVolume);
+    playSfx(clip: AudioClip, volume: number = this.globalSettings.sfxVolume) {
+        this.audioSource.playOneShot(clip, volume);
     }
 
 
