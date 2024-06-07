@@ -33,12 +33,11 @@ export class JudgePointPool extends Component {
         if (!judgePoint) {
             judgePoint = instantiate(this.judgePointPrefab);
             if (ChartEditor.Instance) {
-                judgePoint.getChildByName("JudgePointSprite").on("click", () => ChartEditor.Instance.selectJudgePoint(judgePoint.getComponent(EditorJudgePoint)), ChartEditor.Instance);
-                const sprite = judgePoint.getChildByName("JudgePointSprite").getComponent(Sprite);
-                sprite.color = new Color("#999999");
-                this._sprites.push(sprite);
+
+
             }
             this._pool.push(judgePoint);
+            this._sprites.push(judgePoint.getChildByName("JudgePointSprite").getComponent(Sprite));
         }
 
         judgePoint.active = true;
