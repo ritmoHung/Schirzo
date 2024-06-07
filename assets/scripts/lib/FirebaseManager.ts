@@ -1,5 +1,5 @@
 import { assetManager, AudioClip } from "cc"
-import { ChartData, SelectedSong } from "../settings/song";
+import { ChartData, CustomSongData } from "../settings/song";
 
 declare const firebase: any;
 
@@ -33,7 +33,7 @@ export module FirebaseManager {
         });
     }
 
-    export function loadCustomSongs(onComplete: (songs: SelectedSong[]) => void) {
+    export function loadCustomSongs(onComplete: (songs: CustomSongData[]) => void) {
         firebase.database().ref("custom_charts").on("value", (snapshot) => {
             const obj = snapshot.val();
             if (!obj) {
@@ -56,7 +56,7 @@ export module FirebaseManager {
         });
     }
 
-    export function publishCustomSong(songData: SelectedSong, chartFile: File, audioFile: File, onComplete: (err) => void) {
+    export function publishCustomSong(songData: CustomSongData, chartFile: File, audioFile: File, onComplete: (err) => void) {
         try {
             if (chartFile.type != "application/json") {
                 throw `Chart file type is not json! Received ${chartFile.type}`
@@ -67,6 +67,9 @@ export module FirebaseManager {
                 if (id == null) {
                     onComplete("Unknown error from firebase database")
                 }
+                chartFile = new File([chartFile], "2.json", {type: chartFile.type});
+                audioFile = new File([audioFile], "base.ogg", {type: audioFile.type});
+
                 firebase.storage().ref(`songs/custom/${id}/2.json`).put(chartFile).catch((err) => {
                     throw err;
                 });
@@ -80,14 +83,14 @@ export module FirebaseManager {
         }
     }
 
-    export function publishCustomSongDataToDB(songData: SelectedSong, onComplete: (id: string) => void) {
+    export function publishCustomSongDataToDB(songData: CustomSongData, onComplete: (id: string) => void) {
         checkCustomSongValidate(songData.id, (pass) => {
             let id = songData.id;
             if (!pass) {
                 const randomCode = Math.random().toString().replace(/[^a-zA-Z0-9]/g, '').slice(0, 5)
                 id += `-${randomCode}`;
             }
-            console.log(pass, id);
+            id = id.split(" ").join("-");
             onComplete(id);
 
             firebase.database().ref(`custom_charts/${id}`).set(songData, (err) => {

@@ -1,6 +1,6 @@
 import { _decorator, Button, Component, director, Label, Node } from 'cc';
-import { CustomSongData } from '../lib/FirebaseManager';
 import { GlobalSettings } from '../settings/GlobalSettings';
+import { CustomSongData } from '../settings/song';
 const { ccclass, property } = _decorator;
 
 @ccclass('CustomSong')
@@ -27,6 +27,11 @@ export class CustomSong extends Component {
         this.node.on("click", this.playChart, this);
     }
 
+    /*
+    onDestroy() {
+        this.node.off("click", this.playChart, this);
+    }*/
+
     initialize(customSongData: CustomSongData) {
         this.id = customSongData.id;
         this.nameLabel.string = customSongData.name;
@@ -36,7 +41,9 @@ export class CustomSong extends Component {
     playChart() {
         GlobalSettings.getInstance().selectedSong = {
             type: "custom",
-            id: this.id
+            id: this.id,
+            mode: "gameplay",
+            anomaly: false
         };
         director.loadScene("ChartPlayer");
     }

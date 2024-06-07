@@ -18,3 +18,9 @@ export interface SelectedSong {
     mode: ChartMode
     anomaly: boolean
 }
+
+export interface CustomSongData {
+    id: string,
+    name: string,
+    artist: string
+}

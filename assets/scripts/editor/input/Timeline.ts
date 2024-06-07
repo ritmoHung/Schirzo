@@ -38,6 +38,13 @@ export class Timeline extends Component {
         this.node.on(Node.EventType.MOUSE_LEAVE, this.hoverEnd, this);
     }
 
+    /*
+    onDestroy() {
+        this.node.off(Node.EventType.MOUSE_ENTER, this.hoverStart, this);
+        this.node.off(Node.EventType.MOUSE_DOWN, this.timelineClick, this);
+        this.node.off(Node.EventType.MOUSE_LEAVE, this.hoverEnd, this);
+    }*/
+
     update(dt: number) {
         this.updatePosition();
     }
@@ -98,7 +105,7 @@ export class Timeline extends Component {
     updatePosition() {
         for (const nodeComponent of this.nodes) {
             const node = nodeComponent.node;
-            node.position = v3(0, MeasureLinePool.Instance.barHeight * (nodeComponent.time[0] - MeasureLinePool.Instance.currentTime[0] + (nodeComponent.time[1] - MeasureLinePool.Instance.currentTime[1]) / ChartPlayer.Instance.UPB / ChartEditor.Instance.bpb) - MeasureLinePool.Instance.resolution.height * 0.3);
+            node.position = v3(0, MeasureLinePool.Instance.barHeight * (nodeComponent.time[0] - MeasureLinePool.Instance.currentTime[0] + (nodeComponent.time[1] - MeasureLinePool.Instance.currentTime[1]) / ChartPlayer.Instance.editorUPB / ChartEditor.Instance.bpb) - MeasureLinePool.Instance.resolution.height * 0.3);
             if (node.position.y < -MeasureLinePool.Instance.resolution.height * 0.3 || node.position.y > MeasureLinePool.Instance.resolution.height * 0.5) {
                 node.active = false;
                 nodeComponent.close();

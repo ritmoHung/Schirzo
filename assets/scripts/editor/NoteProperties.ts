@@ -22,6 +22,11 @@ export class NoteProperties extends Component {
         this.noteTypeInput.node.on("change", this.specificNoteSettings, this);
     }
 
+    /*
+    onDestroy() {
+        this.noteTypeInput.node.off("change", this.specificNoteSettings, this);
+    }*/
+
     specificNoteSettings(value: string) {
         this.buttonPressEditbox.node.parent.active = value == "key";
         ChartEditor.Instance.updatePreviewNote();

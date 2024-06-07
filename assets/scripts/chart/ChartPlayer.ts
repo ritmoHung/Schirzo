@@ -9,6 +9,7 @@ import { ProgressSlider } from "./ProgressSlider";
 import { ChartText } from "./ChartText";
 import { ButtonIconOutline } from "../ui/button/ButtonIcon";
 import { ButtonSquare } from "../ui/button/ButtonSquare";
+import { EditStateManager } from "../editor/EditStateManager";
 const { ccclass, property } = _decorator;
 
 interface BPMEvent {
@@ -211,7 +212,9 @@ export class ChartPlayer extends Component {
     }
 
     onDestroy() {
-        this.audioSource.node.off("ended", this.onAudioEnded, this);
+        if (!EditStateManager.playerInit) {
+            this.audioSource.node.off("ended", this.onAudioEnded, this);
+        }
     }
 
     // # Functions
@@ -253,7 +256,6 @@ export class ChartPlayer extends Component {
         if (this.audioSource) {
             this.audioSource.clip = this.chartData.audio;
             this.songDuration = this.chartData.audio.getDuration();
-            this.audioSource.node.on(AudioSource.EventType.ENDED, this.onAudioEnded, this);
         }
     }
 
@@ -331,7 +333,13 @@ export class ChartPlayer extends Component {
         // Clear judgepoints
         this.judgePointPool.reset();
         this.chartData = null;
-        if (!this.editing) this.sceneTransition.fadeOutAndLoadScene("SongSelect");
+        if (!this.editing) {
+            if (this.song.type == "custom") {
+                this.sceneTransition.fadeOutAndLoadScene("CustomChartSelect");
+            } else {
+                this.sceneTransition.fadeOutAndLoadScene("SongSelect");
+            }
+        }
     }
 
     openMenu() {

@@ -60,7 +60,7 @@ export class MeasureLine extends Component {
             } else {
                 pulling = false;
             }
-            y = bottomPosition + this.pool.barHeight * (this.time[0] - this.pool.currentTime[0] + (this.time[1] - this.pool.currentTime[1]) / ChartPlayer.Instance.UPB / bpb);
+            y = bottomPosition + this.pool.barHeight * (this.time[0] - this.pool.currentTime[0] + (this.time[1] - this.pool.currentTime[1]) / ChartPlayer.Instance.editorUPB / bpb);
         }
         this.node.position = v3(this.node.position.x, y);
         this.updateLabel();
@@ -82,6 +82,13 @@ export class MeasureLine extends Component {
         this.node.off(Node.EventType.MOUSE_UP, this.measureLineClick, this);
         this.node.off(Node.EventType.MOUSE_LEAVE, this.hoverEnd, this);
     }
+
+    /*
+    onDestroy() {
+        if (this.interactable) {
+            this.off();
+        }
+    }*/
 
     measureLineClick(event: EventMouse) {
         const judgePoint = ChartEditor.Instance.judgePointPool.pool[ChartEditor.Instance.selectedJudgePoint.index].getComponent(EditorJudgePoint);
@@ -108,7 +115,7 @@ export class MeasureLine extends Component {
         const bpb = ChartEditor.Instance.bpb;
         const bottomPosition = 0.2 * this.pool.resolution.height;
 
-        this.node.position = v3(1020, bottomPosition + this.pool.barHeight * (this.time[0] - this.pool.currentTime[0] + (this.time[1] - this.pool.currentTime[1]) / ChartPlayer.Instance.UPB / bpb));
+        this.node.position = v3(1020, bottomPosition + this.pool.barHeight * (this.time[0] - this.pool.currentTime[0] + (this.time[1] - this.pool.currentTime[1]) / ChartPlayer.Instance.editorUPB / bpb));
         if (this.node.position.y < bottomPosition) {
             this.time = [this.time[0] + this.pool.renderBarCount, this.time[1]];
             this.updateLabel();
@@ -119,9 +126,9 @@ export class MeasureLine extends Component {
     }
 
     updateLabel() {
-        if (this.time[1] % ChartPlayer.Instance.UPB == 0) {
+        if (this.time[1] % ChartPlayer.Instance.editorUPB == 0) {
             this.label.node.active = true;
-            this.label.string = `bAr ${this.time[0]}-${Math.floor(this.time[1] / ChartPlayer.Instance.UPB)}`
+            this.label.string = `bAr ${this.time[0]}-${Math.floor(this.time[1] / ChartPlayer.Instance.editorUPB)}`
         } else {
             this.label.node.active = false;
         }
@@ -137,7 +144,7 @@ export class MeasureLine extends Component {
                 this.opacity.opacity = 200;
             } else if (this.time[1] == 0) {
                 this.opacity.opacity = 150;
-            } else if (this.time[1] % ChartPlayer.Instance.UPB == 0) {
+            } else if (this.time[1] % ChartPlayer.Instance.editorUPB == 0) {
                 this.opacity.opacity = 100;
             } else {
                 this.opacity.opacity = 25;

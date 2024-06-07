@@ -1,8 +1,9 @@
 import { _decorator, Button, Component, director, EditBox, instantiate, Label, Node, Prefab, tween, UIOpacity } from 'cc';
-import { CustomSongData, FirebaseManager } from './lib/FirebaseManager';
+import { FirebaseManager } from './lib/FirebaseManager';
 import { CustomSong } from './menu/CustomSong';
 import { NumericInput } from './editor/input/NumericInput';
 import { PublishDialog } from './menu/PublishDialog';
+import { CustomSongData } from './settings/song';
 const { ccclass, property } = _decorator;
 
 @ccclass('CustomChart')
@@ -57,27 +58,19 @@ export class CustomChart extends Component {
             this.songBlocks[i].interactable = false;
             this.songSelectionPool.addChild(node);
         }
-
-        director.preloadScene("ChartPlayer", (err) => {
-            if (err) {
-                console.log("SCENE::CHARTPLAYER: Failed");
-                return;
-            }
-            console.log("SCENE::CHARTPLAYER: Preloaded");
-        });
-        
-        director.preloadScene("ChartEditor", (err) => {
-            if (err) {
-                console.log("SCENE::CHARTEDITOR: Failed");
-                return;
-            }
-            console.log("SCENE::CHARTEDITOR: Preloaded");
-        });
     }
+
+    /*
+    onDestroy() {
+        this.backButton.node.off("click", this.back, this);
+        this.editButton.node.off("click", this.edit, this);
+        this.publishButton.node.off("click", this.publish, this);
+        this.pageInput.node.off("change", this.pageUpdate, this);
+        this.searchEditbox.node.off("text-changed", this.songSearch, this);
+    }*/
 
     start() {
         FirebaseManager.loadCustomSongs((songs) => {
-            console.log(songs);
             this.songs = songs;
             this.searchedSongs = songs;
             this.noCustomSongLabel.string = "no chart data.";
@@ -121,7 +114,7 @@ export class CustomChart extends Component {
     }
 
     back() {
-        // TODO: Back to menu scene
+        director.loadScene("ChapterSelect");
     }
 
     edit() {

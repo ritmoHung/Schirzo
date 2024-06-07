@@ -49,7 +49,7 @@ export class EditorHoldNote extends Note {
 
     updateEnd(time: [number, number]) {
         if (!time || time.length < 2) return;
-        const endOffset = ((time[0] - this.startTime[0]) * ChartEditor.Instance.bpb + (time[1] - this.startTime[1]) / this.chartPlayer.UPB) * MeasureLinePool.Instance.measureLineBeatGap * MeasureLinePool.Instance.resolution.height;
+        const endOffset = ((time[0] - this.startTime[0]) * ChartEditor.Instance.bpb + (time[1] - this.startTime[1]) / this.chartPlayer.editorUPB) * MeasureLinePool.Instance.measureLineBeatGap * MeasureLinePool.Instance.resolution.height;
         if (endOffset < 0) return;
         this.startSprite.setPosition(0, 0, 0);
         this.endSprite.setPosition(0, endOffset, 0);

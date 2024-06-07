@@ -25,6 +25,10 @@ export class EditStateManager extends Component {
         return EditStateManager.instance ? EditStateManager.instance.currentEditing : false;
     }
 
+    public static get playerInit() {
+        return EditStateManager.instance.initializing;
+    }
+
     onLoad() {
         EditStateManager.instance = this;
     }
@@ -36,6 +40,12 @@ export class EditStateManager extends Component {
         this.switchToEditorButton.node.on("click", () => this.pageSwitch(true), this);
         this.switchToPlayerButton.node.on("click", () => this.pageSwitch(false), this);
     }
+
+    /*
+    onDestroy() {
+        this.switchToEditorButton.node.off("click", () => this.pageSwitch(true), this);
+        this.switchToPlayerButton.node.off("click", () => this.pageSwitch(false), this);
+    }*/
 
     pageSwitch(editing: boolean) {
         this.currentEditing = editing;

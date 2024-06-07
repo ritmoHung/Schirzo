@@ -26,6 +26,13 @@ export class TutorialBox extends Component {
         this.node.active = false;
     }
 
+    /*
+    onDestroy() {
+        this.openButton.node.off("click", this.openTutorial, this);
+        this.closeButton.node.off("click", this.closeTutorial, this);
+        this.pageInput.node.off("change", this.flip, this);
+    }*/
+
     openTutorial() {
         this.node.active = true;
         this.boxOpacity.opacity = 0;
