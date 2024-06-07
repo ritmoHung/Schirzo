@@ -1,8 +1,17 @@
 import { AudioClip, AudioSource, tween } from "cc";
+import { GlobalSettings } from "./GlobalSettings";
 
 export class AudioManager {
+    private globalSettings: GlobalSettings;
     private bgmAudioSource: AudioSource = new AudioSource();
     private sfxAudioSource: AudioSource = new AudioSource();
+    
+    
+    
+    // # Lifecycle
+    constructor(globalSettings: GlobalSettings) {
+        this.globalSettings = globalSettings;
+    }
 
 
 
@@ -14,7 +23,7 @@ export class AudioManager {
             this.bgmAudioSource.stop();
             this.bgmAudioSource.clip = clip;
             this.bgmAudioSource.loop = loop;
-            this.bgmAudioSource.volume = 1;
+            this.bgmAudioSource.volume = this.globalSettings.musicVolume;
             this.bgmAudioSource.play();
         } else {
             console.warn("AUDIO::BGM: Clip is not provided");
@@ -28,7 +37,7 @@ export class AudioManager {
         }
 
         tween(this.bgmAudioSource)
-            .to(duration, { volume: 1 }, { easing: "quadIn" })
+            .to(duration, { volume: this.globalSettings.musicVolume }, { easing: "quadIn" })
             .start();
     }
     // Stop current BGM immediately; fade in next BGM
@@ -41,7 +50,7 @@ export class AudioManager {
             this.bgmAudioSource.volume = 0;
             this.bgmAudioSource.play();
             tween(this.bgmAudioSource)
-                .to(duration, { volume: 1 }, { easing: "quadIn" })
+                .to(duration, { volume: this.globalSettings.musicVolume }, { easing: "quadIn" })
                 .start();
         } else {
             console.warn("AUDIO::BGM: Clip is not provided");
@@ -82,7 +91,7 @@ export class AudioManager {
     // # SFX
     public playSFX(clip: AudioClip) {
         if (clip) {
-            this.sfxAudioSource.playOneShot(clip);
+            this.sfxAudioSource.playOneShot(clip, this.globalSettings.sfxVolume);
         } else {
             console.log("AUDIO::SFX: Clip is not provided");
         }

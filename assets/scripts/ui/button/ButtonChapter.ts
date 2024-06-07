@@ -12,10 +12,16 @@ export class ButtonChapter extends BaseButton {
     bgSprite: SpriteFrame
 
     @property(RichText)
+    nameText: RichText
+
+    @property(RichText)
     clearedText: RichText
 
     @property(RichText)
     totalText: RichText
+
+    @property
+    chapterName: string = ""
 
     @property
     cleared: number = 0

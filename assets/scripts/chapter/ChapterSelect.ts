@@ -1,4 +1,4 @@
-import { _decorator, AudioClip, AudioSource, Button, Component, director, EventKeyboard, Input, input, instantiate, KeyCode, Label, Node, Prefab, resources, SpriteFrame, tween } from "cc";
+import { _decorator, AudioClip, AudioSource, Button, Component, director, EventKeyboard, Input, input, instantiate, KeyCode, Node, Prefab, resources, SpriteFrame, tween } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { SceneTransition } from "../ui/SceneTransition";
 import { ButtonChapter } from "../ui/button/ButtonChapter";
@@ -56,9 +56,11 @@ export class ChapterSelect extends Component {
 
     start() {
         const lunaChapterState = this.globalSettings.getUserData("chapters", "luna")?.progress_state ?? 0;
-        if (lunaChapterState !== 2) {
-            this.audioSource.play();
+        console.log(lunaChapterState);
+        if (lunaChapterState === 2) {
+            this.audioSource.volume = 0;
         }
+        this.audioSource.play();
         this.globalSettings.audioManager.playBGM(this.bgm);
     }
 
@@ -103,7 +105,9 @@ export class ChapterSelect extends Component {
         for (const song of chapterData.songs) {
             const score = this.globalSettings.getUserData("songs", song.id)?.score ?? 0;
             if (score >= 800000) cleared++;
+        
         }
+        chapterButtonComponent.chapterName = chapterData.id;
         chapterButtonComponent.cleared = cleared;
         chapterButtonComponent.total = chapterData.songs.length;
 

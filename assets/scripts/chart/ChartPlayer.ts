@@ -126,6 +126,7 @@ export class ChartPlayer extends Component {
     onLoad() {
         ChartPlayer.instance = this;
         this.judgeManager = JudgeManager.getInstance();
+        this.audioSource.volume = this.globalSettings.musicVolume;
 
         this.loadUiOpacity.opacity = 255;
         this.offset = this.globalSettings.getUserSettings()?.offset ?? 0;
@@ -540,7 +541,7 @@ export class ChartPlayer extends Component {
     }
 
     playSfx(clip: AudioClip) {
-        this.audioSource.playOneShot(clip, 1.0);
+        this.audioSource.playOneShot(clip, this.globalSettings.sfxVolume);
     }
 
 

@@ -2373,7 +2373,7 @@
     ],
     "value": {
       "__type__": "cc.Vec3",
-      "x": -52,
+      "x": -58,
       "y": 0,
       "z": 0
     }
@@ -2491,7 +2491,7 @@
     "value": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 14,
+      "y": 20,
       "z": 0
     }
   },
@@ -2582,7 +2582,7 @@
     ],
     "value": {
       "__type__": "cc.Size",
-      "width": 104,
+      "width": 116,
       "height": 100
     }
   },
@@ -2719,16 +2719,16 @@
         "__id__": 131
       },
       {
-        "__id__": 133
+        "__id__": 134
       },
       {
-        "__id__": 136
+        "__id__": 137
       },
       {
-        "__id__": 139
+        "__id__": 140
       },
       {
-        "__id__": 142
+        "__id__": 143
       }
     ],
     "nestedPrefabInstanceRoots": [
@@ -2864,32 +2864,10 @@
   {
     "__type__": "cc.TargetOverrideInfo",
     "source": {
-      "__id__": 3
-    },
-    "sourceInfo": null,
-    "propertyPath": [
-      "loader"
-    ],
-    "target": {
-      "__id__": 57
-    },
-    "targetInfo": {
-      "__id__": 132
-    }
-  },
-  {
-    "__type__": "cc.TargetInfo",
-    "localID": [
-      "6d3r4OhVtCV4vBDjnKrI0G"
-    ]
-  },
-  {
-    "__type__": "cc.TargetOverrideInfo",
-    "source": {
       "__id__": 7
     },
     "sourceInfo": {
-      "__id__": 134
+      "__id__": 132
     },
     "propertyPath": [
       "spriteComponent"
@@ -2898,7 +2876,7 @@
       "__id__": 7
     },
     "targetInfo": {
-      "__id__": 135
+      "__id__": 133
     }
   },
   {
@@ -2919,7 +2897,7 @@
       "__id__": 7
     },
     "sourceInfo": {
-      "__id__": 137
+      "__id__": 135
     },
     "propertyPath": [
       "bgSpriteComponent"
@@ -2928,7 +2906,7 @@
       "__id__": 7
     },
     "targetInfo": {
-      "__id__": 138
+      "__id__": 136
     }
   },
   {
@@ -2949,7 +2927,7 @@
       "__id__": 7
     },
     "sourceInfo": {
-      "__id__": 140
+      "__id__": 138
     },
     "propertyPath": [
       "charSpriteComponent"
@@ -2958,7 +2936,7 @@
       "__id__": 7
     },
     "targetInfo": {
-      "__id__": 141
+      "__id__": 139
     }
   },
   {
@@ -2979,7 +2957,7 @@
       "__id__": 86
     },
     "sourceInfo": {
-      "__id__": 143
+      "__id__": 141
     },
     "propertyPath": [
       "uiOpacity"
@@ -2988,7 +2966,7 @@
       "__id__": 86
     },
     "targetInfo": {
-      "__id__": 144
+      "__id__": 142
     }
   },
   {
@@ -3001,6 +2979,28 @@
     "__type__": "cc.TargetInfo",
     "localID": [
       "a7jGbpnTVPXZoQ28Wu4tsI"
+    ]
+  },
+  {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 3
+    },
+    "sourceInfo": null,
+    "propertyPath": [
+      "loader"
+    ],
+    "target": {
+      "__id__": 57
+    },
+    "targetInfo": {
+      "__id__": 144
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "6d3r4OhVtCV4vBDjnKrI0G"
     ]
   },
   {
