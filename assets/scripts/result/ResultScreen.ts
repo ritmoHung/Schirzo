@@ -136,7 +136,7 @@ export class ResultScreen extends Component {
 
         this.rankText.string = this.judgeManager.getRank();
         this.scoreText.string = this.judgeManager.score.toString();
-        this.diffText.string = `${scoreDiff < 0 ? "-" : "+"} ${scoreDiff.toString()}`;
+        this.diffText.string = `${scoreDiff >= 0 ? "+" : ""}${scoreDiff.toString()}`;
 
         this.pdText.string = judgements[JudgementType.PDecrypt].count.toString();
         this.pdEarlyText.string = judgements[JudgementType.PDecrypt].early.toString();

@@ -1,7 +1,6 @@
 import { _decorator, AudioClip, Button, Component, director, EventKeyboard, Input, input, KeyCode, Node, resources, RichText, Sprite, SpriteFrame, tween, UIOpacity } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { SceneTransition } from "../ui/SceneTransition";
-import { BackgroundController } from "../ui/bg/BackgroundController";
 import { BaseButton } from "../ui/button/BaseButton";
 import { ButtonIconOutline } from "../ui/button/ButtonIcon";
 const { ccclass, property } = _decorator;
@@ -10,9 +9,6 @@ const { ccclass, property } = _decorator;
 export class SongSelect extends Component {
     @property(SceneTransition)
     sceneTransition: SceneTransition
-
-    @property(BackgroundController)
-    background: BackgroundController
 
     @property(AudioClip)
     enterSFX: AudioClip
@@ -65,7 +61,6 @@ export class SongSelect extends Component {
     // # Lifecycle
     onLoad() {
         this.globalSettings = GlobalSettings.getInstance();
-        this.background.type = this.globalSettings.selectedChapterId;
         this.loadSongs(this.globalSettings.selectedChapterId);
 
         // Song Info

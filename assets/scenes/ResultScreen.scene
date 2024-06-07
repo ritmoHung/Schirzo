@@ -3943,7 +3943,7 @@
     },
     "sourceInfo": null,
     "propertyPath": [
-      "cypherEarlyText"
+      "cypherLateText"
     ],
     "target": {
       "__id__": 69
@@ -3955,7 +3955,7 @@
   {
     "__type__": "cc.TargetInfo",
     "localID": [
-      "66vQx5005HLJwSFP7AqpGI"
+      "37VzzML5VBWL7rwdAtHkGE"
     ]
   },
   {
@@ -3965,7 +3965,7 @@
     },
     "sourceInfo": null,
     "propertyPath": [
-      "cypherLateText"
+      "cypherEarlyText"
     ],
     "target": {
       "__id__": 69
@@ -3977,7 +3977,7 @@
   {
     "__type__": "cc.TargetInfo",
     "localID": [
-      "37VzzML5VBWL7rwdAtHkGE"
+      "1axnj0mqZAmo1b/RM648Vu"
     ]
   },
   {
