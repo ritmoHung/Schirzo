@@ -84,6 +84,7 @@ export module FirebaseManager {
     }
 
     export function publishCustomSongDataToDB(songData: CustomSongData, onComplete: (id: string) => void) {
+        console.log(songData.id);
         checkCustomSongValidate(songData.id, (pass) => {
             let id = songData.id;
             if (!pass) {
@@ -93,7 +94,7 @@ export module FirebaseManager {
             id = id.split(" ").join("-");
             onComplete(id);
 
-            firebase.database().ref(`custom_charts/${id}`).set(songData, (err) => {
+            firebase.database().ref(`custom_charts/${id}`).set({...songData, id: id}, (err) => {
                 if (err) {
                     onComplete(null);
                 } else {

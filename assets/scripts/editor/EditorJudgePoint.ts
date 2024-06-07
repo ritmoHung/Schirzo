@@ -1,4 +1,4 @@
-import { _decorator, Button, EventMouse, Input, input, instantiate, Node, UIOpacity, v3 } from "cc";
+import { _decorator, Button, Color, EventMouse, Input, input, instantiate, Node, Sprite, UIOpacity, v3 } from "cc";
 import { JudgePoint } from "../chart/JudgePoint";
 import { ClickNote } from "../chart/notes/ClickNote";
 import { KeyNote } from "../chart/notes/KeyNote";
@@ -11,6 +11,7 @@ import { ChartEditor } from "./ChartEditor";
 import { NoteProperties } from "./NoteProperties";
 import { EditorHoldNote } from "../chart/notes/EditorHoldNote";
 import { Chart } from "../lib/Chart";
+import { EditStateManager } from "./EditStateManager";
 
 const { ccclass, property } = _decorator;
 
@@ -18,6 +19,13 @@ const { ccclass, property } = _decorator;
 export class EditorJudgePoint extends JudgePoint {
     index: number = 0;
     holdNote: EditorHoldNote = null;
+
+    onLoad() {
+        super.onLoad();
+        const sprite = this.node.getChildByName("JudgePointSprite").getComponent(Sprite);
+        sprite.color = new Color("#999999");
+        sprite.node.on("click", () => EditStateManager.editing && ChartEditor.Instance.selectJudgePoint(this), this);
+    }
 
     update(dt: number) {
         const globalTime = this.chartPlayer.getGlobalTime() || 0;

@@ -75,6 +75,7 @@ export class EditStateManager extends Component {
             } else {
                 ChartPlayer.Instance.reloadGame();
             }
+            ChartPlayer.Instance.startGame();
         }
     }
 
