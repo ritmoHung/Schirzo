@@ -26,6 +26,8 @@ export class ChapterSelect extends Component {
     @property(Button)
     backButton: Button
     @property(Button)
+    editorButton: Button
+    @property(Button)
     settingsButton: Button
 
     private globalSettings: GlobalSettings
@@ -39,6 +41,7 @@ export class ChapterSelect extends Component {
 
         // Buttons
         this.backButton.node.on(Button.EventType.CLICK, () => this.loadScene("IntroScreen"), this);
+        this.editorButton.node.on(Button.EventType.CLICK, () => this.loadScene("CustomChartSelect"), this);
         this.settingsButton.node.on(Button.EventType.CLICK, () => this.loadScene("SettingsScreen"), this);
 
         // Key Down
@@ -56,7 +59,6 @@ export class ChapterSelect extends Component {
 
     start() {
         const lunaChapterState = this.globalSettings.getUserData("chapters", "luna")?.progress_state ?? 0;
-        console.log(lunaChapterState);
         if (lunaChapterState === 2) {
             this.audioSource.volume = 0;
         }

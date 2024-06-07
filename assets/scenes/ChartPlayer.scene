@@ -184,7 +184,7 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 540,
+    "_orthoHeight": 608.9778714436248,
     "_near": 0,
     "_far": 1000,
     "_color": {
@@ -678,6 +678,7 @@
     "chartText": {
       "__id__": 14
     },
+    "editing": false,
     "_id": "ddptZXtI9NJKiuYvbXbf8v"
   },
   {

@@ -1,14 +1,15 @@
-import { _decorator, AudioClip, AudioSource, Button, Component, director, EventKeyboard, input, Input, JsonAsset, KeyCode, Node, Prefab, resources, RichText, tween, UIOpacity, Vec3 } from "cc";
+import { _decorator, AudioClip, AudioSource, Button, CCBoolean, Component, director, EventKeyboard, input, Input, JsonAsset, KeyCode, Node, Prefab, resources, RichText, tween, UIOpacity, Vec3 } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { FirebaseManager } from "../lib/FirebaseManager";
 import { SceneTransition } from "../ui/SceneTransition";
 import { JudgeManager } from "../lib/JudgeManager";
-import { ChartData } from "../settings/song";
+import { ChartData, SelectedSong } from "../settings/song";
 import { JudgePointPool } from "./JudgePointPool";
 import { ProgressSlider } from "./ProgressSlider";
 import { ChartText } from "./ChartText";
 import { ButtonIconOutline } from "../ui/button/ButtonIcon";
 import { ButtonSquare } from "../ui/button/ButtonSquare";
+import { EditStateManager } from "../editor/EditStateManager";
 const { ccclass, property } = _decorator;
 
 interface BPMEvent {
@@ -21,8 +22,8 @@ interface Event {
     startTime: [number, number] | number;
     endTime: [number, number] | number;
     easing: string;
-    start: number;
-    end: number;
+    start: number | [number, number];
+    end: number | [number, number];
 }
 
 interface JudgePoint {
@@ -84,13 +85,16 @@ export class ChartPlayer extends Component {
     hintSFX: AudioClip
 
     @property(JudgePointPool)
-    judgePointPool: JudgePointPool
+    private judgePointPool: JudgePointPool
 
     @property(ProgressSlider)
     progressSlider: ProgressSlider
 
     @property(ChartText)
     chartText: ChartText
+
+    @property(CCBoolean)
+    editing: boolean = false
 
     private static instance: ChartPlayer
     private globalSettings: GlobalSettings
@@ -120,7 +124,11 @@ export class ChartPlayer extends Component {
     }
 
     public static get Instance() {
-        return this.instance;
+        if (!ChartPlayer.instance) {
+            ChartPlayer.instance = new ChartPlayer();
+        }
+
+        return ChartPlayer.instance;
     }
 
     onLoad() {
@@ -134,6 +142,7 @@ export class ChartPlayer extends Component {
             ? this.globalSettings.selectedSong
             : { type: "vanilla", id: "marenol", mode: "gameplay", anomaly: false };
 
+        if (this.editing) return;
         // Get chart & audio from source, then execute callback (load chart)
         this.loadChartData().then(() => {
             tween(this.loadUiOpacity)
@@ -168,6 +177,7 @@ export class ChartPlayer extends Component {
     }
 
     onAudioEnded() {
+        if (this.editing) return;
         console.log(`CHART::SONG: Ended`);
 
         const sceneName = this.processAndGetNextScene();
@@ -197,10 +207,10 @@ export class ChartPlayer extends Component {
     }
 
     onDestroy() {
-        this.audioSource.node.off("ended", this.onAudioEnded, this);
+        if (!EditStateManager.playerInit) {
+            this.audioSource.node.off("ended", this.onAudioEnded, this);
+        }
     }
-
-
 
     // # Functions
     // * Game related
@@ -231,6 +241,16 @@ export class ChartPlayer extends Component {
             callback(chartData);
         } catch (error) {
             console.error(`CHART::LOAD: Failed to load chart data, reason: ${error.message}`);
+        }
+    }
+
+    /** Update chart data only, without adding listener */
+    reloadGame() {
+        this.loadChart();
+
+        if (this.audioSource) {
+            this.audioSource.clip = this.chartData.audio;
+            this.songDuration = this.chartData.audio.getDuration();
         }
     }
 
@@ -309,7 +329,14 @@ export class ChartPlayer extends Component {
         this.chartData = null;
         this.judgePointPool.reset();
         this.judgeManager.reset();
-        this.sceneTransition.fadeOutAndLoadScene("SongSelect");
+
+        if (!this.editing) {
+            if (this.song.type == "custom") {
+                this.sceneTransition.fadeOutAndLoadScene("CustomChartSelect");
+            } else {
+                this.sceneTransition.fadeOutAndLoadScene("SongSelect");
+            }
+        }
     }
 
     openMenu() {
@@ -425,7 +452,7 @@ export class ChartPlayer extends Component {
         }
     }
 
-    convertJudgePointEvents(judgePoint: JudgePoint, bpmEvents: BPMEvent[]): JudgePoint {
+    convertJudgePointEvents(judgePoint: JudgePoint | any, bpmEvents: BPMEvent[]): JudgePoint {
         const convertEventTimings = (events: Event[]): Event[] =>
             events.map(event => ({
                 ...event,
@@ -440,7 +467,7 @@ export class ChartPlayer extends Component {
         const convertNoteTimings = (notes: any[]): any[] => {
             return notes.map(note => {
                 const convertedNote = {
-                    ...note, 
+                    ...note,
                     time: Array.isArray(note.time)
                         ? this.convertToSeconds(note.time, bpmEvents) + this.offset
                         : note.time + this.offset,
@@ -471,7 +498,7 @@ export class ChartPlayer extends Component {
         };
     }
 
-    convertToSeconds(barBeat: [number, number], bpmEvents: BPMEvent[]): number {
+    convertToSeconds(barBeat: [number, number], bpmEvents: BPMEvent[] = this.chartData.chart.bpmEvents): number {
         const targetBar = barBeat[0];
         const targetBeat = barBeat[1] / this.UPB;
 
@@ -542,6 +569,21 @@ export class ChartPlayer extends Component {
 
     playSfx(clip: AudioClip) {
         this.audioSource.playOneShot(clip, this.globalSettings.sfxVolume);
+    }
+
+
+
+    // * Get & Sets
+    public get editorUPB() {
+        return this.UPB;
+    }
+
+    public set editorChartData(data: ChartData) {
+        this.chartData = data;
+    }
+
+    public set editorSongData(data: SelectedSong) {
+        this.song = data
     }
 
 

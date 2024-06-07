@@ -5,24 +5,24 @@ import { ClickNote } from "./notes/ClickNote";
 import { KeyNote } from "./notes/KeyNote";
 import { DragNote } from "./notes/DragNote";
 import { HoldNote } from "./notes/HoldNote";
+
 const { ccclass, property } = _decorator;
 
 @ccclass("JudgePoint")
 export class JudgePoint extends Component {
-    private resolution: Size
-    private settings: GlobalSettings
+    protected resolution: Size
+    protected settings: GlobalSettings
 
-    private chartPlayer: ChartPlayer
-    private topNoteContainer: Node = null
-    private bottomNoteContainer: Node = null
+    protected chartPlayer: ChartPlayer
+    protected topNoteContainer: Node = null
+    protected bottomNoteContainer: Node = null
 
-    private PXPS: number = 300
-    private isInvisible: boolean
-    private notes: any = []
-    private events: any = {}
-    private lastGlobalTime: number = -0.1
-    private lastEventIndexes: { [key: string]: number } = {}
-
+    protected PXPS: number = 300
+    protected isInvisible: boolean
+    protected notes: any = []
+    protected events: any = {}
+    protected lastGlobalTime: number = -0.1
+    protected lastEventIndexes: { [key: string]: number } = {}
 
 
     // # Lifecycle
