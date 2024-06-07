@@ -34,7 +34,6 @@ export class ResultScreen extends Component {
     private unlockedSongIds: string[] = []
     private unlockedLogs: any[] = []
 
-
     // # Lifecycle
     onLoad() {
         this.globalSettings = GlobalSettings.getInstance();
@@ -44,7 +43,7 @@ export class ResultScreen extends Component {
         this.backButton.node.on("click", () => this.back());
         if (!selectedSong.anomaly) {
             this.retryButton.node.on("click", () => this.retry());
-        } else{
+        } else {
             this.retryButton.getComponentInChildren(Button).interactable = false;
         }
 
@@ -63,8 +62,6 @@ export class ResultScreen extends Component {
         unlockedLogs.forEach(log => {
             this.globalSettings.patchUserData({ key: "logs", id: log.id, data: { unlock_level: log.unlock_level, has_read: false } });
         });
-
-        
 
         // Save patched log data to database
         DatabaseManager.updateData();
@@ -86,10 +83,8 @@ export class ResultScreen extends Component {
         }
     }
 
-
-
     // # Functions
-    showResultInfo(SongId: string){
+    async showResultInfo(SongId: string) {
         const tweenResultInfo = () => {
             const songData = this.globalSettings.songs.find(song => SongId === song.id);
             this.SongName.string = `SONG NAME: ${songData.name}`;
@@ -114,9 +109,42 @@ export class ResultScreen extends Component {
                 .to(0.5, { opacity: 255 }, { easing: "smooth" })
                 .start();
         }
+
         tweenResultInfo();
-        let user = this.globalSettings.user;
-        
+
+        const songData = this.globalSettings.songs.find(song => SongId === song.id);
+        const songRecord = this.globalSettings.userData.songs[songData.id];
+        const score = songRecord?.score !== undefined ? songRecord.score : 0;
+        const accuracy = songRecord?.accuracy !== undefined ? songRecord.accuracy : 0;
+
+        // 更新排行榜
+        try {
+
+            let userData= await DatabaseManager.getUserData(this.globalSettings.user.uid);
+            console.log('userData:', userData);
+            console.log(this.globalSettings.user.email);
+    
+            
+            let {maxAccuracy, maxScore} = userData[songData.id];
+            if(accuracy > maxAccuracy)
+            {
+                maxAccuracy = accuracy;
+            }
+
+            if(score > maxScore)
+            {
+                maxScore = score;
+            }
+
+            await DatabaseManager.setLeaderBoard(SongId, {
+                accuracy: maxAccuracy,
+                name: this.globalSettings.user.name,
+                score: maxScore
+            });
+            console.log('Leaderboard updated successfully');
+        } catch (error) {
+            console.error('Error updating leaderboard:', error);
+        }
     }
 
     showUnlockedItems(unlockedSongIds: string[], unlockedLogs: any[]) {
