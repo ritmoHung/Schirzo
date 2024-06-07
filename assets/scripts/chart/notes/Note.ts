@@ -38,12 +38,14 @@ export abstract class Note extends Component {
 
     // # Lifecycle
     onLoad() {
+        if (!this.actKeydown) return;
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
     }
 
     onDestroy() {
+        if (!this.actKeydown) return;
         input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.off(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
         input.off(Input.EventType.KEY_UP, this.onKeyUp, this);

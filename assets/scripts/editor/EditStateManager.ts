@@ -19,6 +19,7 @@ export class EditStateManager extends Component {
     currentEditing: boolean = true;
 
     private static instance: EditStateManager = null;
+    private initializing = true;
 
     public static get editing() {
         return EditStateManager.instance ? EditStateManager.instance.currentEditing : false;
@@ -41,7 +42,7 @@ export class EditStateManager extends Component {
         this.playerControls.active = !editing;
         this.editerControls.active = editing;
         if (editing) {
-            ChartPlayer.Instance.stopGame();
+            ChartPlayer.Instance.quitGame();
             ChartPlayer.Instance.node.active = false;
         } else {
             TimelinePool.Instance.publishTimelines();
@@ -49,8 +50,13 @@ export class EditStateManager extends Component {
             ChartEditor.Instance.audioSource.stop();
 
             ChartPlayer.Instance.node.active = true;
-            ChartPlayer.Instance.loadChartFrom(ChartEditor.Instance.publishChart());
-            ChartPlayer.Instance.loadMusicFrom(ChartEditor.Instance.audioSource.clip);
+            ChartPlayer.Instance.editorChartData = {chart: ChartEditor.Instance.publishChart(), audio: ChartEditor.Instance.audioSource.clip};
+            if (this.initializing) {
+                ChartPlayer.Instance.prepareGame();
+                this.initializing = false;
+            } else {
+                ChartPlayer.Instance.reloadGame();
+            }
         }
     }
 }

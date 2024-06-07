@@ -3,7 +3,7 @@ import { GlobalSettings } from "../settings/GlobalSettings";
 import { FirebaseManager } from "../lib/FirebaseManager";
 import { SceneTransition } from "../ui/SceneTransition";
 import { JudgeManager } from "../lib/JudgeManager";
-import { ChartData } from "../settings/song";
+import { ChartData, SelectedSong } from "../settings/song";
 import { JudgePointPool } from "./JudgePointPool";
 import { ProgressSlider } from "./ProgressSlider";
 import { ChartText } from "./ChartText";
@@ -114,8 +114,6 @@ export class ChartPlayer extends Component {
     private score: number = 0
     private accuracy: string = "00.00"
 
-
-
     // # Lifecycle
     constructor() {
         super();
@@ -124,6 +122,18 @@ export class ChartPlayer extends Component {
 
     public static get Instance() {
         return this.instance;
+    }
+
+    public get editorUPB() {
+        return this.UPB;
+    }
+
+    public set editorChartData(data: ChartData) {
+        this.chartData = data;
+    }
+
+    public set editorSongData(data: SelectedSong) {
+        this.song = data
     }
 
     onLoad() {
@@ -136,6 +146,7 @@ export class ChartPlayer extends Component {
             ? this.globalSettings.selectedSong
             : { type: "vanilla", id: "marenol", mode: "gameplay", anomaly: false };
 
+        if (this.editing) return;
         // Get chart & audio from source, then execute callback (load chart)
         this.loadChartData().then(() => {
             tween(this.loadUiOpacity)
@@ -170,6 +181,7 @@ export class ChartPlayer extends Component {
     }
 
     onAudioEnded() {
+        if (this.editing) return;
         console.log(`CHART::SONG: Ended`);
 
         const sceneName = this.processAndGetNextScene();
@@ -219,7 +231,7 @@ export class ChartPlayer extends Component {
             let chartData: ChartData = { chart: {}, audio: null };
             switch (source) {
                 case DataSource.Firebase:
-                    chartData = await FirebaseManager.getChartData("vanilla", this.song.id);
+                    chartData = await FirebaseManager.getChartData(this.song.type, this.song.id);
                     break;
                 case DataSource.Local:
                 default:
@@ -231,6 +243,17 @@ export class ChartPlayer extends Component {
             callback(chartData);
         } catch (error) {
             console.error(`CHART::LOAD: Failed to load chart data, reason: ${error.message}`);
+        }
+    }
+
+    /** Update chart data only, without adding listener */
+    reloadGame() {
+        this.loadChart();
+
+        if (this.audioSource) {
+            this.audioSource.clip = this.chartData.audio;
+            this.songDuration = this.chartData.audio.getDuration();
+            this.audioSource.node.on(AudioSource.EventType.ENDED, this.onAudioEnded, this);
         }
     }
 
@@ -308,7 +331,7 @@ export class ChartPlayer extends Component {
         // Clear judgepoints
         this.judgePointPool.reset();
         this.chartData = null;
-        this.sceneTransition.fadeOutAndLoadScene("SongSelect");
+        if (!this.editing) this.sceneTransition.fadeOutAndLoadScene("SongSelect");
     }
 
     openMenu() {

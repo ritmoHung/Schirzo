@@ -27,6 +27,8 @@ export class ChapterSelect extends Component {
     backButton: Button
     @property(Button)
     settingsButton: Button
+    @property(Button)
+    editorButton: Button
 
     private globalSettings: GlobalSettings
 
@@ -40,6 +42,7 @@ export class ChapterSelect extends Component {
         // Buttons
         this.backButton.node.on(Button.EventType.CLICK, () => this.loadScene("IntroScreen"), this);
         this.settingsButton.node.on(Button.EventType.CLICK, () => this.loadScene("SettingsScreen"), this);
+        this.editorButton.node.on(Button.EventType.CLICK, () => this.loadScene("CustomChartSelect"), this);
 
         // Key Down
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
