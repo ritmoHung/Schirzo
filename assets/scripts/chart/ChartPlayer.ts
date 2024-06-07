@@ -247,7 +247,7 @@ export class ChartPlayer extends Component {
     /** Update chart data only, without adding listener */
     reloadGame() {
         this.loadChart();
-
+        this.globalTime = 0;
         if (this.audioSource) {
             this.audioSource.clip = this.chartData.audio;
             this.songDuration = this.chartData.audio.getDuration();
