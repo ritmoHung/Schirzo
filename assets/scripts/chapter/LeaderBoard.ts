@@ -107,7 +107,7 @@ export class LeaderBoard extends Component {
 
     async getLeaderBoard(SongId: string) {
         this.leaderboard = await DatabaseManager.getLeaderBoard(SongId);
-        //this.leaderboard = this.leaderboard.sort((a: any, b: any) => a.score.val() - b.score.val())
+        //this.leaderboard = this.leaderboard.sort((a: any, b: any) => a.score - b.score);
     }
 
     async setSongInfo(songIndex: number) {
@@ -129,11 +129,10 @@ export class LeaderBoard extends Component {
         if (this.leaderboard) {
             this.ScoreList.string = `Score`;
             this.ScoreNameList.string = `Name`;
-            for (const key in this.leaderboard) {
+            for(const key in this.leaderboard){
                 if (this.leaderboard.hasOwnProperty(key)) {
-                    const entry = this.leaderboard[key];
-                    this.ScoreList.string += `\n${entry.score}`;
-                    this.ScoreNameList.string += `\n${entry.name}`;
+                    this.ScoreList.string += `\n${this.leaderboard[key].score.toString()}`;
+                    this.ScoreNameList.string += `\n${this.leaderboard[key].name}`;
                 }
             }
         } else {

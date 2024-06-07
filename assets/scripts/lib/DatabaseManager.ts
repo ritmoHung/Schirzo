@@ -45,7 +45,7 @@ export module DatabaseManager {
     }
     //return the data of leaderboard
     export async function getLeaderBoard(SongId: string): Promise<object> {
-        let songRef = firebase.database().ref(`leaderboard/songs/vanilla/${SongId}/test`);
+        let songRef = firebase.database().ref(`leaderboard/songs/vanilla/${SongId}`);
 
         // console.log(`Fetching data from: leaderboard/songs/vanilla/${SongId}/test`);
         
