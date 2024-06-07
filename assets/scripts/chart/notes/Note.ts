@@ -23,7 +23,8 @@ export abstract class Note extends Component {
     protected isFake: boolean
     protected time: number
     protected speed: number
-    protected isJudged: boolean
+    protected isActive: boolean = false
+    protected isJudged: boolean = false
 
 
     

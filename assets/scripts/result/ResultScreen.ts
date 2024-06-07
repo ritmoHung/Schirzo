@@ -2,6 +2,7 @@ import { _decorator, Button, Component, EventKeyboard, Input, input, KeyCode, re
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { DatabaseManager } from "../lib/DatabaseManager";
 import { SceneTransition } from "../ui/SceneTransition";
+import { JudgeManager } from "../lib/JudgeManager";
 import { ButtonIconOutline } from "../ui/button/ButtonIcon";
 const { ccclass, property } = _decorator;
 
@@ -23,6 +24,7 @@ export class ResultScreen extends Component {
     unlockText: RichText
 
     private globalSettings: GlobalSettings
+    private judgeManager: JudgeManager
     private unlockedSongIds: string[] = []
     private unlockedLogs: any[] = []
 
@@ -30,6 +32,7 @@ export class ResultScreen extends Component {
     // # Lifecycle
     onLoad() {
         this.globalSettings = GlobalSettings.getInstance();
+        this.judgeManager = JudgeManager.getInstance();
         const selectedSong = this.globalSettings.selectedSong;
 
         // Set background image to song jacket (blurred)
@@ -141,10 +144,12 @@ export class ResultScreen extends Component {
     }
 
     retry() {
+        this.judgeManager.reset();
         this.loadScene("ChartPlayer");
     }
 
     back() {
+        this.judgeManager.reset();
         this.loadScene("SongSelect");
     }
 

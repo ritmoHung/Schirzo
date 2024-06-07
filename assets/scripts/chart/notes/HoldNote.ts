@@ -28,13 +28,17 @@ export class HoldNote extends Note {
 
         if (globalTime >= this.time && globalTime < this.time + this.holdTime) {
             if (!this.hasPressed) {
-                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
-                this.hasPressed = true;
+                if (Math.abs(globalTime - this.lastGlobalTime) < 1) {
+                    // this.chartPlayer.playSfx(this.sfx);
+                    this.hasPressed = true;
+                }
             }
         } else if (globalTime >= this.time + this.holdTime) {
             if (!this.hasPlayedSfx) {
-                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
-                this.hasPlayedSfx = true;
+                if (Math.abs(globalTime - this.lastGlobalTime) < 1) {
+                    // this.chartPlayer.playSfx(this.sfx);
+                    this.hasPlayedSfx = true;
+                }
             }
 
             if (this.mode !== "autoplay") {

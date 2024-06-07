@@ -1,14 +1,12 @@
 import { _decorator, EventKeyboard } from "cc";
 import { JudgePoint } from "../JudgePoint";
 import { Note } from "./Note";
-import { PERFECT_RANGE, BAD_RANGE } from "../../lib/JudgeManager";
+import { P_DECRYPT_RANGE, GOOD_RANGE } from "../../lib/JudgeManager";
 const { ccclass, property } = _decorator;
 
 @ccclass("DragNote")
 export class DragNote extends Note {
     // # Lifecycle
-
-    // TODO: Autoplay support
     update() {
         const globalTime = this.chartPlayer.getGlobalTime() || 0;
         const mode = this.chartPlayer.getMode();
@@ -30,11 +28,12 @@ export class DragNote extends Note {
                     }
 
                     const dt = 1000 * (globalTime - this.time);
-                    if (dt > BAD_RANGE) {
+                    if (dt > GOOD_RANGE) {
                         this.isJudged = true;
                         this.judgeManager.judgeNote(dt);
                         this.node.destroy();
                     }
+                    break;
                 default:
                     break;
             }
@@ -47,17 +46,14 @@ export class DragNote extends Note {
     }
 
     protected onKeyDown(event: EventKeyboard): void {
-        console.log("DOWN");
         this.judge(event);
     }
 
     protected onKeyPressing(event: EventKeyboard): void {
-        console.log("PRESSING");
         this.judge(event);
     }
 
     protected onKeyUp(event: EventKeyboard): void {
-        console.log("UP");
         this.judge(event);
     }
 
@@ -77,9 +73,9 @@ export class DragNote extends Note {
         if (!this.isFake && mode !== "autoplay") {
             const globalTime = this.chartPlayer.getGlobalTime() || 0;
             const dt = 1000 * (globalTime - this.time);
-            if (Math.abs(dt) <= BAD_RANGE && !this.isJudged) {
+            if (Math.abs(dt) <= GOOD_RANGE && !this.isJudged) {
                 this.isJudged = true;
-                this.judgeManager.judgeNote(PERFECT_RANGE);
+                this.judgeManager.judgeNote(P_DECRYPT_RANGE);
             }
         }
     }

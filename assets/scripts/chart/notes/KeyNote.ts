@@ -37,41 +37,23 @@ export class KeyNote extends ClickNote {
     @property(RichText)
     richText: RichText
 
-    private key: KeyCode
-
 
 
     // # Lifecycle
     update() {
-        const globalTime = this.chartPlayer.getGlobalTime() || 0;
-
-        if (globalTime >= this.time) {
-            if (!this.hasPlayedSfx) {
-                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
-                this.hasPlayedSfx = true;
-            }
-
-            if (this.mode !== "autoplay") {
-                this.node.destroy();
-            }
-        } else {
-            this.hasPlayedSfx = false;
-        }
-
-        this.updateUI(globalTime);
-        this.lastGlobalTime = globalTime;
+        super.update();
     }
 
     protected onKeyDown(event: EventKeyboard): void {
-        const globalTime = this.chartPlayer.getGlobalTime() || 0;
+        super.onKeyDown(event);
     }
 
     protected onKeyPressing(event: EventKeyboard): void {
-
+        super.onKeyPressing(event);
     }
 
     protected onKeyUp(event: EventKeyboard): void {
-        
+        super.onKeyUp(event);
     }
 
 

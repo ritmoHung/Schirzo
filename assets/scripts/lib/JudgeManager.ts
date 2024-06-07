@@ -1,41 +1,41 @@
+import { KeyCode } from "cc";
+
 export enum JudgementType {
-    Decoded = "decoded",
-    Perfect = "perfect",
+    PDecrypt = "perfect decrypt",
+    Decrypt = "decrypt",
     Good = "good",
-    Bad = "bad",
-    Miss = "miss",
+    Cypher = "cypher",
 }
 
 export interface Judgements {
-    [JudgementType.Decoded]: { count: number; early: number; late: number };
-    [JudgementType.Perfect]: { count: number; early: number; late: number };
+    [JudgementType.PDecrypt]: { count: number; early: number; late: number };
+    [JudgementType.Decrypt]: { count: number; early: number; late: number };
     [JudgementType.Good]: { count: number; early: number; late: number };
-    [JudgementType.Bad]: { count: number; early: number; late: number };
-    [JudgementType.Miss]: { count: number; early: number; late: number };
+    [JudgementType.Cypher]: { count: number; early: number; late: number };
 }
 
 const BASE_SCORE: number = 1000000;
 const BASE_ACCURACY: number = 100;
-const DECODED_RANGE: number = 40;
-export const PERFECT_RANGE: number = 80;
+export const P_DECRYPT_RANGE: number = 40;
+export const DECRYPT_RANGE: number = 80;
 export const GOOD_RANGE: number = 120;
-export const BAD_RANGE: number = 160;
+export const ACTIVE_RANGE: number = 120;
 
 export class JudgeManager {
     private static instance: JudgeManager
     private _judgements: Judgements = {
-        [JudgementType.Decoded]: { count: 0, early: 0, late: 0 },
-        [JudgementType.Perfect]: { count: 0, early: 0, late: 0 },
+        [JudgementType.PDecrypt]: { count: 0, early: 0, late: 0 },
+        [JudgementType.Decrypt]: { count: 0, early: 0, late: 0 },
         [JudgementType.Good]: { count: 0, early: 0, late: 0 },
-        [JudgementType.Bad]: { count: 0, early: 0, late: 0 },
-        [JudgementType.Miss]: { count: 0, early: 0, late: 0 },
+        [JudgementType.Cypher]: { count: 0, early: 0, late: 0 },
     };
 
+    public activeKeys: Map<KeyCode, boolean> = new Map()
     public noteCount: number = 0
     private maxCombo: number = 0
     private _combo: number = 0
     private _score: number = 0
-    private _accuracy: string = "00.00"
+    private _accuracy: string = "0.00"
 
 
     
@@ -60,20 +60,17 @@ export class JudgeManager {
 
     public judgeNote(dt: number) {
         const absDt = Math.abs(dt);
-        if (absDt <= DECODED_RANGE) {
-            this.addJudgement(JudgementType.Decoded, dt);
+        if (absDt <= P_DECRYPT_RANGE) {
+            this.addJudgement(JudgementType.PDecrypt, dt);
             this.addCombo();
-        } else if (absDt <= PERFECT_RANGE) {
-            this.addJudgement(JudgementType.Perfect, dt);
+        } else if (absDt <= DECRYPT_RANGE) {
+            this.addJudgement(JudgementType.Decrypt, dt);
             this.addCombo();
         } else if (absDt <= GOOD_RANGE) {
             this.addJudgement(JudgementType.Good, dt);
             this.addCombo();
-        } else if (absDt <= BAD_RANGE) {
-            this.addJudgement(JudgementType.Bad, dt);
-            this.resetCombo();
         } else {
-            this.addJudgement(JudgementType.Miss, dt);
+            this.addJudgement(JudgementType.Cypher, dt);
             this.resetCombo();
         }
 
@@ -81,6 +78,7 @@ export class JudgeManager {
     }
 
     private addJudgement(type: JudgementType, dt: number) {
+        console.log(type.toUpperCase());
         if (this._judgements.hasOwnProperty(type)) {
             this._judgements[type].count++;
 
@@ -94,15 +92,14 @@ export class JudgeManager {
 
     private calculateScoreAndAccuracy() {
         this._score = Math.round(
-            ((this._judgements[JudgementType.Decoded].count + this._judgements[JudgementType.Perfect].count)
-            + 0.7 * this._judgements[JudgementType.Good].count
-            + 0.3 * this._judgements[JudgementType.Bad].count)
+            ((this._judgements[JudgementType.PDecrypt].count + this._judgements[JudgementType.Decrypt].count)
+            + 0.7 * this._judgements[JudgementType.Good].count)
             * (BASE_SCORE / this.noteCount)
         ) + this.maxCombo;
         this._accuracy = Number(
-            (this._judgements[JudgementType.Decoded].count
-            + 0.7 * this._judgements[JudgementType.Perfect].count
-            + 0.3 * this._judgements[JudgementType.Good].count)
+            (this._judgements[JudgementType.PDecrypt].count
+            + 0.9 * this._judgements[JudgementType.Decrypt].count
+            + 0.7 * this._judgements[JudgementType.Good].count)
             * (BASE_ACCURACY / this.noteCount)
         ).toFixed(2);
     }
@@ -136,17 +133,17 @@ export class JudgeManager {
 
     public reset() {
         this._judgements = {
-            [JudgementType.Decoded]: { count: 0, early: 0, late: 0 },
-            [JudgementType.Perfect]: { count: 0, early: 0, late: 0 },
+            [JudgementType.PDecrypt]: { count: 0, early: 0, late: 0 },
+            [JudgementType.Decrypt]: { count: 0, early: 0, late: 0 },
             [JudgementType.Good]: { count: 0, early: 0, late: 0 },
-            [JudgementType.Bad]: { count: 0, early: 0, late: 0 },
-            [JudgementType.Miss]: { count: 0, early: 0, late: 0 },
+            [JudgementType.Cypher]: { count: 0, early: 0, late: 0 },
         };
     
-        this.noteCount = 0
-        this.maxCombo = 0
-        this._combo = 0
-        this._score = 0
-        this._accuracy = "00.00"
+        this.activeKeys = new Map();
+        this.noteCount = 0;
+        this.maxCombo = 0;
+        this._combo = 0;
+        this._score = 0;
+        this._accuracy = "00.00";
     }
 }

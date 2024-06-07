@@ -109,7 +109,7 @@ export class ChartPlayer extends Component {
 
     private combo: number = 0
     private score: number = 0
-    private accuracy: string = "00.00"
+    private accuracy: string = "0.00"
 
 
 
@@ -162,7 +162,7 @@ export class ChartPlayer extends Component {
             this.progressSlider.updateProgress(progress);
 
             // Scores
-            this.updateText();
+            this.updateText({});
         }
     }
 
@@ -218,7 +218,7 @@ export class ChartPlayer extends Component {
             let chartData: ChartData = { chart: {}, audio: null };
             switch (source) {
                 case DataSource.Firebase:
-                    chartData = await FirebaseManager.getChartData("vanilla", this.song.id);
+                    chartData = await FirebaseManager.getChartData(this.song.type, this.song.id);
                     break;
                 case DataSource.Local:
                 default:
@@ -293,7 +293,7 @@ export class ChartPlayer extends Component {
         this.audioSource.stop();
         this.closeMenu();
         this.comboNode.getComponent(RichText).string = "0";
-        this.scoreNode.getComponent(RichText).string = "000000";
+        this.scoreNode.getComponent(RichText).string = "0";
         this.accuracyNode.getComponent(RichText).string = `00.00%`;
         this.judgeManager.reset();
 
@@ -305,8 +305,9 @@ export class ChartPlayer extends Component {
 
     quitGame() {
         // Clear judgepoints
-        this.judgePointPool.reset();
         this.chartData = null;
+        this.judgePointPool.reset();
+        this.judgeManager.reset();
         this.sceneTransition.fadeOutAndLoadScene("SongSelect");
     }
 
@@ -349,31 +350,31 @@ export class ChartPlayer extends Component {
         return this.song.mode;
     }
 
-    updateText() {
-        const combo = this.judgeManager.combo;
-        const score = this.judgeManager.score;
-        const accuracy = this.judgeManager.accuracy;
-        if (combo !== this.combo) {
-            this.combo = combo;
-            this.comboNode.getComponent(RichText).string = combo.toString();
+    updateText({ combo, score, accuracy }: { combo?: number, score?: number, accuracy?: string }) {
+        const comboValue = combo ?? this.judgeManager.combo;
+        const scoreValue = score ?? this.judgeManager.score;
+        const accuracyValue = accuracy ?? this.judgeManager.accuracy;
+        if (comboValue !== this.combo) {
+            this.combo = comboValue;
+            this.comboNode.getComponent(RichText).string = comboValue.toString();
             tween(this.comboNode)
                 .to(0.05, { scale: new Vec3(1, 1.1, 1) }, { easing: "expoOut" })
                 .delay(0.05)
                 .to(0.1, { scale: new Vec3(1, 1, 1) }, { easing: "sineOut" })
                 .start();
         }
-        if (score !== this.score) {
-            this.score = score;
-            this.scoreNode.getComponent(RichText).string = score.toString();
+        if (scoreValue !== this.score) {
+            this.score = scoreValue;
+            this.scoreNode.getComponent(RichText).string = scoreValue.toString();
             tween(this.scoreNode)
                 .to(0.05, { scale: new Vec3(1, 1.1, 1) }, { easing: "expoOut" })
                 .delay(0.05)
                 .to(0.1, { scale: new Vec3(1, 1, 1) }, { easing: "sineOut" })
                 .start();
         }
-        if (accuracy !== this.accuracy) {
-            this.accuracy = accuracy;
-            this.accuracyNode.getComponent(RichText).string = `${accuracy}%`;
+        if (accuracyValue !== this.accuracy) {
+            this.accuracy = accuracyValue;
+            this.accuracyNode.getComponent(RichText).string = `${accuracyValue}%`;
         }
     }
 
