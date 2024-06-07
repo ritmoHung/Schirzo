@@ -2180,7 +2180,7 @@
     "__prefab": null,
     "_lineHeight": 40,
     "_string": "",
-    "_horizontalAlign": 1,
+    "_horizontalAlign": 0,
     "_verticalAlign": 1,
     "_fontSize": 40,
     "_fontColor": {
@@ -2288,7 +2288,7 @@
     "__prefab": null,
     "_lineHeight": 40,
     "_string": "",
-    "_horizontalAlign": 1,
+    "_horizontalAlign": 0,
     "_verticalAlign": 1,
     "_fontSize": 40,
     "_fontColor": {

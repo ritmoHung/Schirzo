@@ -118,7 +118,7 @@ export class LeaderBoard extends Component {
         const songUnlocked = this.isSongUnlocked(songData);
         console.log(songData.id);
         
-        this.getLeaderBoard(songData.id).then(() => {
+        await this.getLeaderBoard(songData.id).then(() => {
             console.log("Leaderboard");
             console.log(this.leaderboard);
         });
@@ -137,6 +137,7 @@ export class LeaderBoard extends Component {
             }
         } else {
             this.ScoreList.string = `Nope`;
+            this.ScoreNameList.string = `Nope`;
         }
     }
     
