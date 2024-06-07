@@ -1,0 +1,42 @@
+{
+	"id": "luna-05-00",
+	"name": "「雲」在放晴後散去",
+	"contents": [
+		{
+			"type": "text",
+			"content": "{2: 我死了，但}這些孤獨這些情感不會消失\n我的歌，我的作品，會在網路上"
+		},
+		{
+			"type": "text",
+			"content": "我要搞得轟轟烈烈"
+		},
+		{
+			"type": "text",
+			"content": "我的{2: 創作}將代替${3: 我活著}，"
+		},
+		{
+			"type": "text",
+			"content": "希望{2: 看到這些日記的人}，知道在這之後，我不會再哭了，不要為了我擔心\n{3: 雲會在放晴後消失}"
+		}
+	],
+	"unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "rip",
+			"required_score": 800000,
+			"unlock_level": 1
+		},
+		{
+			"type": "song_score",
+			"song_id": "rip",
+			"required_score": 850000,
+			"unlock_level": 2
+		},
+		{
+			"type": "song_score",
+			"song_id": "rip",
+			"required_score": 950000,
+			"unlock_level": 3
+		}
+	]
+}

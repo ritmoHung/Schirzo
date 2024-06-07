@@ -1,0 +1,30 @@
+{
+	"id": "luna-03-00",
+	"name": "temp",
+	"contents": [
+		{
+			"type": "text",
+			"content": "被二一，媽媽知道了這件事情，還知道自己去參賽"
+		},
+		{
+			"type": "text",
+			"content": "準備了好多，在作品發表前媽媽跑來比賽亂"
+		},
+		{
+			"type": "text",
+			"content": "順利進行，但最後被主辦方淘汰：「你的歌裡面沒有靈魂」"
+		},
+		{
+			"type": "text",
+			"content": "我以為找到我的志向，可以跟過去完全切割，但到頭來，這些創傷從來沒有讓我自由過"
+		}
+	],
+	"unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "miserable",
+			"required_score": 800000,
+			"unlock_level": 1
+		}
+	]
+}

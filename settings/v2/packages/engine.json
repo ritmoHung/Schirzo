@@ -21,7 +21,7 @@
         "_value": false
       },
       "3d": {
-        "_value": false
+        "_value": true
       },
       "2d": {
         "_value": true
@@ -118,12 +118,16 @@
       "marionette": {
         "_value": false
       },
+      "procedural-animation": {
+        "_value": false
+      },
       "custom-pipeline": {
         "_value": false
       }
     },
     "includeModules": [
       "2d",
+      "3d",
       "animation",
       "audio",
       "base",
