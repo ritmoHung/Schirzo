@@ -1,0 +1,26 @@
+{
+	"id": "luna-00-00",
+	"name": "temp",
+	"contents": [
+		{
+			"type": "text",
+			"content": "故事的開始\n開心的大學"
+		},
+		{
+			"type": "text",
+			"content": "喝醉酒，偶爾夜衝，放縱自己，一點一點，熬夜，秩序開始崩壞\n交了一個男朋友，感覺終於脫離了高中的生活"
+		},
+		{
+			"type": "text",
+			"content": "偶爾會吵架，自己會很嚴厲的罵男朋友"
+		}
+	],
+	"unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "mopemope",
+			"required_score": 800000,
+			"unlock_level": 1
+		}
+	]
+}

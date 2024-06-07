@@ -1,0 +1,46 @@
+{
+	"id": "luna-04-00",
+	"name": "副作用是想活下去",
+	"contents": [
+		{
+			"type": "text",
+			"content": "被當掉、父母又開始介入自己的生活、沒辦法畢業"
+		},
+		{
+			"type": "text",
+			"content": "我好累\n你們又不愛我，怎麼會一直說是為了我好?"
+		},
+		{
+			"type": "text",
+			"content": "只有在喝酒的時候可以忘掉外部壓力，開始創作\n但身體和感官都變得很遲鈍"
+		},
+		{
+			"type": "text",
+			"content": "於是我開始{3: 自殘}"
+		},
+		{
+			"type": "text",
+			"content": "{3: 彷彿只有在流血，我才擁有生命}\n反而這些{2: 身體}上的{3: 傷}，讓我能感受到溫暖\n這些傷至少真誠的，比起你們的愛還真實"
+		}
+	],
+	"unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "marenol",
+			"required_score": 800000,
+			"unlock_level": 1
+		},
+		{
+			"type": "song_score",
+			"song_id": "marenol",
+			"required_score": 850000,
+			"unlock_level": 2
+		},
+		{
+			"type": "song_score",
+			"song_id": "marenol",
+			"required_score": 950000,
+			"unlock_level": 3
+		}
+	]
+}

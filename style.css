@@ -1,0 +1,8 @@
+/* <link rel="icon" href="favicon.png" type="image/png"> */
+
+body {
+    display: grid;
+    height: 100svh;
+    place-items: center;
+    place-content: center;
+}

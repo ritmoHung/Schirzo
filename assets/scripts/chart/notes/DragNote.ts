@@ -1,33 +1,64 @@
 import { _decorator, EventKeyboard } from "cc";
 import { JudgePoint } from "../JudgePoint";
 import { Note } from "./Note";
+import { PERFECT_RANGE, BAD_RANGE } from "../../lib/JudgeManager";
 const { ccclass, property } = _decorator;
 
 @ccclass("DragNote")
 export class DragNote extends Note {
     // # Lifecycle
-    protected onKeyDown(event: EventKeyboard) {
-        const globalTime = this.chartPlayer.getGlobalTime() || 0;
-    }
 
+    // TODO: Autoplay support
     update() {
         const globalTime = this.chartPlayer.getGlobalTime() || 0;
+        const mode = this.chartPlayer.getMode();
 
-        if (globalTime >= this.time) {
-            if (!this.hasPlayedSFX) {
-                if (Math.abs(globalTime - this.lastGlobalTime) < 1) this.chartPlayer.playSfx(this.sfx);
-                this.hasPlayedSFX = true;
-            }
+        if (!this.isFake && globalTime >= this.time) {
+            switch (mode) {
+                case "autoplay":
+                    if (!this.hasPlayedSfx) {
+                        if (Math.abs(globalTime - this.lastGlobalTime) < 0.1) {
+                            this.hasPlayedSfx = true;
+                            this.chartPlayer.playSfx(this.sfx);
+                        }
+                    }
+                    break;
+                case "gameplay":
+                    if (this.isJudged) {
+                        this.chartPlayer.playSfx(this.sfx);
+                        this.node.destroy();
+                    }
 
-            if (this.mode !== "autoplay") {
-                this.node.destroy();
+                    const dt = 1000 * (globalTime - this.time);
+                    if (dt > BAD_RANGE) {
+                        this.isJudged = true;
+                        this.judgeManager.judgeNote(dt);
+                        this.node.destroy();
+                    }
+                default:
+                    break;
             }
         } else {
-            this.hasPlayedSFX = false;
+            this.hasPlayedSfx = false;
         }
 
         this.updateUI(globalTime);
         this.lastGlobalTime = globalTime;
+    }
+
+    protected onKeyDown(event: EventKeyboard): void {
+        console.log("DOWN");
+        this.judge(event);
+    }
+
+    protected onKeyPressing(event: EventKeyboard): void {
+        console.log("PRESSING");
+        this.judge(event);
+    }
+
+    protected onKeyUp(event: EventKeyboard): void {
+        console.log("UP");
+        this.judge(event);
     }
 
 
@@ -38,5 +69,18 @@ export class DragNote extends Note {
 
         const offset = this.judgePoint.calculatePositionOffset(this.time);
         this.node.setPosition(0, offset, 0);
+    }
+
+    judge(event: EventKeyboard) {
+        const mode = this.chartPlayer.getMode();
+
+        if (!this.isFake && mode !== "autoplay") {
+            const globalTime = this.chartPlayer.getGlobalTime() || 0;
+            const dt = 1000 * (globalTime - this.time);
+            if (Math.abs(dt) <= BAD_RANGE && !this.isJudged) {
+                this.isJudged = true;
+                this.judgeManager.judgeNote(PERFECT_RANGE);
+            }
+        }
     }
 }

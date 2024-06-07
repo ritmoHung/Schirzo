@@ -17,6 +17,11 @@ export class ImportButton extends Component {
         this.trigger.node.on("click", this.importFile, this);
     }
 
+    /*
+    onDestroy() {
+        this.trigger.node.off("click", this.importFile, this);
+    }*/
+
     importFile() {
         let input = document.createElement("input");
         input.setAttribute("type", "file");

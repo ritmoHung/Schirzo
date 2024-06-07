@@ -41,6 +41,14 @@ export class MeasureLinePool extends Component {
         input.on(Input.EventType.KEY_UP, () => this.keyHold = 0, this);
     }
 
+    /*
+    onDestroy() {
+        input.off(Input.EventType.MOUSE_WHEEL, (event) => this.scroll(event.getScrollY() * 0.25), this);
+        input.off(Input.EventType.KEY_DOWN, this.scrollByKey, this);
+        input.off(Input.EventType.KEY_PRESSING, this.scrollByKey, this);
+        input.off(Input.EventType.KEY_UP, () => this.keyHold = 0, this);
+    }*/
+
     clear() {
         for (const node of this._pool) {
             node.node.destroy();
@@ -70,7 +78,7 @@ export class MeasureLinePool extends Component {
 
     scroll(unit: number) {
         if (!ChartEditor.Instance.endTime) return
-        const UPBar = ChartPlayer.Instance.UPB * ChartEditor.Instance.bpb;
+        const UPBar = ChartPlayer.Instance.editorUPB * ChartEditor.Instance.bpb;
         this.currentTime[1] += unit;
         if (unit > 0 && this.currentTime[0] >= ChartEditor.Instance.endTime[0]) {
             this.currentTime[1] -= unit;
@@ -102,7 +110,7 @@ export class MeasureLinePool extends Component {
             for (let unit = 0; unit < 12; unit++) {
                 const node = instantiate(this.measureLinePrefab);
                 const measureLine = node.getComponent(MeasureLine);
-                measureLine.time = [Math.floor(beat / bpb), ChartPlayer.Instance.UPB * (beat % bpb + unit / 12)];
+                measureLine.time = [Math.floor(beat / bpb), ChartPlayer.Instance.editorUPB * (beat % bpb + unit / 12)];
                 measureLine.pool = this;
                 measureLine.unitIndex = unit;
                 this._pool.push(measureLine);
@@ -117,7 +125,7 @@ export class MeasureLinePool extends Component {
             if (measureLine.unitIndex < split) {
                 measureLine.enabled = true;
                 measureLine.on();
-                measureLine.time = [measureLine.time[0], measureLine.time[1] - measureLine.time[1] % ChartPlayer.Instance.UPB + ChartPlayer.Instance.UPB * measureLine.unitIndex / split];
+                measureLine.time = [measureLine.time[0], measureLine.time[1] - measureLine.time[1] % ChartPlayer.Instance.editorUPB + ChartPlayer.Instance.editorUPB * measureLine.unitIndex / split];
             } else {
                 measureLine.enabled = false;
                 measureLine.off();

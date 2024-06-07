@@ -133,14 +133,6 @@ export class ChartEditor extends Component {
         this.bpmEditbox.node.on("change", (value) => this.bpm = Number.parseInt(value), this);
         this.bpbEditbox.node.on("change", (value) => this.bpb = Number.parseInt(value), this);
         this.durationEditbox.node.on("change", (value) => this.duration = Number.parseInt(value), this);
-
-        director.preloadScene("CustomChartSelect", (err) => {
-            if (err) {
-                console.log("SCENE::CUSTOMCHART: Failed");
-                return;
-            }
-            console.log("SCENE::CUSTOMCHART: Preloaded");
-        });
     }
 
     back() {
@@ -153,9 +145,21 @@ export class ChartEditor extends Component {
         this.clearData();
     }
 
+    /*
     onDestroy() {
+        this.musicControlButton.node.off("click", this.toggleMusic, this);
+        this.backButton.node.off("click", this.back, this);
+        this.renewButton.node.off("click", this.clearData, this);
+        this.saveButton.node.off("click", this.saveChart, this);
+        this.importMusicButton.node.off("click", this.importMusic, this);
+        this.measureLineSplitInput.node.off("change", this.updateMeasureLineProps, this);
+        this.judgePointInput.node.off("change", this.updateJudgePointPool, this);
+        this.editTargetInput.node.off("change", this.propsUpdate, this);
+        this.bpmEditbox.node.off("change", (value) => this.bpm = Number.parseInt(value), this);
+        this.bpbEditbox.node.off("change", (value) => this.bpb = Number.parseInt(value), this);
+        this.durationEditbox.node.off("change", (value) => this.duration = Number.parseInt(value), this);
         ChartEditor.instance = null;
-    }
+    }*/
 
     update(dt: number) {
         this.updateBeatHoverLabel();
@@ -388,14 +392,14 @@ export class ChartEditor extends Component {
         const time = progress * this.duration
         const beats = Math.ceil(time * this.bpm / 60);
         const bars = Math.floor(beats / this.bpb);
-        const units = (beats % this.bpb) * ChartPlayer.Instance.UPB;
+        const units = (beats % this.bpb) * ChartPlayer.Instance.editorUPB;
         return [bars, units];
     }
 
     updateEndTime() {
         const beats = Math.ceil(this.duration * this.bpm / 60);
         const bars = Math.floor(beats / this.bpb);
-        const units = (beats % this.bpb) * ChartPlayer.Instance.UPB;
+        const units = (beats % this.bpb) * ChartPlayer.Instance.editorUPB;
         this._endTime = [bars, units];
     }
 
@@ -408,7 +412,7 @@ export class ChartEditor extends Component {
     }
 
     updateMusicProgress(time: [number, number]) {
-        const second = (time[0] * this.bpb + time[1] / ChartPlayer.Instance.UPB) * 60 / this.bpm;
+        const second = (time[0] * this.bpb + time[1] / ChartPlayer.Instance.editorUPB) * 60 / this.bpm;
         if (second > 0 && second < this.duration) {
             this.audioSource.stop();
             this.audioSource.currentTime = second;
@@ -424,7 +428,7 @@ export class ChartEditor extends Component {
         } else if (!this.isHovering) {
             this.musicProgressLabel.string = "not hoVering"
         } else {
-            this.musicProgressLabel.string = ` bar ${this.currentHoverTime[0]}, beAt ${Math.floor(this.currentHoverTime[1] / ChartPlayer.Instance.UPB)}, uniT ${this.currentHoverTime[1] % ChartPlayer.Instance.UPB}/${ChartPlayer.Instance.UPB}`
+            this.musicProgressLabel.string = ` bar ${this.currentHoverTime[0]}, beAt ${Math.floor(this.currentHoverTime[1] / ChartPlayer.Instance.editorUPB)}, uniT ${this.currentHoverTime[1] % ChartPlayer.Instance.editorUPB}/${ChartPlayer.Instance.editorUPB}`
         }
     }
 

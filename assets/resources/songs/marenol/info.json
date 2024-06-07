@@ -3,5 +3,19 @@
 	"name": "MARENOL",
 	"artist": "LeaF",
 	"bpm": "140",
-	"default_unlocked": false
+	"default_unlocked": false,
+	"chapter": {
+		"id": "luna",
+		"index": 4
+	},
+	"unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "miserable",
+			"required_score": 800000
+		}
+	],
+	"log_ids": [
+		"luna-04-00"
+	]
 }

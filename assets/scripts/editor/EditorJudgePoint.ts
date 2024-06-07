@@ -52,7 +52,7 @@ export class EditorJudgePoint extends JudgePoint {
                     break;
             }
             if (!noteComponent) continue;
-            note.position = v3(0, MeasureLinePool.Instance.barHeight * (noteComponent.noteTime[0] - MeasureLinePool.Instance.currentTime[0] + (noteComponent.noteTime[1] - MeasureLinePool.Instance.currentTime[1]) / ChartPlayer.Instance.UPB / ChartEditor.Instance.bpb));
+            note.position = v3(0, MeasureLinePool.Instance.barHeight * (noteComponent.noteTime[0] - MeasureLinePool.Instance.currentTime[0] + (noteComponent.noteTime[1] - MeasureLinePool.Instance.currentTime[1]) / ChartPlayer.Instance.editorUPB / ChartEditor.Instance.bpb));
             if (note.name == "EditorHoldNotePrefab") {
                 const holdNote = noteComponent as EditorHoldNote;
                 note.active = !(holdNote.endPos.y < 0 || holdNote.startPos.y > this.resolution.height * 0.75)

@@ -1,0 +1,26 @@
+{
+	"id": "luna-01-00",
+	"name": "temp",
+	"contents": [
+		{
+			"type": "text",
+			"content": "男朋友跟好閨蜜劈腿"
+		},
+		{
+			"type": "text",
+			"content": "爸媽傳訊息來關心，(不能讓父母知道自己交男朋友，所以也不能跟他們說)"
+		},
+		{
+			"type": "text",
+			"content": "開始透過創作來轉換心情，想要去投新人獎之類的"
+		}
+	],
+	"unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "tpvsshark",
+			"required_score": 800000,
+			"unlock_level": 1
+		}
+	]
+}
