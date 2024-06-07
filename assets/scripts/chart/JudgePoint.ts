@@ -116,6 +116,7 @@ export class JudgePoint extends Component {
                             offset += event.start * duration;
                             break;
                         case "linear":
+                        default:
                             const startSpeed = event.start;
                             const endSpeed = lerp(event.start, event.end, (endTime - event.startTime) / (event.endTime - event.startTime));
                             offset += (startSpeed + endSpeed) * duration / 2;
@@ -142,7 +143,9 @@ export class JudgePoint extends Component {
         }
         
         const flowSpeed = this.settings.getUserData("settings", "flow_speed");
-        return flowSpeed * this.PXPS * offset;
+        let result = flowSpeed * this.PXPS * offset;
+        result = Math.round(result * 10000) / 10000;
+        return result;
     }
 
     getPropValueByTime(property: string, time: number) {

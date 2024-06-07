@@ -1,7 +1,8 @@
-import { _decorator, AudioClip, AudioSource, Button, Component, director, EventKeyboard, input, Input, JsonAsset, KeyCode, Prefab, resources, tween, UIOpacity } from "cc";
+import { _decorator, AudioClip, AudioSource, Button, Component, director, EventKeyboard, input, Input, JsonAsset, KeyCode, Node, Prefab, resources, RichText, tween, UIOpacity, Vec3 } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { FirebaseManager } from "../lib/FirebaseManager";
 import { SceneTransition } from "../ui/SceneTransition";
+import { JudgeManager } from "../lib/JudgeManager";
 import { ChartData } from "../settings/song";
 import { JudgePointPool } from "./JudgePointPool";
 import { ProgressSlider } from "./ProgressSlider";
@@ -62,6 +63,14 @@ export class ChartPlayer extends Component {
     @property(Button)
     quitButton: Button
 
+    // Node
+    @property(Node)
+    comboNode: Node
+    @property(Node)
+    scoreNode: Node
+    @property(Node)
+    accuracyNode: Node
+
     // UIOpacity
     @property(UIOpacity)
     loadUiOpacity: UIOpacity
@@ -85,6 +94,8 @@ export class ChartPlayer extends Component {
 
     private static instance: ChartPlayer
     private globalSettings: GlobalSettings
+    private judgeManager: JudgeManager
+
     private menuOpened: boolean = false
     private dataSource: DataSource = DataSource.Firebase
     private chartData: ChartData
@@ -95,6 +106,10 @@ export class ChartPlayer extends Component {
     private globalTime: number = 0
     private offset: number = 0;
     private UPB = 120  // Units per beat
+
+    private combo: number = 0
+    private score: number = 0
+    private accuracy: string = "00.00"
 
 
 
@@ -110,20 +125,20 @@ export class ChartPlayer extends Component {
 
     onLoad() {
         ChartPlayer.instance = this;
+        this.judgeManager = JudgeManager.getInstance();
+
         this.loadUiOpacity.opacity = 255;
         this.offset = this.globalSettings.getUserSettings()?.offset ?? 0;
         this.song = this.globalSettings.selectedSong
             ? this.globalSettings.selectedSong
-            : { type: "vanilla", id: "rip", mode: "gameplay", anomaly: false };
+            : { type: "vanilla", id: "marenol", mode: "gameplay", anomaly: false };
 
         // Get chart & audio from source, then execute callback (load chart)
         this.loadChartData().then(() => {
             tween(this.loadUiOpacity)
                 .to(1, { opacity: 0 }, { easing: "smooth" })
-                .call(() => {
-                    this.startGame();
-                })
                 .start();
+            this.startGame();
         }).catch((error) => {
             console.error(error);
         });
@@ -142,8 +157,12 @@ export class ChartPlayer extends Component {
         if (this.audioSource.playing) {
             this.globalTime += deltaTime;
 
+            // Progress Slider
             const progress = this.audioSource.currentTime / this.songDuration;
             this.progressSlider.updateProgress(progress);
+
+            // Scores
+            this.updateText();
         }
     }
 
@@ -237,6 +256,7 @@ export class ChartPlayer extends Component {
     startGame() {
         this.globalTime = 0;
         this.progressSlider.updateProgress(0);
+        console.log(`NOTE COUNT: ${this.judgeManager.noteCount}`);
 
         this.scheduleOnce(() => {
             for(let i = 0; i < this.hintAmount; i++) {
@@ -272,6 +292,10 @@ export class ChartPlayer extends Component {
     restartGame() {
         this.audioSource.stop();
         this.closeMenu();
+        this.comboNode.getComponent(RichText).string = "0";
+        this.scoreNode.getComponent(RichText).string = "000000";
+        this.accuracyNode.getComponent(RichText).string = `00.00%`;
+        this.judgeManager.reset();
 
         // Prepare chart
         this.loadChart();
@@ -284,10 +308,6 @@ export class ChartPlayer extends Component {
         this.judgePointPool.reset();
         this.chartData = null;
         this.sceneTransition.fadeOutAndLoadScene("SongSelect");
-    }
-
-    getGlobalTime() {
-        return this.globalTime;
     }
 
     openMenu() {
@@ -319,6 +339,42 @@ export class ChartPlayer extends Component {
         this.resumeButton.interactable = state;
         this.retryButton.interactable = state;
         this.quitButton.interactable = state;
+    }
+
+    getGlobalTime() {
+        return this.globalTime;
+    }
+
+    getMode() {
+        return this.song.mode;
+    }
+
+    updateText() {
+        const combo = this.judgeManager.combo;
+        const score = this.judgeManager.score;
+        const accuracy = this.judgeManager.accuracy;
+        if (combo !== this.combo) {
+            this.combo = combo;
+            this.comboNode.getComponent(RichText).string = combo.toString();
+            tween(this.comboNode)
+                .to(0.05, { scale: new Vec3(1, 1.1, 1) }, { easing: "expoOut" })
+                .delay(0.05)
+                .to(0.1, { scale: new Vec3(1, 1, 1) }, { easing: "sineOut" })
+                .start();
+        }
+        if (score !== this.score) {
+            this.score = score;
+            this.scoreNode.getComponent(RichText).string = score.toString();
+            tween(this.scoreNode)
+                .to(0.05, { scale: new Vec3(1, 1.1, 1) }, { easing: "expoOut" })
+                .delay(0.05)
+                .to(0.1, { scale: new Vec3(1, 1, 1) }, { easing: "sineOut" })
+                .start();
+        }
+        if (accuracy !== this.accuracy) {
+            this.accuracy = accuracy;
+            this.accuracyNode.getComponent(RichText).string = `${accuracy}%`;
+        }
     }
 
 
@@ -393,6 +449,10 @@ export class ChartPlayer extends Component {
                         ? this.convertToSeconds(note.endTime, bpmEvents) + this.offset
                         : note.endTime + this.offset;
                 }
+
+                // ? Contribute to note count if not fake
+                const isFake = note?.isFake ?? false;
+                if (!isFake) this.judgeManager.addNoteCount();
 
                 return convertedNote;
             })
