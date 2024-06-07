@@ -43,8 +43,12 @@ export class GlobalSettings {
 
     // # Functions
     public async initialize(): Promise<void> {
-        this.musicVolume = parseFloat(localStorage.getItem("musicVolume" || "1.0"));
-        this.sfxVolume = parseFloat(localStorage.getItem("sfxVolume" || "1.0"));
+        const musicVolumeString = localStorage.getItem("musicVolume");
+        const sfxVolumeString = localStorage.getItem("sfxVolume");
+        const musicVolume = parseFloat(musicVolumeString !== null ? musicVolumeString : "1.0");
+        const sfxVolume = parseFloat(sfxVolumeString !== null ? sfxVolumeString : "1.0")
+        this.musicVolume = musicVolume;
+        this.sfxVolume = sfxVolume;
         this._audioManager = new AudioManager(GlobalSettings.getInstance());
 
         try {

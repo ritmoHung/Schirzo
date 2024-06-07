@@ -1,0 +1,34 @@
+{
+    "id": "luna-02-02",
+    "name": "temp",
+    "contents": [
+        {
+            "type": "text",
+            "content": "<b>睡不著 3</b>"
+        },
+        {
+            "type": "text",
+            "content": "{3: 「少一分打一下」}\n\n他們都幫我{2: 安排}好了，要做這個要做那個。每次成績出來，我都要擔心家裡的{2: 反應}。總覺得自己像是被困在一個巨大的{2: 迷宮}裡，找不到{2: 出口。}\n\n深夜，獨自坐在書桌前，看著堆積如山的課本，感覺{2: 心情沉重得無法呼吸。}\n\n我試著閉上眼睛，卻只能聽到自己的心跳聲。\n\n突然，一股{2: 衝動}湧上{2: 心}頭，我開始彈{2: 奏那首}一直在腦海中{2: 旋律}。\n\n{2: 音符}一個個跳出來。彈{2: 著}彈{2: 著}，似乎有什麼不一樣了。\n\n在這樣的夜晚，我感覺自己離{2: 現實}越來越遠，但卻離自己的夢想越來越近。\n\n也許這次可以喔，也許這次會{3: win} 喔。"
+        }
+    ],
+    "unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "alephzero",
+			"required_score": 800000,
+			"unlock_level": 1
+		},
+        {
+            "type": "song_score",
+            "song_id": "alephzero",
+            "required_score": 850000,
+            "unlock_level": 2
+        },
+        {
+            "type": "song_score",
+            "song_id": "alephzero",
+            "required_score": 900000,
+            "unlock_level": 3
+        }
+	]
+}

@@ -1,0 +1,34 @@
+{
+    "id": "luna-00-02",
+    "name": "temp",
+    "contents": [
+        {
+            "type": "text",
+            "content": "<b>煩死了</b>"
+        },
+        {
+            "type": "text",
+            "content": "「她」還是不斷的打電話給我\n我必須裝做好好的樣子\n當然也沒有提 Mavors 或音樂的東西\n否則「她」又會念念念\n\n每次打完電話，我都會找 Venus 哭\n明明我已經很認真了\n還要被這樣對待...\n\n我現在冰箱裡常駐著 {2: ほろよい} 每次這樣就喝一瓶\n然後趁著這個微醺跟難受 開始做音樂"
+        }
+    ],
+    "unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "mopemope",
+			"required_score": 800000,
+			"unlock_level": 1
+		},
+        {
+            "type": "song_score",
+            "song_id": "mopemope",
+            "required_score": 850000,
+            "unlock_level": 2
+        },
+        {
+            "type": "song_score",
+            "song_id": "mopemope",
+            "required_score": 900000,
+            "unlock_level": 3
+        }
+	]
+}

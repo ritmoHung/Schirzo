@@ -1,0 +1,28 @@
+{
+    "id": "luna-00-03",
+    "name": "temp",
+    "contents": [
+        {
+            "type": "text",
+            "content": "<b>南寮海邊黑得要命</b>"
+        },
+        {
+            "type": "text",
+            "content": "上個星期跟 {2: Mavors} 還有 {2: Venus} 一群朋友夜衝去南寮\n雖然只是跑到海邊 然後再去玩溜滑梯\n\n我覺得真的超開心的\n莫名其妙的聚在一起\n一點一點的 在我這片爛泥裡開了花"
+        }
+    ],
+    "unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "mopemope",
+			"required_score": 800000,
+			"unlock_level": 1
+		},
+        {
+            "type": "song_score",
+            "song_id": "mopemope",
+            "required_score": 850000,
+            "unlock_level": 2
+        }
+	]
+}

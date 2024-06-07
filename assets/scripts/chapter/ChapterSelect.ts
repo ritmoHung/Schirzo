@@ -61,6 +61,8 @@ export class ChapterSelect extends Component {
         const lunaChapterState = this.globalSettings.getUserData("chapters", "luna")?.progress_state ?? 0;
         if (lunaChapterState === 2) {
             this.audioSource.volume = 0;
+        } else {
+            this.audioSource.volume = this.globalSettings.musicVolume;
         }
         this.audioSource.play();
         this.globalSettings.audioManager.playBGM(this.bgm);
