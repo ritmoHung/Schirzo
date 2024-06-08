@@ -22,15 +22,10 @@ export class EditStateManager extends Component {
     private initializing = true;
 
 
-
     // # Constructor
     public static getInstance(): EditStateManager {
-        if (!EditStateManager.instance) {
-            EditStateManager.instance = new EditStateManager();
-        }
         return EditStateManager.instance;
     }
-
 
 
     // # Lifecycle
