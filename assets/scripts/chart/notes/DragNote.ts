@@ -1,7 +1,7 @@
 import { _decorator, EventKeyboard } from "cc";
 import { JudgePoint } from "../JudgePoint";
 import { Note } from "./Note";
-import { P_DECRYPT_RANGE, GOOD_RANGE } from "../../lib/JudgeManager";
+import { P_DECRYPT_RANGE, GOOD_RANGE, JudgementType } from "../../lib/JudgeManager";
 const { ccclass, property } = _decorator;
 
 @ccclass("DragNote")
@@ -18,12 +18,14 @@ export class DragNote extends Note {
                         if (Math.abs(globalTime - this.lastGlobalTime) < 0.1) {
                             this.hasPlayedSfx = true;
                             this.chartPlayer.playSfx(this.sfx);
+                            this.playNoteHitAnim(JudgementType.PDecrypt);
                         }
                     }
                     break;
                 case "gameplay":
                     if (this.isJudged) {
                         this.chartPlayer.playSfx(this.sfx);
+                        this.playNoteHitAnim(JudgementType.PDecrypt);
                         this.node.destroy();
                     }
 
@@ -43,6 +45,7 @@ export class DragNote extends Note {
 
         this.updateUI(globalTime);
         this.lastGlobalTime = globalTime;
+        super.update();
     }
 
     protected onKeyDown(event: EventKeyboard): void {

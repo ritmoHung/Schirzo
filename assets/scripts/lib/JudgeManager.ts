@@ -77,23 +77,31 @@ export class JudgeManager {
         return "F";
     }
 
-    public judgeNote(dt: number) {
+    public judgeNote(dt: number): JudgementType {
         const absDt = Math.abs(dt);
+        let type: JudgementType;
+
         if (absDt <= P_DECRYPT_RANGE) {
-            this.addJudgement(JudgementType.PDecrypt, dt);
+            type = JudgementType.PDecrypt;
+            this.addJudgement(type, dt);
             this.addCombo();
         } else if (absDt <= DECRYPT_RANGE) {
-            this.addJudgement(JudgementType.Decrypt, dt);
+            type = JudgementType.Decrypt;
+            this.addJudgement(type, dt);
             this.addCombo();
+            return type;
         } else if (absDt <= GOOD_RANGE) {
-            this.addJudgement(JudgementType.Good, dt);
+            type = JudgementType.Good;
+            this.addJudgement(type, dt);
             this.addCombo();
         } else {
-            this.addJudgement(JudgementType.Cypher, dt);
+            type = JudgementType.Cypher;
+            this.addJudgement(type, dt);
             this.resetCombo();
         }
 
         this.calculateScoreAndAccuracy();
+        return type;
     }
 
     private addJudgement(type: JudgementType, dt: number) {

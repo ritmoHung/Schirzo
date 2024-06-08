@@ -637,6 +637,10 @@
     "uiOpacity": {
       "__id__": 30
     },
+    "noteHitPrefab": {
+      "__uuid__": "5fb7678a-c5ad-46b5-8939-f0bb9fbcd2cb",
+      "__expectedType__": "cc.Prefab"
+    },
     "sfx": {
       "__uuid__": "6c5a4436-703f-4c64-8310-3f13dfa4c88e",
       "__expectedType__": "cc.AudioClip"

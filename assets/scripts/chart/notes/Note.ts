@@ -1,13 +1,17 @@
-import { _decorator, AudioClip, Component, easing, EventKeyboard, Input, input, UIOpacity } from "cc";
+import { _decorator, AudioClip, Component, easing, EventKeyboard, Input, input, instantiate, Prefab, UIOpacity } from "cc";
 import { ChartPlayer } from "../ChartPlayer";
-import { JudgeManager } from "../../lib/JudgeManager";
+import { JudgeManager, JudgementType } from "../../lib/JudgeManager";
 import { JudgePoint } from "../JudgePoint";
+import { NoteHit } from "../../animation/NoteHit";
 const { ccclass, property } = _decorator;
 
 @ccclass("Note")
 export abstract class Note extends Component {
     @property(UIOpacity)
     uiOpacity: UIOpacity
+
+    @property(Prefab)
+    noteHitPrefab: Prefab
 
     @property(AudioClip)
     sfx: AudioClip | null = null
@@ -18,6 +22,7 @@ export abstract class Note extends Component {
 
     protected mode: string = "autoplay"
     protected hasPlayedSfx = false
+    protected hasPlayedNoteHit = false
     protected lastGlobalTime: number = -1
 
     protected isFake: boolean
@@ -56,7 +61,7 @@ export abstract class Note extends Component {
     protected abstract onKeyPressing(event: EventKeyboard): void;
     protected abstract onKeyUp(event: EventKeyboard): void;
 
-    update(deltaTime: number) {
+    update() {
 
     }
 
@@ -86,6 +91,15 @@ export abstract class Note extends Component {
         } else {
             this.uiOpacity.opacity = 255;
             this.node.setScale(1, 1);
+        }
+    }
+
+    protected playNoteHitAnim(type: JudgementType) {
+        if (!this.hasPlayedNoteHit) {
+            this.hasPlayedNoteHit = true;
+            const noteHit = instantiate(this.noteHitPrefab);
+            noteHit.getComponent(NoteHit).initialize(type);
+            noteHit.setParent(this.judgePoint.node);
         }
     }
 }

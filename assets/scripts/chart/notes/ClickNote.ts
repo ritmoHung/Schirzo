@@ -93,7 +93,8 @@ export class ClickNote extends Note {
                 this.isJudged = true;
                 this.isActive = false;
                 this.chartPlayer.playSfx(this.sfx);
-                this.judgeManager.judgeNote(dt);
+                const type = this.judgeManager.judgeNote(dt);
+                this.playNoteHitAnim(type);
                 this.node.destroy();
             }
         }
