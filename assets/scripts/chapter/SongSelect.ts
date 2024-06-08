@@ -44,10 +44,13 @@ export class SongSelect extends Component {
     logsButton: Button
     @property(Button)
     settingsButton: Button
+    @property(Button)
+    LeaderBoardButton: Button
 
     // UIOpacity
     @property(UIOpacity)
     notificationDot: UIOpacity
+
 
     private globalSettings: GlobalSettings
     private songs: any = []
@@ -77,6 +80,7 @@ export class SongSelect extends Component {
         this.backButton.node.on(Button.EventType.CLICK, () => this.loadScene("ChapterSelect"), this);
         this.logsButton.node.on(Button.EventType.CLICK, () => this.loadScene("ChapterLogs"), this);
         this.settingsButton.node.on(Button.EventType.CLICK, () => this.loadScene("SettingsScreen"), this);
+        this.LeaderBoardButton.node.on(Button.EventType.CLICK, () => this.loadScene("LeaderBoard"), this);
         this.songJacket.node.on(Node.EventType.TOUCH_END, this.loadChartPlayerScene, this)
 
         // Key Down

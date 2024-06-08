@@ -90,6 +90,12 @@ export class ResultScreen extends Component {
 
             // Key Down
             input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+
+            this.updateLeaderboard(selectedSong.id).then(() => {
+
+            }).catch(error => {
+                console.error(error);
+            })
         }).catch(error => {
             console.error(error);
         });
@@ -105,8 +111,6 @@ export class ResultScreen extends Component {
                 break;
         }
     }
-
-
 
     // # Functions
     async setBackground(songId: string) {
@@ -203,6 +207,37 @@ export class ResultScreen extends Component {
                 score: this.judgeManager.score,
                 accuracy: parseFloat(this.judgeManager.accuracy),
             }})
+        }
+    }
+
+    async updateLeaderboard(songId: string) {
+        try {
+
+            let userData = await DatabaseManager.getUserData(this.globalSettings.user.uid);
+            console.log('userData:', userData);
+            console.log(this.globalSettings.user.email);
+    
+            
+            let maxAccuracy = userData.songs[songId].accuracy;
+            let maxScore = userData.songs[songId].score;
+            if(this.judgeManager.accuracy > maxAccuracy)
+            {
+                maxAccuracy = this.judgeManager.accuracy;
+            }
+
+            if(this.judgeManager.score > maxScore)
+            {
+                maxScore = this.judgeManager.score;
+            }
+
+            await DatabaseManager.setLeaderBoard(songId, {
+                accuracy: maxAccuracy,
+                name: this.globalSettings.user.displayName,
+                score: maxScore
+            });
+            console.log('Leaderboard updated successfully');
+        } catch (error) {
+            console.error('Error updating leaderboard:', error);
         }
     }
 

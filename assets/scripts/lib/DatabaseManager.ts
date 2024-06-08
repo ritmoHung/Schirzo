@@ -43,4 +43,44 @@ export module DatabaseManager {
             console.error(`DATABASE::UPDATE: Failed, reason: ${error.message}`);
         }
     }
+    //return the data of leaderboard
+    export async function getLeaderBoard(SongId: string): Promise<any> {
+        let songRef = firebase.database().ref(`leaderboard/songs/vanilla/${SongId}`);
+
+        // console.log(`Fetching data from: leaderboard/songs/vanilla/${SongId}/test`);
+    
+        try {
+            let snapshot = await songRef.orderByChild("score").limitToLast(5).once("value");
+            let data = snapshot.val();
+    
+            let leaderboardArray = [];
+            if (data) {
+                for (let key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        leaderboardArray.push(data[key]);
+                    }
+                }
+            }
+    
+            leaderboardArray.sort((a, b) => {
+                if (a.accuracy === b.accuracy) {
+                    return b.score - a.score;
+                }
+                return b.accuracy - a.accuracy;
+            });
+    
+            return leaderboardArray;
+        } catch (error) {
+            console.error("Error fetching data: ", error);
+            throw error;
+        }
+    }
+
+    export async function setLeaderBoard(SongId: string, data: any): Promise<void> {
+        const globalSettings = GlobalSettings.getInstance();
+        let songRef = firebase.database().ref(`leaderboard/songs/vanilla/${SongId}`);
+        const name = globalSettings.user.displayName;
+        console.log(name);
+        return firebase.database().ref(`leaderboard/songs/vanilla/${SongId}/${name}`).set(data);
+    }
 }
