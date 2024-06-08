@@ -130,9 +130,17 @@ export class ChartEditor extends Component {
         this.measureLineSplitInput.node.on("change", this.updateMeasureLineProps, this);
         this.judgePointInput.node.on("change", this.updateJudgePointPool, this);
         this.editTargetInput.node.on("change", this.propsUpdate, this);
-        this.bpmEditbox.node.on("change", (value) => this.bpm = Number.parseInt(value), this);
-        this.bpbEditbox.node.on("change", (value) => this.bpb = Number.parseInt(value), this);
-        this.durationEditbox.node.on("change", (value) => this.duration = Number.parseInt(value), this);
+        this.bpmEditbox.node.on("editing-did-ended", (value: EditBox) => this.bpm = Number.parseInt(value.string), this);
+        this.bpbEditbox.node.on("editing-did-ended", (value) => this.updateBpb(value.string), this);
+        this.durationEditbox.node.on("editing-did-ended", (value) => this.duration = Number.parseInt(value.string), this);
+    }
+
+    updateBpb(bpb: string) {
+        this.bpb = Number.parseInt(bpb);
+        if (MeasureLinePool.Instance) {
+            MeasureLinePool.Instance.rearrangePoolWithBpb(this.bpb);
+            this.updateMeasureLineProps(this.measureLineSplitInput.string);
+        }
     }
 
     back() {

@@ -19,7 +19,7 @@ export class MeasureLinePool extends Component {
 
     resolution: Size;
     barHeight: number;
-    renderBarCount: number = 0; 
+    renderBarCount: [number, number] = [0, 0]; 
 
     private _pool: MeasureLine[] = [];
     private keyHold: number = 0;
@@ -62,6 +62,12 @@ export class MeasureLinePool extends Component {
         }
     }
 
+    updateTime() {
+        for (const node of this._pool) {
+            node.updateTime();
+        }
+    }
+
     scrollByKey(event: EventKeyboard) {
         this.keyHold++;
         const speed = (this.keyHold > 48) ? 240 : (this.keyHold > 16) ? 40 : (this.keyHold > 6) ? 20 : 10;
@@ -98,14 +104,14 @@ export class MeasureLinePool extends Component {
     }
 
     update(dt: number) {
-        this.topViewTime = [this.currentTime[0] + this.renderBarCount, this.currentTime[1]];
+        this.topViewTime = [this.currentTime[0] + this.renderBarCount[0], this.currentTime[1] + this.renderBarCount[1]];
     }
 
     initializePool() {
         const bpb = ChartEditor.Instance.bpb;
         this.resolution = view.getDesignResolutionSize();
         this.barHeight = this.resolution.height * this.measureLineBeatGap * bpb;
-        this.renderBarCount = 4 / bpb;
+        this.renderBarCount = [Math.floor(4 / bpb), Math.floor(4 % bpb) * 120];
         for (let beat = 0; beat < 4; beat++) {
             for (let unit = 0; unit < 12; unit++) {
                 const node = instantiate(this.measureLinePrefab);
@@ -117,6 +123,23 @@ export class MeasureLinePool extends Component {
                 this.node.addChild(node);
             }
         }
+    }
+
+    rearrangePoolWithBpb(bpb: number) {
+        if (bpb <= 0) return;
+        this.resolution = view.getDesignResolutionSize();
+        this.barHeight = this.resolution.height * this.measureLineBeatGap * bpb;
+        this.renderBarCount = [Math.floor(4 / bpb), Math.floor(4 % bpb) * 120];
+        for (let beat = 0; beat < 4; beat++) {
+            for (let unit = 0; unit < 12; unit++) {
+                const node = this.pool[beat * 12 + unit];
+                const measureLine = node.getComponent(MeasureLine);
+                measureLine.time = [Math.floor(beat / bpb), ChartPlayer.Instance.editorUPB * (beat % bpb + unit / 12)];
+                console.log(measureLine.time[0],  measureLine.time[1])
+            }
+        }
+        this.updateTime();
+        this.pull();
     }
 
     rearrangePoolWithSplit(split: number) {

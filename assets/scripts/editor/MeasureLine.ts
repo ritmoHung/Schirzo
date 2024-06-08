@@ -54,9 +54,9 @@ export class MeasureLine extends Component {
         let y = this.node.position.y;
         for (let i = 0; i < 10 && pulling; i++) {
             if (y < bottomPosition) {
-                this.time = [this.time[0] + this.pool.renderBarCount, this.time[1]];
+                this.time = [this.time[0] + this.pool.renderBarCount[0], this.time[1] + this.pool.renderBarCount[1]];
             } else if (y >= this.pool.resolution.height) {
-                this.time = [this.time[0] - this.pool.renderBarCount, this.time[1]];
+                this.time = [this.time[0] - this.pool.renderBarCount[0], this.time[1] + this.pool.renderBarCount[1]];
             } else {
                 pulling = false;
             }
@@ -117,11 +117,25 @@ export class MeasureLine extends Component {
 
         this.node.position = v3(1020, bottomPosition + this.pool.barHeight * (this.time[0] - this.pool.currentTime[0] + (this.time[1] - this.pool.currentTime[1]) / ChartPlayer.Instance.editorUPB / bpb));
         if (this.node.position.y < bottomPosition) {
-            this.time = [this.time[0] + this.pool.renderBarCount, this.time[1]];
+            this.time = [this.time[0] + this.pool.renderBarCount[0], this.time[1] + this.pool.renderBarCount[1]];
             this.updateLabel();
         } else if (this.node.position.y >= this.pool.resolution.height) {
-            this.time = [this.time[0] - this.pool.renderBarCount, this.time[1]];
+            this.time = [this.time[0] - this.pool.renderBarCount[0], this.time[1] - this.pool.renderBarCount[1]];
             this.updateLabel();
+        }
+        this.updateTime();
+    }
+
+    updateTime() {
+        if (this.time[1] < 0) {
+            this.time[1] += 120 * ChartEditor.Instance.bpb;
+            this.time[0]--;
+            if (this.time[0] < 0) {
+                this.time = [0, 0];
+            }
+        } else if (this.time[1] >= 120 * ChartEditor.Instance.bpb) {
+            this.time[1] -= 120 * ChartEditor.Instance.bpb;
+            this.time[0]++;
         }
     }
 
