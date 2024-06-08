@@ -81,21 +81,6 @@ export module DatabaseManager {
         let songRef = firebase.database().ref(`leaderboard/songs/vanilla/${SongId}`);
         const name = globalSettings.user.displayName;
         console.log(name);
-
-        /*let snapshot = await songRef.once("value").val();
-        if(!snapshot){
-            let vanillaRef =  firebase.database().ref(`leaderboard/songs/vanilla`);
-            snapshot = await vanillaRef.once("value").val();
-            snapshot[SongId] = {};
-            snapshot[SongId][name] = {};
-            snapshot[SongId][name] = {...snapshot[SongId][name], ...data};
-            return firebase.database().ref(`leaderboard/songs/vanilla`).set(snapshot);
-        }
-        else if(!snapshot[name]){
-            snapshot[name] = {};
-            snapshot[name] = {...snapshot[name], ...data};
-            return songRef.set(snapshot);
-        }*/
         return firebase.database().ref(`leaderboard/songs/vanilla/${SongId}/${name}`).set(data);
     }
 }
