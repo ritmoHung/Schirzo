@@ -60,6 +60,7 @@ export class EditStateManager extends Component {
         this.playerControls.active = !editing;
         this.editerControls.active = editing;
         if (editing) {
+            ChartPlayer.Instance.pauseGame();
             ChartPlayer.Instance.quitGame();
             ChartPlayer.Instance.node.active = false;
         } else {
@@ -69,13 +70,13 @@ export class EditStateManager extends Component {
 
             ChartPlayer.Instance.node.active = true;
             ChartPlayer.Instance.editorChartData = {chart: ChartEditor.Instance.publishChart(), audio: ChartEditor.Instance.audioSource.clip};
+            console.log(ChartEditor.Instance.publishChart());
             if (this.initializing) {
                 ChartPlayer.Instance.prepareGame();
                 this.initializing = false;
             } else {
                 ChartPlayer.Instance.reloadGame();
             }
-            ChartPlayer.Instance.startGame();
         }
     }
 
