@@ -156,7 +156,7 @@ export class Timeline extends Component {
                 data.push({
                     "startTime": prevTime,
                     "endTime": node.time,
-                    "easing": prevValue ? node.easingTypeInput.rawString : "constant",
+                    "easing": prevValue != null ? node.easingTypeInput.rawString : "constant",
                     "start": prevValue ?? node.value,
                     "end": node.value
                 });

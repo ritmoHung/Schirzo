@@ -10,6 +10,7 @@ import { ChartText } from "./ChartText";
 import { ButtonIconOutline } from "../ui/button/ButtonIcon";
 import { ButtonSquare } from "../ui/button/ButtonSquare";
 import { EditStateManager } from "../editor/EditStateManager";
+import { ChartEditor } from "../editor/ChartEditor";
 const { ccclass, property } = _decorator;
 
 interface BPMEvent {
@@ -207,7 +208,7 @@ export class ChartPlayer extends Component {
     }
 
     onDestroy() {
-        if (!EditStateManager.playerInit) {
+        if (!ChartEditor.Instance) {
             this.audioSource.node.off("ended", this.onAudioEnded, this);
         }
     }
