@@ -107,7 +107,9 @@ export class LeaderBoard extends Component {
 
     async getLeaderBoard(SongId: string) {
         this.leaderboard = await DatabaseManager.getLeaderBoard(SongId);
-        //this.leaderboard = this.leaderboard.sort((a: any, b: any) => a.score - b.score);
+        /*if(this.leaderboard){
+            this.leaderboard = this.leaderboard.sort((a: any, b: any) => this.leaderboard[a].score - this.leaderboard[b].score);
+        }*/
     }
 
     async setSongInfo(songIndex: number) {

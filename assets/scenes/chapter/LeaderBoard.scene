@@ -1956,8 +1956,8 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -490,
-      "y": 230,
+      "x": -490.681,
+      "y": 251.041,
       "z": 0
     },
     "_lrot": {
@@ -2071,8 +2071,8 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -750,
-      "y": 150,
+      "x": -745.705,
+      "y": 175.964,
       "z": 0
     },
     "_lrot": {
@@ -2119,7 +2119,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 0,
+      "x": 59.199981689453125,
       "y": 0,
       "z": 0
     },
@@ -2158,7 +2158,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 0,
+      "width": 118.39996337890625,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -2179,9 +2179,9 @@
     "_enabled": true,
     "__prefab": null,
     "_lineHeight": 40,
-    "_string": "",
-    "_horizontalAlign": 0,
-    "_verticalAlign": 1,
+    "_string": "Name",
+    "_horizontalAlign": 1,
+    "_verticalAlign": 0,
     "_fontSize": 40,
     "_fontColor": {
       "__type__": "cc.Color",
@@ -2227,7 +2227,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 100,
+      "x": 292.39994049072266,
       "y": 0,
       "z": 0
     },
@@ -2266,7 +2266,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 0,
+      "width": 147.9999542236328,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -2287,9 +2287,9 @@
     "_enabled": true,
     "__prefab": null,
     "_lineHeight": 40,
-    "_string": "",
-    "_horizontalAlign": 0,
-    "_verticalAlign": 1,
+    "_string": "score",
+    "_horizontalAlign": 1,
+    "_verticalAlign": 2,
     "_fontSize": 40,
     "_fontColor": {
       "__type__": "cc.Color",
@@ -2326,13 +2326,13 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 100,
+      "width": 366.39991760253906,
       "height": -16
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
       "x": 0,
-      "y": 1
+      "y": 0
     },
     "_id": "544sPT4ypB27ZsUh/5gWxH"
   },

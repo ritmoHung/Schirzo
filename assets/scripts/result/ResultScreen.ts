@@ -125,7 +125,8 @@ export class ResultScreen extends Component {
             console.log(this.globalSettings.user.email);
     
             
-            let {maxAccuracy, maxScore} = userData[songData.id];
+            let maxAccuracy = userData.songs[songData.id].accuracy;
+            let maxScore = userData.songs[songData.id].score;
             if(accuracy > maxAccuracy)
             {
                 maxAccuracy = accuracy;
@@ -138,7 +139,7 @@ export class ResultScreen extends Component {
 
             await DatabaseManager.setLeaderBoard(SongId, {
                 accuracy: maxAccuracy,
-                name: this.globalSettings.user.name,
+                name: this.globalSettings.user.displayName,
                 score: maxScore
             });
             console.log('Leaderboard updated successfully');
