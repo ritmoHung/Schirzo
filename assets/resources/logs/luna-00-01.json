@@ -1,0 +1,28 @@
+{
+    "id": "luna-00-01",
+    "name": "temp",
+    "contents": [
+        {
+            "type": "text",
+            "content": "<b>奇妙的事情</b>"
+        },
+        {
+            "type": "text",
+            "content": "「原來有人懂我」\n跟他聊天的時候就是這種感覺\n\n在南大的演講認識 Mavors 學長\n他好像以前是音樂班的然後現在讀科藝\n他很會彈吉他 也對製作音樂很有興趣\n\n他在演奏的時候眼睛是發亮的\n我很羨慕他那種「做自己喜歡的事」的神情\n\n不知道是他的影響還是什麼\n我最近都在忙完實驗結預報後\n在半夜拿 iPad 偷混音\n然後再傳給他聽 有時候還他還會幫我譜詞\n跟他在一起我的心情就會很起伏\n很難得有了{2:「期待」跟「喜歡」}的感受\n這讓我做一些平常沒辦法做的事情\n感覺超不真實的"
+        }
+    ],
+    "unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "mopemope",
+			"required_score": 800000,
+			"unlock_level": 1
+		},
+        {
+            "type": "song_score",
+            "song_id": "mopemope",
+            "required_score": 850000,
+            "unlock_level": 2
+        }
+	]
+}

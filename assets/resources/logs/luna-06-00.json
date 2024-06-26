@@ -1,0 +1,34 @@
+{
+    "id": "luna-06-00",
+    "name": "temp",
+    "contents": [
+        {
+            "type": "text",
+            "content": "<b>{3: 夠沉重才能創造「太陽」}</b>"
+        },
+        {
+            "type": "text",
+            "content": "聽著歌，眼淚已經枯乾了，\n{2: 我開始把這段故事、這些想像唱成歌。}\n\n{3: 當我一唱起歌，天空就放晴了。}\n\n這很艱難，很痛苦，但帶出來的{2: 音樂共感}，{3: 救贖了我}。\n\n我似乎理解了{3: 那位評審說的「靈魂」}是什麼。\n\n你們的這些攻擊都無法改變我許的願望，也無法動搖我對創作的執念。\n\n從小到大，我一直被音樂所安慰。他們以前沒有打敗我，現在也不能打敗我。\n\n{3: 我要繼續創作，繼續向前，也許就是夠沉重才能創造「太陽」}"
+        }
+    ],
+    "unlock_requirements": [
+        {
+            "type": "song_score",
+            "song_id": "hopefortheflowers",
+            "required_score": 800000,
+            "unlock_level": 1
+        },
+        {
+            "type": "song_score",
+            "song_id": "hopefortheflowers",
+            "required_score": 850000,
+            "unlock_level": 2
+        },
+        {
+            "type": "song_score",
+            "song_id": "hopefortheflowers",
+            "required_score": 950000,
+            "unlock_level": 3
+        }
+    ]
+}

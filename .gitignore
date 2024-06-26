@@ -27,9 +27,14 @@ node_modules/
 # Firebase
 #//////////////////////////
 .firebase/
+firebase-debug.log
 
 # Materials
 materials/
 
-# .DS_Store
+# Others
 **/.DS_Store*
+**/*.docx
+**/*.pptx
+**/*.pdf
+**/*.pkf

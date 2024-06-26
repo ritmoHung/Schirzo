@@ -1,0 +1,28 @@
+{
+	"id": "alephzero",
+	"name": "Aleph-0",
+	"artist": "LeaF",
+	"bpm": "35~400",
+	"default_unlocked": false,
+	"chapter": {
+		"id": "luna",
+		"index": 2
+	},
+	"unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "mopemope",
+			"required_score": 800000
+		},
+		{
+			"type": "song_score",
+			"song_id": "tpvsshark",
+			"required_score": 800000
+		}
+	],
+	"log_ids": [
+		"luna-02-00",
+		"luna-02-01",
+		"luna-02-02"
+	]
+}

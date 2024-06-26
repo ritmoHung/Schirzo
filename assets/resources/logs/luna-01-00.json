@@ -1,0 +1,28 @@
+{
+    "id": "luna-01-00",
+    "name": "temp",
+    "contents": [
+        {
+            "type": "text",
+            "content": "<b>結果 Mavors 和 {2: Venus 在一起了}</b>"
+        },
+        {
+            "type": "text",
+            "content": "{2: Venus} 告訴我{2: 她和 Mavors 在一起了}\n當時我愣住了\n感覺{2: 心裡}像是被挖空了一樣。\n\nVenus 問我是不是生氣\n我只能擠出一個微笑說「怎麼會呢」\n但其實內心百感交集。"
+        }
+    ],
+    "unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "tpvsshark",
+			"required_score": 800000,
+			"unlock_level": 1
+		},
+        {
+            "type": "song_score",
+            "song_id": "tpvsshark",
+            "required_score": 850000,
+            "unlock_level": 2
+        }
+	]
+}

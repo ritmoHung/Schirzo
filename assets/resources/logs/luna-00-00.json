@@ -1,0 +1,22 @@
+{
+    "id": "luna-00-00",
+    "name": "temp",
+    "contents": [
+        {
+            "type": "text",
+            "content": "<b>故事開始啦</b>"
+        },
+        {
+            "type": "text",
+            "content": "上大學兩個月了\n\n感覺還不錯\n原本以為會不怎麼適應\n\n但還好 Venus 跟我同一個系\n原本高中的時候沒有跟她那麼熟\n跟我不同她是那種很有人緣的人\n\n迎新結束跑到她宿舍第一次喝醉酒後\n講著高中學校跟家裡給我的壓力\n我不小心在她面前大哭\n結果她就開始跟我一起哭\n那之後我們就變得無話不談"
+        }
+    ],
+    "unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "mopemope",
+			"required_score": 800000,
+			"unlock_level": 1
+		}
+	]
+}

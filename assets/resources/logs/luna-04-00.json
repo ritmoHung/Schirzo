@@ -1,0 +1,34 @@
+{
+    "id": "luna-04-00",
+    "name": "temp",
+    "contents": [
+        {
+            "type": "text",
+            "content": "<b>副作用才是想活下去</b>"
+        },
+        {
+            "type": "text",
+            "content": "我好累。\n\n你們又不愛我，怎麼會一直說是為了我好？\n\n只有在喝酒的時候，我才能忘掉外部的壓力，開始創作。\n\n當酒精滲入血液，我感覺自己彷彿進入了一個暫時的避風港，所有的焦慮和痛苦都被壓制在腦海深處。\n\n只有在那時，我才能真正放下所有的包袱，自由地表達自己內心的情感和想法。\n\n但這種感覺是短暫的，酒精帶來的麻痺效果讓我的身體和感官都變得很遲鈍。\n\n每當酒醒後，那些壓力和痛苦會再次湧現，讓我感到更加的無力和絕望。\n\n於是，我開始{3: 自殘}\n\n彷彿{3: 只有在流血，我才擁有生命}\n\n反而這些{2: 身體}上的{3: 傷}，讓我能感受到溫暖\n\n這些{3: 傷}至少真誠的，比起你們的愛還真實"
+        }
+    ],
+    "unlock_requirements": [
+		{
+			"type": "song_score",
+			"song_id": "marenol",
+			"required_score": 800000,
+			"unlock_level": 1
+		},
+        {
+            "type": "song_score",
+            "song_id": "marenol",
+            "required_score": 850000,
+            "unlock_level": 2
+        },
+        {
+            "type": "song_score",
+            "song_id": "marenol",
+            "required_score": 900000,
+            "unlock_level": 3
+        }
+	]
+}
