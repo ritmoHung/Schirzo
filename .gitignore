@@ -26,6 +26,7 @@ node_modules/
 #//////////////////////////
 # Firebase
 #//////////////////////////
+assets/scripts/firebase.js
 .firebase/
 firebase-debug.log
 
