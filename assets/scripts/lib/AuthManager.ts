@@ -16,9 +16,9 @@ export module AuthManager {
         })
     }
 
-    export async function signInRedirect(provider: firebase.auth.AuthProvider) {
+    export async function signInPopup(provider: firebase.auth.AuthProvider) {
         try {
-            await firebase.auth().signInWithRedirect(provider);
+            await firebase.auth().signInWithPopup(provider);
         } catch (error) {
             console.error("Error signing in:", error);
         }

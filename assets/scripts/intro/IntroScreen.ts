@@ -1,4 +1,4 @@
-import { _decorator, AudioClip, Button, Camera, Component, director, EventKeyboard, EventMouse, Input, input, KeyCode, RichText, Tween, tween, UIOpacity, Vec3 } from "cc";
+import { _decorator, AudioClip, Button, Camera, Component, director, EventKeyboard, EventMouse, Input, input, KeyCode, Label, RichText, Tween, tween, UIOpacity, Vec3 } from "cc";
 import { GlobalSettings } from "../settings/GlobalSettings";
 import { AuthManager } from "../lib/AuthManager";
 import { DatabaseManager } from "../lib/DatabaseManager";
@@ -20,7 +20,9 @@ export class Intro extends Component {
     bgm: AudioClip
 
     @property(Button)
-    logoutButton: Button
+    signIOButton: Button
+    @property(Label)
+    signIOButtonLabel: Label
 
     // UIOpacity
     @property(UIOpacity)
@@ -73,7 +75,7 @@ export class Intro extends Component {
     onStartTouchEnd() {
         this.clearStartText();
     }
-    
+
     onContinueKeyDown(event: EventKeyboard) {
         if (event.keyCode === KeyCode.ENTER || event.keyCode === KeyCode.SPACE) {
             this.enterGame();
@@ -118,9 +120,6 @@ export class Intro extends Component {
                     (user) => this.onUserSignedIn(user),
                     () => this.onUserSignedOut()
                 );
-
-                // Logout button
-                this.logoutButton.node.on(Button.EventType.CLICK, this.signOut, this);
             })
             .start();
     }
@@ -166,7 +165,7 @@ export class Intro extends Component {
         // Update loader status
         this.loader.showStatus("success");
         this.statusText.string = `useR: ${user.displayName}`;
-        
+
         // Attach event listeners
         input.on(Input.EventType.KEY_DOWN, this.onContinueKeyDown, this);
         input.on(Input.EventType.TOUCH_END, this.onContinueTouchEnd, this);
@@ -175,6 +174,10 @@ export class Intro extends Component {
             .to(2, { opacity: 0 }, { easing: "sineOut" })
             .start();
         this.applyBlink(this.contUIOpacity);
+
+        // Sign I/O button
+        this.signIOButtonLabel.string = "loGouT";
+        this.signIOButton.node.on(Button.EventType.CLICK, this.signOut, this);
     }
 
     async onUserSignedOut() {
@@ -182,11 +185,15 @@ export class Intro extends Component {
         this.loader.showStatus("warning");
         this.statusText.string = "Not logged in";
 
+        // Sign I/O button
+        this.signIOButtonLabel.string = "loGin";
+        this.signIOButton.node.on(Button.EventType.CLICK, this.signIn, this);
+    }
+
+    async signIn() {
         if (!this.isSignOutProcess) {
-            this.scheduleOnce(function() {
-                const googleProvider = new firebase.auth.GoogleAuthProvider();
-                AuthManager.signInRedirect(googleProvider);
-            }, 1);
+            const googleProvider = new firebase.auth.GoogleAuthProvider();
+            await AuthManager.signInPopup(googleProvider);
         }
     }
 
@@ -206,7 +213,7 @@ export class Intro extends Component {
         // const chapterStatus = this.globalSettings.userData.chapters["luna"].chapter_status;
         this.globalSettings.audioManager.playBGM(this.bgm);
     }
-    
+
     loadScene() {
         const isNewPlayer = this.globalSettings.userData?.isNewPlayer;
         if (isNewPlayer) {
